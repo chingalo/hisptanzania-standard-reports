@@ -1,0 +1,1116 @@
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script>
+    $(document).ready(function(){
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        $(".period_area").text(periods[0]);
+        $("#archived_area").text("Archived "+periods[0]);
+        $("#header_area").text(dhis2.report.organisationUnit.name);
+    });
+
+</script>
+<p>
+    <style type="text/css"><!--td {border: 1px solid #ccc;}br {mso-data-placement:same-cell;}-->
+    </style>
+</p>
+<h3 class="text-center">PMP Targets for <span id="header_area"></span> <span class="period_area"></span> </h3>
+<table class="" border="1" cellpadding="0" cellspacing="0" dir="ltr">
+    <colgroup>
+        <col width="42" />
+        <col width="279" />
+        <col width="308" />
+        <col width="190" />
+        <col width="100" />
+        <col width="100" />
+    </colgroup>
+    <tbody>
+    <tr>
+        <td colspan="1" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;#&quot;}" rowspan="2">
+            <p>#</p>
+        </td>
+        <td colspan="1" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Performance Indicator&quot;}" rowspan="2" style="background-color: rgb(255, 102, 51);">
+            <p>Performance Indicator</p>
+        </td>
+        <td style="background-color: rgb(255, 51, 0);">&nbsp;</td>
+        <td style="background-color: rgb(255, 51, 0);">&nbsp;</td>
+        <td rowspan="2" style="background-color: rgb(102, 204, 51);">Total <span class="period_area"></span> </td>
+        <td rowspan="2" style="background-color: rgb(102, 204, 51);">Target <span class="period_area"></span></td>
+        <td colspan="1" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% Achieved Yr 2&quot;}" rowspan="2" style="background-color: rgb(102, 204, 51);">
+            <p id="archived_area">% Achieved Yr 2</p>
+        </td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Operational definition&quot;}" style="background-color: rgb(255, 51, 0);">Operational definition</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Data source HMIS&quot;}" style="background-color: rgb(255, 51, 0); width: 40px;">Data source HMIS</td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 204, 204);">&nbsp;</td>
+        <td colspan="6" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Objective 1: Ensure 27 facilities in Temeke and Ilala offer quality, youth-friendly contraceptive services, particularly a balanced selection of long-acting methods, by 2017. Ensure an additional 33 facilities offer both long-acting and permanent methods by 2017.&quot;}" rowspan="1" style="background-color: rgb(221, 221, 221);">Objective 1: Ensure 27 facilities in Temeke and Ilala offer quality, youth-friendly contraceptive services, particularly a balanced selection of long-acting methods, by 2017. Ensure an additional 33 facilities offer both long-acting and permanent methods by 2017.</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:1}">1</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities offering contraceptive services, including short-acting and long-acting (IUD and implant)&quot;}"># of facilities offering contraceptive services, including short-acting and long-acting (IUD and implant)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering long-acting contraceptive methods (IUD and implant) in addition to short-acting methods, as confirmed through service statistics indicating provision of LA methods to clients. Maps to LAD indicator for # of facilities offering contracetive services.&quot;}">Number of project-supported facilities offering long-acting contraceptive methods (IUD and implant) in addition to short-acting methods, as confirmed through service statistics indicating provision of LA methods to clients. Maps to LAD indicator for # of facilities offering contracetive services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:2}">2</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities offering all contraceptive services (including short-acting, long-acting and permanent methods)&quot;}"># of facilities offering all contraceptive services (including short-acting, long-acting and permanent methods)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering both long-acting (IUD, implant) and permanent (female sterilization, male sterilization) methods in addition to short-acting methods, as confirmed through service statistics indicating provision of LA and PM methods to clients. Maps to LAD indicator for # of facilities offering contracetive services&quot;}">Number of project-supported facilities offering both long-acting (IUD, implant) and permanent (female sterilization, male sterilization) methods in addition to short-acting methods, as confirmed through service statistics indicating provision of LA and PM methods to clients. Maps to LAD indicator for # of facilities offering contracetive services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;pills&quot;}">pills</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;pills&quot;}">pills</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;FP&quot;}">FP</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;injectables&quot;}">injectables</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;injectables&quot;}">injectables</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;FP&quot;}">FP</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:5}">5</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new LAPM users (includes interval IUD, PPIUD, implant, PM)&quot;}"># of new LAPM users (includes interval IUD, PPIUD, implant, PM)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of new users adopting a long-acting or permanent contraceptive method at project-supported facilites. This includes IUD (interval or PPIUD), implant, female sterilization, and male sterilization. A new user is defined by country HMIS as someone who has never used modern contraception before. Maps to LAD indicator for # of LAPM insertions&quot;}">Number of new users adopting a long-acting or permanent contraceptive method at project-supported facilites. This includes IUD (interval or PPIUD), implant, female sterilization, and male sterilization. A new user is defined by country HMIS as someone who has never used modern contraception before. Maps to LAD indicator for # of LAPM insertions</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Sum below&quot;}">Sum below</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:6}">6</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new implant users&quot;}"># of new implant users</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of new users accepting an implant (Jadelle) at project-supported facilities. Maps to LAD indicator for # of implant insertions&quot;}">Number of new users accepting an implant (Jadelle) at project-supported facilities. Maps to LAD indicator for # of implant insertions</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Sum below&quot;}">Sum below</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;FP PNC - within 40 days of delivery&quot;}">FP PNC - within 40 days of delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PNC - within 40 days of delivery&quot;}">PNC - within 40 days of delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 13-PNC manual count from register #24 FP method&quot;}">Book 13-PNC manual count from register #24 FP method</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:7}">7</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new IUD users (interval + PPIUD)&quot;}"># of new IUD users (interval + PPIUD)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of new users accepting an IUD at project-supported facilities. This includes interval IUD and postpartum IUD insertions.&quot;}">Number of new users accepting an IUD at project-supported facilities. This includes interval IUD and postpartum IUD insertions.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Sum below&quot;}">Sum below</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;FP - interval IUD&quot;}">FP - interval IUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;FP - interval IUD&quot;}">FP - interval IUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 8 - FP: line 6a (IUD)&quot;}">Book 8 - FP: line 6a (IUD)</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;L&amp;D - PPIUD&quot;}">L&amp;D - PPIUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Post placental within 10 minutes; immediate post partum within 48 hours; extended post-partum = copper IUD after 4 weeks.&quot;}">Post placental within 10 minutes; immediate post partum within 48 hours; extended post-partum = copper IUD after 4 weeks.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Carolyn Boyce: Hellen to confirm that IUDs are inserted in L&amp;D room and not in PNC within first 48 hours Hellen: In the current system, the PPIUD services are not offered in all facilities. What the has advice us is to develop a new improvision tool to capture this indicator while waiting for the review of HMIS tool for incooparation of this data. So we will work with district to develop this form and train the providers during PPIUD training Book 12 - L&amp;D: line 26, will need to manually count IUD code from remarks column&quot;}">Carolyn Boyce: Hellen to confirm that IUDs are inserted in L&amp;D room and not in PNC within first 48 hours Hellen: In the current system, the PPIUD services are not offered in all facilities. What the has advice us is to develop a new improvision tool to capture this indicator while waiting for the review of HMIS tool for incooparation of this data. So we will work with district to develop this form and train the providers during PPIUD training Book 12 - L&amp;D: line 26, will need to manually count IUD code from remarks column</td>
+        <td rowspan="3">&nbsp;</td>
+        <td rowspan="3">&nbsp;</td>
+        <td colspan="1" data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}" rowspan="3">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PNC - PPIUD within 40 days of delivery&quot;}">PNC - PPIUD within 40 days of delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Carolyn Boyce: Clarify process of what happens between L&amp;D, here and FP room for post-partum women. \u2022 Confirm data sources for PPIUD indicators \u2013 manual count from logbooks? Hellen: Yes we will develop a new tool for capturing the indicator and the provider focal person witll summarize the data and report to us on monthly basis. PNC - PPIUD within 40 days of delivery&quot;}">Carolyn Boyce: Clarify process of what happens between L&amp;D, here and FP room for post-partum women. &bull; Confirm data sources for PPIUD indicators &ndash; manual count from logbooks? Hellen: Yes we will develop a new tool for capturing the indicator and the provider focal person witll summarize the data and report to us on monthly basis. PNC - PPIUD within 40 days of delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 13-PNC manual count from register #24 FP method&quot;}">Book 13-PNC manual count from register #24 FP method</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Addiitional PPFP Indicators&quot;}">Addiitional PPFP Indicators</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new users Implant due PPFP&quot;}"># of new users Implant due PPFP</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP tool&quot;}">PPFP tool</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new users Injection due PPFP&quot;}"># of new users Injection due PPFP</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP tool&quot;}">PPFP tool</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new users condom due PPFP&quot;}"># of new users condom due PPFP</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP tool&quot;}">PPFP tool</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new users pills due PPFP&quot;}"># of new users pills due PPFP</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP tool&quot;}">PPFP tool</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:8}">8</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of new permanent method users&quot;}"># of new permanent method users</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of new users accepting female or male sterilization at project-supported facilities. Maps to LAD indicator for # of permanent methods&quot;}">Number of new users accepting female or male sterilization at project-supported facilities. Maps to LAD indicator for # of permanent methods</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 8 - FP: line 4a (tubal) and 4c (vasectomy)&quot;}">Book 8 - FP: line 4a (tubal) and 4c (vasectomy)</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:8.1}">8.1</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Additional service FP indicators required by LAD&quot;}">Additional service FP indicators required by LAD</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="8">&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of deliveries at facilities providing PPIUD&quot;}"># of deliveries at facilities providing PPIUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of deliveries at project-supported facilities. The project is not directly aiming to influence this indicator, but it is tracked in order to provide context for the number of women counseled on postpartum IUD.&quot;}">Number of deliveries at project-supported facilities. The project is not directly aiming to influence this indicator, but it is tracked in order to provide context for the number of women counseled on postpartum IUD.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 12 - L&amp;D, monthly summary, 2a&quot;}">Book 12 - L&amp;D, monthly summary, 2a</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of women counseled on PPIUD&quot;}"># of women counseled on PPIUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of women counseled on postpartum IUD at project-supported facilities. This is a subset of the total number of women who deliver at project-supported facilities.&quot;}">Number of women counseled on postpartum IUD at project-supported facilities. This is a subset of the total number of women who deliver at project-supported facilities.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Carolyn Boyce: Hellen to confirm that IUDs are inserted in L&amp;D room and not in PNC within first 48 hours Hellen: The IUD insertion are done during PNC and not within 48 hours in current system. Only one facility is doing PPIUD currently. We will develop a separate tool to record IUCD insertion in L&amp;D ward as it is not possible to add additional data in the HMIS tool until we do a formal review with stakeholders. We think we will loose a lot of data if we rely on the remark column of L&amp;D register. PPFP tool&quot;}">Carolyn Boyce: Hellen to confirm that IUDs are inserted in L&amp;D room and not in PNC within first 48 hours Hellen: The IUD insertion are done during PNC and not within 48 hours in current system. Only one facility is doing PPIUD currently. We will develop a separate tool to record IUCD insertion in L&amp;D ward as it is not possible to add additional data in the HMIS tool until we do a formal review with stakeholders. We think we will loose a lot of data if we rely on the remark column of L&amp;D register. PPFP tool</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of LAPM due to IUD ( Exclude PPIUD)&quot;}">% of LAPM due to IUD ( Exclude PPIUD)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;The percent of new LAPM clients at project-supported facilities that are IUD acceptors. Numerator: number of IUDs inserted (interval + PPIUD) at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities&quot;}">The percent of new LAPM clients at project-supported facilities that are IUD acceptors. Numerator: number of IUDs inserted (interval + PPIUD) at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculation&quot;}">Calculation</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of LAPM due to implants&quot;}">% of LAPM due to implants</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;The percent of new LAPM clients at project-supported facilities that are implant acceptors. Numerator: number of implants inserted at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities&quot;}">The percent of new LAPM clients at project-supported facilities that are implant acceptors. Numerator: number of implants inserted at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculation&quot;}">Calculation</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of LAPM due to PM&quot;}">% of LAPM due to PM</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;The percent of new LAPM clients at project-supported facilities that are permanent method acceptors. Numerator: number of PM provided (female + male sterilization) at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities&quot;}">The percent of new LAPM clients at project-supported facilities that are permanent method acceptors. Numerator: number of PM provided (female + male sterilization) at project-supported facilities Denominator: total number of new LAPM users at project-supported facilities</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculation&quot;}">Calculation</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;total # of PPIUD providers&quot;}">total # of PPIUD providers</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Total number of active providers who are able to offer PPIUDs in project-supported facilities, including those trained by the project and those who were already offering PPIUD prior to the project&quot;}">Total number of active providers who are able to offer PPIUDs in project-supported facilities, including those trained by the project and those who were already offering PPIUD prior to the project</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;total # of LAPM providers&quot;}">total # of LAPM providers</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Total number of active providers who are able to offer LAPM in project-supported facilities, including those trained by the project and those who were already offering LAPM prior to the project.&quot;}">Total number of active providers who are able to offer LAPM in project-supported facilities, including those trained by the project and those who were already offering LAPM prior to the project.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;total # of cPAC providers&quot;}">total # of cPAC providers</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Total number of active providers who are able to offer cPAC in project-supported facilities, including those trained by the project and those who were already offering cPAC prior to the project&quot;}">Total number of active providers who are able to offer cPAC in project-supported facilities, including those trained by the project and those who were already offering cPAC prior to the project</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:9}">9</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Continuation rate (by method) as measured by CHWs&quot;}">Continuation rate (by method) as measured by CHWs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Laura Subramanian: \u2022 Confirm whether the individual client cards for FP are actually being used at facilities to calculate continuation rates annually? \u2022 Should we include method continuation rates in the KIT? The tracking of method continuation is quite complicated, so maybe we can put a placeholder in the KIT for now and then determine what is feasible to report in the KIT? Hellen: During the assessment we found this card are hardly used. Must it is very important for the program to revise the use of these cards and help the facilities. I agree with what Laura is suggesting but we can try to track the method continuation rate using CHW application tool. Percent of contraceptive users who are still using their method at a certain time period after initiation (30 day, 60 day, 90 day, and quarterly for short-acting methods and biannually for long-acting methods), as assessed by CHWs during follow-up home visits. Disaggregated by method: pills, injectables, implants, IUD, PM.\nNumerator: # of women who initiated a specific contraceptive method and are still using that method after a certain time period\nDenominator: total # of women who initiated a specific contraceptive method&quot;}">Laura Subramanian: &bull; Confirm whether the individual client cards for FP are actually being used at facilities to calculate continuation rates annually? &bull; Should we include method continuation rates in the KIT? The tracking of method continuation is quite complicated, so maybe we can put a placeholder in the KIT for now and then determine what is feasible to report in the KIT? Hellen: During the assessment we found this card are hardly used. Must it is very important for the program to revise the use of these cards and help the facilities. I agree with what Laura is suggesting but we can try to track the method continuation rate using CHW application tool. Percent of contraceptive users who are still using their method at a certain time period after initiation (30 day, 60 day, 90 day, and quarterly for short-acting methods and biannually for long-acting methods), as assessed by CHWs during follow-up home visits. Disaggregated by method: pills, injectables, implants, IUD, PM.<br />
+            Numerator: # of women who initiated a specific contraceptive method and are still using that method after a certain time period<br />
+            Denominator: total # of women who initiated a specific contraceptive method</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:10}">10</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Pill continuation rate&quot;}">Pill continuation rate</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:11}">11</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Injectable continuation rate&quot;}">Injectable continuation rate</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:12}">12</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Implant continuation rate&quot;}">Implant continuation rate</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:13}">13</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;IUD continuation rate&quot;}">IUD continuation rate</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:14}">14</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PM continuation rate&quot;}">PM continuation rate</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:15}">15</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facility assessments conducted on contraceptive service delivery&quot;}"># of facility assessments conducted on contraceptive service delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of rapid facility assessments conducted by the project to assess gaps related to contraceptive service delivery (particularly around long-acting methods) and youth-friendliness.&quot;}">Number of rapid facility assessments conducted by the project to assess gaps related to contraceptive service delivery (particularly around long-acting methods) and youth-friendliness.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:16}">16</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of master trainers re-oriented on FP prior to offering training&quot;}"># of master trainers re-oriented on FP prior to offering training</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of master trainers completing a TOT course on contraceptive service delivery, including LAPM and youth- friendly approaches and logistics management. This tracks individuals trained.&quot;}">Number of master trainers completing a TOT course on contraceptive service delivery, including LAPM and youth- friendly approaches and logistics management. This tracks individuals trained.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:17}">17</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of providers oriented on general FP and short-acting methods (required by government prior to LAPM training)&quot;}"># of providers oriented on general FP and short-acting methods (required by government prior to LAPM training)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of service providers completing a competency-based orientation on contraception counseling including short acting contraceptive methods and youth-friendly services.&quot;}">Number of service providers completing a competency-based orientation on contraception counseling including short acting contraceptive methods and youth-friendly services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:18}">18</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of Master Trainers trained as trainers for PPIUD insertion&quot;}"># of Master Trainers trained as trainers for PPIUD insertion</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of National Master Trainers completing a TOT course on training for PPIUD.&quot;}">Number of National Master Trainers completing a TOT course on training for PPIUD.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:19}">19</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of providers (MDs and AMOs; clinical officers and nurses/nurse- midwives) trained in long-acting methods&quot;}"># of providers (MDs and AMOs; clinical officers and nurses/nurse- midwives) trained in long-acting methods</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of MDs and AMOs, Clinical Officers and Experienced Nurses/Nurse Midwives completing a competency-based training course on long-acting methods including youth-friendly services. This reflects training of all providers in both IUD and implants. This tracks individuals trained. Maps to LAD indicator for # of providers trained in LAPM&quot;}">Number of MDs and AMOs, Clinical Officers and Experienced Nurses/Nurse Midwives completing a competency-based training course on long-acting methods including youth-friendly services. This reflects training of all providers in both IUD and implants. This tracks individuals trained. Maps to LAD indicator for # of providers trained in LAPM</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:20}">20</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of providers (subset of those trained on long-acting methods) trained on PPIUD&quot;}"># of providers (subset of those trained on long-acting methods) trained on PPIUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of Clinical Officers and Experienced Nurses/Nurse Midwives, MDs and AMOs completing a competency-based training course on PPIUD. This is a subset of the providers trained in long-acting methods. This tracks individuals trained. Maps to LAD indicator for # of providers trained in PPIUD&quot;}">Number of Clinical Officers and Experienced Nurses/Nurse Midwives, MDs and AMOs completing a competency-based training course on PPIUD. This is a subset of the providers trained in long-acting methods. This tracks individuals trained. Maps to LAD indicator for # of providers trained in PPIUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:21}">21</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of providers (medical officers and AMOs) trained in permanent methods (subset of those trained on long-acting methods)&quot;}"># of providers (medical officers and AMOs) trained in permanent methods (subset of those trained on long-acting methods)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of Medical Officers and Assistant Medical Officers in select facilities completing a competency-based training course on provision of permanent methods. This is a subset of the providers trained in long-acting methods. This tracks individuals trained. Maps to LAD indicator for # of providers trained in LAPM&quot;}">Number of Medical Officers and Assistant Medical Officers in select facilities completing a competency-based training course on provision of permanent methods. This is a subset of the providers trained in long-acting methods. This tracks individuals trained. Maps to LAD indicator for # of providers trained in LAPM</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:22}">22</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of providers trained/oriented on contraceptive counseling in ANC, PNC, immunization and HIV services&quot;}"># of providers trained/oriented on contraceptive counseling in ANC, PNC, immunization and HIV services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of providers at ANC, PNC, immunization, and HIV sites who are trained/oriented on contraceptive counselling, especially on YFS and long-acting methods.&quot;}">Number of providers at ANC, PNC, immunization, and HIV sites who are trained/oriented on contraceptive counselling, especially on YFS and long-acting methods.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:23}">23</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of project-supported facilities offering contraceptive counseling during ANC visits&quot;}"># of project-supported facilities offering contraceptive counseling during ANC visits</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering contraceptive counseling during ANC visits, as verified by mentorship team records.&quot;}">Number of project-supported facilities offering contraceptive counseling during ANC visits, as verified by mentorship team records.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;23a&quot;}">23a</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of project-supported facilities offering contraceptive method provision during PNC visits&quot;}"># of project-supported facilities offering contraceptive method provision during PNC visits</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering contraceptive counseling during PNC visits, as verified by mentorship team records.&quot;}">Number of project-supported facilities offering contraceptive counseling during PNC visits, as verified by mentorship team records.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:24}">24</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of project-supported facilities offering FP information and (in- facility) referrals during immunization services&quot;}"># of project-supported facilities offering FP information and (in- facility) referrals during immunization services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering contraceptive information and (in-facility) referals during immunization services, as verified by mentorship team records.&quot;}">Number of project-supported facilities offering contraceptive information and (in-facility) referals during immunization services, as verified by mentorship team records.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:25}">25</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of project-supported facilities which have integrated FP into HIV treatment services&quot;}"># of project-supported facilities which have integrated FP into HIV treatment services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities that are providing contraceptive methods within HIV care &amp; treatment services, as verified by mentorship team reports.&quot;}">Number of project-supported facilities that are providing contraceptive methods within HIV care &amp; treatment services, as verified by mentorship team reports.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:26}">26</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of mentorship team members trained&quot;}"># of mentorship team members trained</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of people identified and trained as members of mentorship teams that will conduct routine follow-up visits to support trained providers at project-supported facilities.&quot;}">Number of people identified and trained as members of mentorship teams that will conduct routine follow-up visits to support trained providers at project-supported facilities.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:27}">27</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities receiving at least one mentorship visit per quarter&quot;}"># of facilities receiving at least one mentorship visit per quarter</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities receiving at least one mentorship visit per quarter to support individual trained provider performance tracking and improvement.&quot;}">Number of project-supported facilities receiving at least one mentorship visit per quarter to support individual trained provider performance tracking and improvement.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:28}">28</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Supervision guidelines and checklists incorporate ISQS methodology/content&quot;}">Supervision guidelines and checklists incorporate ISQS methodology/content</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Pathfinder ISQS methodology/content incorporated into facility supervision guidelines and checklists&quot;}">Pathfinder ISQS methodology/content incorporated into facility supervision guidelines and checklists</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:29}">29</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities receiving at least one supervision visit per quarter for contraceptive services&quot;}"># of facilities receiving at least one supervision visit per quarter for contraceptive services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities receiving at least one supervision visit per quarter from district officials (accompanied by project staff) for contraceptive services.&quot;}">Number of project-supported facilities receiving at least one supervision visit per quarter from district officials (accompanied by project staff) for contraceptive services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:30}">30</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities that have adequate equipment and supplies to provide contraceptive services&quot;}"># of facilities that have adequate equipment and supplies to provide contraceptive services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities that have adequate equipment and supplies (defined per mentorship team checklist/app) to provide contraceptive services.&quot;}">Number of project-supported facilities that have adequate equipment and supplies (defined per mentorship team checklist/app) to provide contraceptive services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:32}">32</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;mHealth applications developed&quot;}">mHealth applications developed</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;mHealth applications developed for 1) mentorship teams to monitor service quality standards and track individual provider performance 2) CHWs to register and counsel clients on contraception, make and confirm referrals, track method continuation, and collect Citizen Report Card data; 3) CHW supervisors track CHW performance.&quot;}">mHealth applications developed for 1) mentorship teams to monitor service quality standards and track individual provider performance 2) CHWs to register and counsel clients on contraception, make and confirm referrals, track method continuation, and collect Citizen Report Card data; 3) CHW supervisors track CHW performance.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:33}">33</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities using established referral form process to confirm contraceptive referrals (from CHW)&quot;}"># of facilities using established referral form process to confirm contraceptive referrals (from CHW)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities using established referral process to complete contraceptive referrals from CHWs (referral completion) and prompt CHW client follow-up. This includes completion of referred service by facility provider upon receipt of CHW referral form, deposit of referral form in Pathfinder-provided referral form box, and confirmation of slips in referral box by mentorship team during quarterly visit.&quot;}">Number of project-supported facilities using established referral process to complete contraceptive referrals from CHWs (referral completion) and prompt CHW client follow-up. This includes completion of referred service by facility provider upon receipt of CHW referral form, deposit of referral form in Pathfinder-provided referral form box, and confirmation of slips in referral box by mentorship team during quarterly visit.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:34}">34</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of quarterly data review meetings held by district (Temeke and Ilala)&quot;}"># of quarterly data review meetings held by district (Temeke and Ilala)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of quarterly data review meetings held in each project district (in which on site mentoring is provided for generating and working with data).&quot;}">Number of quarterly data review meetings held in each project district (in which on site mentoring is provided for generating and working with data).</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:35}">35</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities holding regular data review meetings&quot;}"># of facilities holding regular data review meetings</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities holding regular data review meetings on a monthly basis.&quot;}">Number of project-supported facilities holding regular data review meetings on a monthly basis.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:36}">36</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities provided with job aids to support quality counseling&quot;}"># of facilities provided with job aids to support quality counseling</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities provided with job aids to support quality counseling for contraception&quot;}">Number of project-supported facilities provided with job aids to support quality counseling for contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="6" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Objective 2: Ensure 36 facilities in Temeke and Ilala offer quality, youth-friendly cPAC services (as an entry point for CAC) to all women by 2017.&quot;}" rowspan="1" style="background-color: rgb(204, 204, 204);">Objective 2: Ensure 36 facilities in Temeke and Ilala offer quality, youth-friendly cPAC services (as an entry point for CAC) to all women by 2017.</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:37}">37</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities offering cPAC services&quot;}"># of facilities offering cPAC services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities offering quality cPAC services. cPAC refers to the provision of care including treatment of incomplete abortion/complications of abortion, contraceptive counseling and provision, links to other SRH and social services, and community engagement to raise awareness of and involvement in addressing unsafe abortion. Maps to LAD indicator for total # of facilities offering cPAC only&quot;}">Number of project-supported facilities offering quality cPAC services. cPAC refers to the provision of care including treatment of incomplete abortion/complications of abortion, contraceptive counseling and provision, links to other SRH and social services, and community engagement to raise awareness of and involvement in addressing unsafe abortion. Maps to LAD indicator for total # of facilities offering cPAC only</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:38}">38</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of facilities that meet essential quality standards for cPAC&quot;}">% of facilities that meet essential quality standards for cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of project-supported facilities that meet a set of essential quality standards for cPAC. A facility must meet all of the specified standards in order to be considered as meeting the essential quality standards for cPAC.&quot;}">Percent of project-supported facilities that meet a set of essential quality standards for cPAC. A facility must meet all of the specified standards in order to be considered as meeting the essential quality standards for cPAC.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:39}">39</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of women receiving cPAC services from project-supported facilities&quot;}"># of women receiving cPAC services from project-supported facilities</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of women receiving comprehensive postabortion care services from project-supported facilities. Maps to LAD indicator for total # of CAC/PAC clients. Disaggregated by type: medical abortion, MVA&quot;}">Number of women receiving comprehensive postabortion care services from project-supported facilities. Maps to LAD indicator for total # of CAC/PAC clients. Disaggregated by type: medical abortion, MVA</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book9 - outpatient, monthly summary - line 73 (abortion) and 72? (pregnancy complications\n\nBook 8 (L&amp;D) Monthly form (7e)&quot;}">Book9 - outpatient, monthly summary - line 73 (abortion) and 72? (pregnancy complications<br />
+            <br />
+            Book 8 (L&amp;D) Monthly form (7e)</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:40}">40</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of women receiving medical abortion for cPAC&quot;}"># of women receiving medical abortion for cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Maps to LAD indicator for # of MA for CAC/PAC&quot;}">Maps to LAD indicator for # of MA for CAC/PAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Laura S: \u2022 Confirm age disaggregations for CAC/PAC clients (any age-disaggregated data available in monthly summary forms?). Hellen: We are developing ourproject tool to capture this information by age. So age dissagregation data will be available for analysis and use. We will use the same age dissagration as for FP \u2022 Confirm how we will get MVA/MA disaggregation for cPAC \u2013 manual count from logbooks? Hellen: Yes we will use the our project developed tool Manual&quot;}">Laura S: &bull; Confirm age disaggregations for CAC/PAC clients (any age-disaggregated data available in monthly summary forms?). Hellen: We are developing ourproject tool to capture this information by age. So age dissagregation data will be available for analysis and use. We will use the same age dissagration as for FP &bull; Confirm how we will get MVA/MA disaggregation for cPAC &ndash; manual count from logbooks? Hellen: Yes we will use the our project developed tool Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:41}">41</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of women receiving MVA for cPAC&quot;}"># of women receiving MVA for cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Maps to LAD indicator for # of MVA/EVA for CAC/PAC&quot;}">Maps to LAD indicator for # of MVA/EVA for CAC/PAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 8, monthly form (7e)&quot;}">Book 8, monthly form (7e)</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:42}">42</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of total cPAC clients that adopt a modern method of contraception&quot;}"># of total cPAC clients that adopt a modern method of contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of cPAC clients at project-supported facilities that adopt a modern method of contraception. Maps to LAD indicator for # of CAC/PAC clients receiving post-abortion contraception&quot;}">Number of cPAC clients at project-supported facilities that adopt a modern method of contraception. Maps to LAD indicator for # of CAC/PAC clients receiving post-abortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Book 8, #13 - FP services after delivery: received FP after miscarriage (to manually count by method?)\n\nBook 8, # 11b monthly form \nPPFP/cPAC&quot;}">Book 8, #13 - FP services after delivery: received FP after miscarriage (to manually count by method?)<br />
+            <br />
+            Book 8, # 11b monthly form<br />
+            PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception&quot;}"># of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception&quot;}"># of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP/cPAC&quot;}">PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving long term method (iimplant, IUCD and PM) for postabortion contraception&quot;}"># of cPAC clients receiving long term method (iimplant, IUCD and PM) for postabortion contraception</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP/cPAC&quot;}">PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving IUD for postabortion contraception&quot;}"># of cPAC clients receiving IUD for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving IUD for postabortion contraception&quot;}"># of cPAC clients receiving IUD for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP/cPAC&quot;}">PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving implant for postabortion contraception&quot;}"># of cPAC clients receiving implant for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving implant for postabortion contraception&quot;}"># of cPAC clients receiving implant for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP/cPAC&quot;}">PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving PM for postabortion contraception&quot;}"># of cPAC clients receiving PM for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of cPAC clients receiving PM for postabortion contraception&quot;}"># of cPAC clients receiving PM for postabortion contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;PPFP/cPAC&quot;}">PPFP/cPAC</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:43}">43</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of total cPAC clients that adopt a modern method of contraception&quot;}">% of total cPAC clients that adopt a modern method of contraception</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of cPAC clients at project-supported facilities that adopt a modern method of contraception postabortion. Maps to LAD indicator for % of post abortion contraception. Numerator: # of cPAC clients at project-supported facilities that adopt a modern method of contraception. Denominator: total # of cPAC clients at project-supported facilities.&quot;}">Percent of cPAC clients at project-supported facilities that adopt a modern method of contraception postabortion. Maps to LAD indicator for % of post abortion contraception. Numerator: # of cPAC clients at project-supported facilities that adopt a modern method of contraception. Denominator: total # of cPAC clients at project-supported facilities.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculate from above automatically&quot;}">Calculate from above automatically</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:44}">44</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of cPAC clients accepting contraception who choose LAPM&quot;}">% of cPAC clients accepting contraception who choose LAPM</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of cPAC clients at project-supported facilities adopting contraception who choose a long-acting or permanent method. This indicator is looking at the method mix among the sub-group of cPAC clients who adopt contraception. Maps to LAD indicator for % of post abortion contraception due to LAPM. Numerator: # of cPAC clients at project-supported facilities that adopt a long-acting or permanent contraceptive method postabortion. Denominator: # of cPAC clients at project-supported facilities that adopt a contraceptive method postabortion.&quot;}">Percent of cPAC clients at project-supported facilities adopting contraception who choose a long-acting or permanent method. This indicator is looking at the method mix among the sub-group of cPAC clients who adopt contraception. Maps to LAD indicator for % of post abortion contraception due to LAPM. Numerator: # of cPAC clients at project-supported facilities that adopt a long-acting or permanent contraceptive method postabortion. Denominator: # of cPAC clients at project-supported facilities that adopt a contraceptive method postabortion.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculated from above, including IUD, implants, and female sterilization.&quot;}">Calculated from above, including IUD, implants, and female sterilization.</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:45}">45</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of cPAC LAPM acceptors who choose IUD&quot;}">% of cPAC LAPM acceptors who choose IUD</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of cPAC clients at project-supported facilities adopting LAPM who choose an IUD. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt an IUD. Maps to LAD indicator for # of clients receiving IUD for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method&quot;}">Percent of cPAC clients at project-supported facilities adopting LAPM who choose an IUD. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt an IUD. Maps to LAD indicator for # of clients receiving IUD for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculated from above, using IUDs.&quot;}">Calculated from above, using IUDs.</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:46}">46</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of cPAC LAPM acceptors who choose implants&quot;}">% of cPAC LAPM acceptors who choose implants</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of cPAC clients at project-supported facilities adopting LAPM who choose an implant. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt an implant. Maps to LAD indicator for # of clients receiving implant for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method&quot;}">Percent of cPAC clients at project-supported facilities adopting LAPM who choose an implant. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt an implant. Maps to LAD indicator for # of clients receiving implant for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculated from above, using implants.&quot;}">Calculated from above, using implants.</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:47}">47</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of cPAC LAPM acceptors who choose PM&quot;}">% of cPAC LAPM acceptors who choose PM</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of cPAC clients at project-supported facilities adopting LAPM who choose a permanent method. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt PM. Maps to LAD indicator for # of clients receiving implant for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method&quot;}">Percent of cPAC clients at project-supported facilities adopting LAPM who choose a permanent method. This indicator is looking at the method breakdown among the sub-group of cPAC clients who adopt a long-acting or permanent method. Numerator: # of cPAC clients at project-supported facilities who adopt PM. Maps to LAD indicator for # of clients receiving implant for post-abortion contraception Denominator: # of cPAC clients at project-supported facilities who adopt a long-acting or permanent method</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Calculated from above, using PM&quot;}">Calculated from above, using PM</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:48}">48</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facility assessments conducted on cPAC service delivery&quot;}"># of facility assessments conducted on cPAC service delivery</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of rapid facility assessments conducted of hospitals and health facilities to identify needed steps to establish cPAC services (based on existing infrastructure)&quot;}">Number of rapid facility assessments conducted of hospitals and health facilities to identify needed steps to establish cPAC services (based on existing infrastructure)</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:49}">49</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of trainers trained in cPAC&quot;}"># of trainers trained in cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of trainers completing a course on provision of cPAC services as per national government guidelines&quot;}">Number of trainers completing a course on provision of cPAC services as per national government guidelines</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:50}">50</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses trained on cPAC&quot;}"># of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses trained on cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses completing competency-based training course(s) on cPAC and youth-friendly cPAC, as per national government guidelines. Maps to LAD indicator for total # of providers trained in CAC/PAC&quot;}">Number of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses completing competency-based training course(s) on cPAC and youth-friendly cPAC, as per national government guidelines. Maps to LAD indicator for total # of providers trained in CAC/PAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:51}">51</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of nurses and non-physician providers trained on harm reduction practices&quot;}"># of nurses and non-physician providers trained on harm reduction practices</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of nurses and other non-physician health providers at dispensaries and health centers completing a training course on harm reduction practices (i.e. provision of information about medical abortion, including where to access).&quot;}">Number of nurses and other non-physician health providers at dispensaries and health centers completing a training course on harm reduction practices (i.e. provision of information about medical abortion, including where to access).</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:53}">53</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities receive at least one supervision visit per quarter for cPAC services&quot;}"># of facilities receive at least one supervision visit per quarter for cPAC services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities receiving at least one supervision visit per quarter from district officials (accompanied by project staff) for cPAC services to support ongoing quality service delivery and improvement.&quot;}">Number of project-supported facilities receiving at least one supervision visit per quarter from district officials (accompanied by project staff) for cPAC services to support ongoing quality service delivery and improvement.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:54}">54</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities that have adequate equipment and supplies to provide cPAC services&quot;}"># of facilities that have adequate equipment and supplies to provide cPAC services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities that have adequate equipment and supplies (defined as per mentorship team checklist/app) to provide cPAC services.&quot;}">Number of project-supported facilities that have adequate equipment and supplies (defined as per mentorship team checklist/app) to provide cPAC services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:55}">55</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facilities using established referral system for cPAC and postabortion contraception uptake&quot;}"># of facilities using established referral system for cPAC and postabortion contraception uptake</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities using established CHW referral process for cPAC and postabortion contraception uptake. This includes completion of referred service by facility provider with receipt of CHW referral form, deposit of referral form in Pathfinder-provided referral form box, and confirmation of slips in referral box by mentorship team during quarterly visit.&quot;}">Number of project-supported facilities using established CHW referral process for cPAC and postabortion contraception uptake. This includes completion of referred service by facility provider with receipt of CHW referral form, deposit of referral form in Pathfinder-provided referral form box, and confirmation of slips in referral box by mentorship team during quarterly visit.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:56}">56</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of health facilities providing referrals to cPAC&quot;}"># of health facilities providing referrals to cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of project-supported facilities (lower level health facilities in the hospital/health center catchment areas) providing referrals for cPAC. This will be confirmed by mentorship team looking at referral records during quarterly visits.&quot;}">Number of project-supported facilities (lower level health facilities in the hospital/health center catchment areas) providing referrals for cPAC. This will be confirmed by mentorship team looking at referral records during quarterly visits.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="7" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Objective 3: Ensure 165 CHWs in Temeke provide quality counseling and referrals for contraceptive and cPAC services by 2017.&quot;}" rowspan="1" style="background-color: rgb(204, 204, 204);">Objective 3: Ensure 165 CHWs in Temeke provide quality counseling and referrals for contraceptive and cPAC services by 2017.</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:63}">63</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of trainers trained to conduct CHW training&quot;}"># of trainers trained to conduct CHW training</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of trainers participating in a TOT course to prepare them to conduct trainings for CHWs.&quot;}">Number of trainers participating in a TOT course to prepare them to conduct trainings for CHWs.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:64}">64</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of CHWs trained&quot;}"># of CHWs trained</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of CHWs completing a training course on contraceptive counseling and referral, cPAC awareness/values clarification, information on medical abortion, youth- friendliness, and strategies to reach specific target populations. This tracks individuals trained.&quot;}">Number of CHWs completing a training course on contraceptive counseling and referral, cPAC awareness/values clarification, information on medical abortion, youth- friendliness, and strategies to reach specific target populations. This tracks individuals trained.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:57}">57</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of CHWs providing counseling and referrals for contraceptive services and cPAC&quot;}"># of CHWs providing counseling and referrals for contraceptive services and cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of CHWs trained by the project that are providing counseling and referrals for contraceptive services and cPAC, as per CHW Supervision checklist.&quot;}">Number of CHWs trained by the project that are providing counseling and referrals for contraceptive services and cPAC, as per CHW Supervision checklist.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:57.1}">57.1</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of CHW Supervisors trained&quot;}">Number of CHW Supervisors trained</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:68}">68</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of CHWs use mHealth system for all contraceptive counseling, referrals and follow-up&quot;}"># of CHWs use mHealth system for all contraceptive counseling, referrals and follow-up</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Laura Subramanian: We need to determine exactly how this will be defined. It will probably have to be a composite indicator. For example a CHW would be \u2018yes\u2019 for this indicator if they complete full counseling (BCS + Form), are confirming (checking on) all referrals, and have at least one follow-up visit recorded in the system for all clients. Does this sound OK? Hellen: Okay perhaps we can discuss more with Mozambique. Number of CHWs trained by the project that are using the mHealth system for all contraceptive counseling, referrals and follow-up. This is an indirect measure of quality of CHW services, as consistent use of the system facilitates quality counseling and referral tracking.&quot;}">Laura Subramanian: We need to determine exactly how this will be defined. It will probably have to be a composite indicator. For example a CHW would be &lsquo;yes&rsquo; for this indicator if they complete full counseling (BCS + Form), are confirming (checking on) all referrals, and have at least one follow-up visit recorded in the system for all clients. Does this sound OK? Hellen: Okay perhaps we can discuss more with Mozambique. Number of CHWs trained by the project that are using the mHealth system for all contraceptive counseling, referrals and follow-up. This is an indirect measure of quality of CHW services, as consistent use of the system facilitates quality counseling and referral tracking.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:69}">69</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Tanzania Meetings: # of CHW who meet all quality standard ( proficiently perfomed) in provison of FP services # of CHWs completing full sequence of counseling using mobile application&quot;}">Tanzania Meetings: # of CHW who meet all quality standard ( proficiently perfomed) in provison of FP services # of CHWs completing full sequence of counseling using mobile application</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of CHWs trained by the project that use the full contraceptive counseling protocol with their clients, defined as completing the full sequence of counseling on all relevant methods using the mobile application.&quot;}">Number of CHWs trained by the project that use the full contraceptive counseling protocol with their clients, defined as completing the full sequence of counseling on all relevant methods using the mobile application.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:74}">74</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of CHWs receiving performance-based incentives&quot;}"># of CHWs receiving performance-based incentives</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of CHWs receiving performance-based incentives above their base pay.&quot;}">Number of CHWs receiving performance-based incentives above their base pay.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:65}">65</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of women receiving home visits and counselling by the CHW&quot;}"># of women receiving home visits and counselling by the CHW</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Laura Subramanian: \u2022 Confirm age disaggregations for CHW visits (Moz age disaggregations are &lt;19, 20-24, 25+). Number of women receiving routine home visits from CHWs, including counseling, referrals and follow-up to support method continuation. Each woman is counted only once, regardless of the number of visits she receives. Disaggregated by age: &lt;19 yrs, 20-24 yrs, 25+ yrs.&quot;}">Laura Subramanian: &bull; Confirm age disaggregations for CHW visits (Moz age disaggregations are &lt;19, 20-24, 25+). Number of women receiving routine home visits from CHWs, including counseling, referrals and follow-up to support method continuation. Each woman is counted only once, regardless of the number of visits she receives. Disaggregated by age: &lt;19 yrs, 20-24 yrs, 25+ yrs.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:66}">66</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Tanzania Meetings: Laura: Propose to change the indicator to % of CHW clients (counselled women) receiving more than one visit from a CHW during an annual period % of CHW clients ( women) receiving more than one visit from a CHW during an annual period&quot;}">Tanzania Meetings: Laura: Propose to change the indicator to % of CHW clients (counselled women) receiving more than one visit from a CHW during an annual period % of CHW clients ( women) receiving more than one visit from a CHW during an annual period</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of CHW clients (women) receiving more than one routine home visit from a CHW during an annual period. Numerator: number of women receiving 2 or more routine home visits from a CHW during an annual period Denominator: total number of women who received a routine home visit from a CHW during an annual period&quot;}">Percent of CHW clients (women) receiving more than one routine home visit from a CHW during an annual period. Numerator: number of women receiving 2 or more routine home visits from a CHW during an annual period Denominator: total number of women who received a routine home visit from a CHW during an annual period</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:67}">67</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Average number of home visits per woman per year&quot;}">Average number of home visits per woman per year</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Average number of routine home visits that a woman receives from a CHW per year. This is calculated by dividing the total number of home visits conducted by CHWs in the year, by the total number of women receiving home visits in the year.&quot;}">Average number of routine home visits that a woman receives from a CHW per year. This is calculated by dividing the total number of home visits conducted by CHWs in the year, by the total number of women receiving home visits in the year.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:58}">58</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of referrals for contraception services by CHWs&quot;}"># of referrals for contraception services by CHWs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of referrals provided by trained CHWs to women for contraception services.&quot;}">Number of referrals provided by trained CHWs to women for contraception services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:59}">59</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of referrals for contraception services by CHWs completed&quot;}"># of referrals for contraception services by CHWs completed</td>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:2,&quot;2&quot;:&quot;#,##0&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:59}">59</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of referrals for contraception services by CHWs that are completed&quot;}">% of referrals for contraception services by CHWs that are completed</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of referrals by CHWs for contraception services that are completed, which is defined as a client going to the facility following referral by a project-supported CHW. Referrals are confirmed in mHealth system by CHW after verbal confirmation of referral completed by client to CHW at follow-up visit. Numerator: # of referrals by CHWs for contraception services that are completed (the client goes to the facility). Denominator: total # of referrals by CHWs for contraception services&quot;}">Percent of referrals by CHWs for contraception services that are completed, which is defined as a client going to the facility following referral by a project-supported CHW. Referrals are confirmed in mHealth system by CHW after verbal confirmation of referral completed by client to CHW at follow-up visit. Numerator: # of referrals by CHWs for contraception services that are completed (the client goes to the facility). Denominator: total # of referrals by CHWs for contraception services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:60}">60</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Tanzania Meetin This indicator is difficult to collect .. Need to review with HQ # of referrals for cPAC services by CHWs&quot;}">Tanzania Meetin This indicator is difficult to collect .. Need to review with HQ # of referrals for cPAC services by CHWs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of referrals provided by trained CHWs to women for cPAC services.&quot;}">Number of referrals provided by trained CHWs to women for cPAC services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:61}">61</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Tanzania Meetings: need to discuss with HQ % of referrals for cPAC services by CHWs that are completed.&quot;}">Tanzania Meetings: need to discuss with HQ % of referrals for cPAC services by CHWs that are completed.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of referrals by CHWs for cPAC services that are completed, which is defined as a client going to the facility following referral by a project-supported CHW . Referrals are confirmed in mHealth system by CHW after verbal confirmation of referral completed by client to CHW at follow-up visit. \nNumerator: # of referrals by CHWs for CAC or cPAC services that are completed (the client goes to the facility).\nDenominator: total # of referrals by CHWs for CAC or cPAC services&quot;}">Percent of referrals by CHWs for cPAC services that are completed, which is defined as a client going to the facility following referral by a project-supported CHW . Referrals are confirmed in mHealth system by CHW after verbal confirmation of referral completed by client to CHW at follow-up visit.<br />
+            Numerator: # of referrals by CHWs for CAC or cPAC services that are completed (the client goes to the facility).<br />
+            Denominator: total # of referrals by CHWs for CAC or cPAC services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:70}">70</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of District and NGO staff trained on mHealth system&quot;}"># of District and NGO staff trained on mHealth system</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of district and NGO staff trained on use of the mHealth application and project dashboards to improve data use and drive quality improvement schemes.&quot;}">Number of district and NGO staff trained on use of the mHealth application and project dashboards to improve data use and drive quality improvement schemes.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:71}">71</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of district and NGO staff accessing the mHealth system at least once per quarter in order to inform quality improvement&quot;}"># of district and NGO staff accessing the mHealth system at least once per quarter in order to inform quality improvement</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of district and NGO staff accessing the mHealth system at least once per quarter (as determined through system records) in order to inform quality improvement&quot;}">Number of district and NGO staff accessing the mHealth system at least once per quarter (as determined through system records) in order to inform quality improvement</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:72}">72</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of NGO field officers and supervisors trained in CHW supervision&quot;}"># of NGO field officers and supervisors trained in CHW supervision</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of NGO supervisors and field officers trained on the CHW system. This tracks individuals trained.&quot;}">Number of NGO supervisors and field officers trained on the CHW system. This tracks individuals trained.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:73}">73</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of monthly supervision meetings held with CHWs&quot;}"># of monthly supervision meetings held with CHWs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of monthly supervision meetings held between health facility staff and CHWs and local partners (in partnership with Pathfinder), including use of data (dashboards) from the mHealth system for monitoring and quality improvement.&quot;}">Number of monthly supervision meetings held between health facility staff and CHWs and local partners (in partnership with Pathfinder), including use of data (dashboards) from the mHealth system for monitoring and quality improvement.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:75}">75</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facility health committees that include CHWs&quot;}"># of facility health committees that include CHWs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of health facility committees that include CHWs in order to foster community-facility linkages.&quot;}">Number of health facility committees that include CHWs in order to foster community-facility linkages.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Objective 4: Ensure 45 health facility catchment areas in Temeke and Ilala are engaged in systematic processes to hold the health system accountable for provision of rights-based contraceptive and cPAC services by 2017.&quot;}">Objective 4: Ensure 45 health facility catchment areas in Temeke and Ilala are engaged in systematic processes to hold the health system accountable for provision of rights-based contraceptive and cPAC services by 2017.</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:76}">76</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;% of Facility Health Committees working with Council Health Management Teams to address issues regarding service availability/ quality&quot;}">% of Facility Health Committees working with Council Health Management Teams to address issues regarding service availability/ quality</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Percent of health facility committees that are active (meet regularly) and working with Council Health Management Teams to articulate and address issues regarding service availability and quality.&quot;}">Percent of health facility committees that are active (meet regularly) and working with Council Health Management Teams to articulate and address issues regarding service availability and quality.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:77}">77</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of facility health committees established or revitalized&quot;}"># of facility health committees established or revitalized</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of facility health committees and district health boards established or revitalized by conducting training/orientation of health committee members and follow-up mentoring to support improved functionality.&quot;}">Number of facility health committees and district health boards established or revitalized by conducting training/orientation of health committee members and follow-up mentoring to support improved functionality.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:78}">78</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of CHWs using Citizen Report Card questionnaire with clients&quot;}"># of CHWs using Citizen Report Card questionnaire with clients</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of trained CHWs conducting Citizen Report Card questionnaire (through mHealth system) with clients during follow-up visits to ask about satisfaction with services.&quot;}">Number of trained CHWs conducting Citizen Report Card questionnaire (through mHealth system) with clients during follow-up visits to ask about satisfaction with services.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:79}">79</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of meetings held with district and facility staff to review report card findings&quot;}"># of meetings held with district and facility staff to review report card findings</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of quarterly review meetings held by districts and facilities to review CRC findings&quot;}">Number of quarterly review meetings held by districts and facilities to review CRC findings</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:80}">80</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of health facility, facility health committee, and LGA staff trained on use of data for decision making&quot;}"># of health facility, facility health committee, and LGA staff trained on use of data for decision making</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of health facility, health facility board, and LGA staff receiving training on use of data for decision making.&quot;}"># of health facility, health facility board, and LGA staff receiving training on use of data for decision making.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="6" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Objective 5: Support two local NGOs to achieve at least 75% of benchmarks related to their capacity to implement a CHW system and facilitate mechanisms for community participation in demanding quality services in Temeke and Ilala by 2017.&quot;}" rowspan="1" style="background-color: rgb(204, 204, 204);">Objective 5: Support two local NGOs to achieve at least 75% of benchmarks related to their capacity to implement a CHW system and facilitate mechanisms for community participation in demanding quality services in Temeke and Ilala by 2017.</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:81}">81</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of local NGOs that have achieved 75% of capacity benchmarks related to contraception and cPAC&quot;}"># of local NGOs that have achieved 75% of capacity benchmarks related to contraception and cPAC</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of local NGOs working with the project that have achieved 75% of capacity benchmarks (as identified in organizational capacity-building plans) related to contraception and cPAC. NOTE: This is not linked with performance-based indicators for which we give incentives.&quot;}">Number of local NGOs working with the project that have achieved 75% of capacity benchmarks (as identified in organizational capacity-building plans) related to contraception and cPAC. NOTE: This is not linked with performance-based indicators for which we give incentives.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:82}">82</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of organizations selected as a local implementing partner&quot;}"># of organizations selected as a local implementing partner</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of local NGOs selected through a competitive bidding process to manage the CHW component of the project.&quot;}">Number of local NGOs selected through a competitive bidding process to manage the CHW component of the project.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:83}">83</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of participatory organizational assessments conducted for local NGOs&quot;}"># of participatory organizational assessments conducted for local NGOs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of participatory organizational assessments conducted for local NGOs to identify strengths and gaps related to SRH service delivery, demand generation, advocacy, and institutional/operational areas (finance, project management).&quot;}">Number of participatory organizational assessments conducted for local NGOs to identify strengths and gaps related to SRH service delivery, demand generation, advocacy, and institutional/operational areas (finance, project management).</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:84}">84</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of capacity building plans developed for local NGOs&quot;}"># of capacity building plans developed for local NGOs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of capacity building plans developed with local NGOs.&quot;}">Number of capacity building plans developed with local NGOs.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:85}">85</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Sets of performance benchmarks identified for local NGOs&quot;}">Sets of performance benchmarks identified for local NGOs</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Sets of performance benchmarks identified for local NGOs to achieve in order to receive continued funding as well as graduating to different levels of capacity building support from Pathfinder. Benchmarks could change from year to year, so frequently of measurement is annual.&quot;}">Sets of performance benchmarks identified for local NGOs to achieve in order to receive continued funding as well as graduating to different levels of capacity building support from Pathfinder. Benchmarks could change from year to year, so frequently of measurement is annual.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:86}">86</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of trainings with NGO staff conducted&quot;}"># of trainings with NGO staff conducted</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of trainings conducted for local NGO staff to develop institutional capacity and enable them to manage a grant from Pathfinder. This includes project orientation, Grants and Finance management, M&amp;E, Behavior change and Pathways to Change, and Community score card and community report card methodology.&quot;}">Number of trainings conducted for local NGO staff to develop institutional capacity and enable them to manage a grant from Pathfinder. This includes project orientation, Grants and Finance management, M&amp;E, Behavior change and Pathways to Change, and Community score card and community report card methodology.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:87}">87</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of local partners implementing CHW component&quot;}"># of local partners implementing CHW component</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of local partners that are implementing the CHW component.&quot;}">Number of local partners that are implementing the CHW component.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:88}">88</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of community engagement activities held by local partners to foster a supportive environment for women and youth to seek services&quot;}"># of community engagement activities held by local partners to foster a supportive environment for women and youth to seek services</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of community engagement activities held by local partners with community leader councils, elders, male partners, and other gatekeepers to foster a supportive environment for women and youth to seek services. Does not include home visits conducted by CHWs.&quot;}">Number of community engagement activities held by local partners with community leader councils, elders, male partners, and other gatekeepers to foster a supportive environment for women and youth to seek services. Does not include home visits conducted by CHWs.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:89}">89</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of data review meetings held by local partners&quot;}"># of data review meetings held by local partners</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of data review meetings held by local partners (with Pathfinder participation) in which data and dashboards are used for quality improvement and decision-making.&quot;}">Number of data review meetings held by local partners (with Pathfinder participation) in which data and dashboards are used for quality improvement and decision-making.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="6" data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Cross-cutting learning activities&quot;}" rowspan="1" style="background-color: rgb(204, 204, 204);">Cross-cutting learning activities</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:90}">90</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of virtual meetings held&quot;}"># of virtual meetings held</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of virtual meetings held with joint project team on a bi-annual basis to facilitate cross-country exchange and learning.&quot;}">Number of virtual meetings held with joint project team on a bi-annual basis to facilitate cross-country exchange and learning.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:91}">91</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of in-person project team meetings held&quot;}"># of in-person project team meetings held</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of in-person cross-country project team meetings held to facilitate exchange and learning.&quot;}">Number of in-person cross-country project team meetings held to facilitate exchange and learning.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:92}">92</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of publications produced&quot;}"># of publications produced</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of publications produced to document innovative practices and key findings/lessons learned from the project.&quot;}">Number of publications produced to document innovative practices and key findings/lessons learned from the project.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td data-sheets-numberformat="{&quot;1&quot;:3,&quot;2&quot;:&quot;0%&quot;,&quot;3&quot;:1}">&nbsp;</td>
+    </tr>
+    <tr>
+        <td data-sheets-value="{&quot;1&quot;:3,&quot;3&quot;:93}">93</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;# of end of project dissemination events held&quot;}"># of end of project dissemination events held</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Number of end of project dissemination events held to share project documentation and learnings.&quot;}">Number of end of project dissemination events held to share project documentation and learnings.</td>
+        <td data-sheets-value="{&quot;1&quot;:2,&quot;2&quot;:&quot;Manual&quot;}">Manual</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    </tbody>
+</table>

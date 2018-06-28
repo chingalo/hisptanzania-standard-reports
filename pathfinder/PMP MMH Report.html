@@ -1,0 +1,302 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var dateElmsArr1 = [];
+        var url = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name);
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(level,cordId){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+            html += '<th style="width: 1%">#</th>';
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:FICyhodDdll&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                $.each(data,function(key,value){
+                    html +="<tr style='background-color: "+value.color+"'><td colspan='9'>"+value.title+"</td> </tr>";
+                    if(value.hasOwnProperty('content')){
+                        $.each(value.content,function(k,val){
+
+                            if(val.hasOwnProperty('indicator')){
+                                if(val.hasOwnProperty('rows')){
+                                    var valuee1 = [];
+                                    var sumvaluee1 = 0;
+                                    var valuee2 = [];
+                                    var sumvaluee2 = 0;
+                                    html +="<tr>";
+                                    html +="<td rowspan='"+val.rows+"'></td>";
+                                    html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
+                                    html +="<td>"+val.defination[0].term+"</td>";
+                                    if(val.hasOwnProperty('defination')){
+                                        if(val.defination[0].hasOwnProperty('id')){
+                                            $.each(period.split(";"),function(m,per){
+                                                valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
+                                                html +="<td>"+valuee1[per]+"</td>";
+                                                sumvaluee1+=valuee1[per];
+                                            })
+                                        }
+                                    }
+                                    //realization
+                                    if(val.defination[0].realisation == 'sum'){
+                                        html +="<td>"+sumvaluee1+"</td>";
+                                    }else if(val.defination[0].realisation == 'last'){
+                                        html +="<td>"+ valuee1[2] +"</td>";
+                                    }
+
+                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                    html +="<td  class='lastColumn'></td>";
+
+                                    html +="</tr>";
+                                    var rowTracker = 0;
+                                    $.each(val.defination,function(j,v){
+                                        if(rowTracker == 0){
+
+                                        }else{
+                                            html +="<tr>";
+                                            html +="<td>"+v.term+"</td>";
+                                            if(v.hasOwnProperty('id')){
+
+                                                $.each(period.split(";"),function(m,per){
+                                                   valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
+                                                    html +="<td>"+valuee2[per]+"</td>";
+                                                    sumvaluee2 += valuee2[per];
+                                                })
+                                            }
+
+                                            //realization
+                                            if(v.realisation == 'sum'){
+                                                html +="<td>"+sumvaluee2+"</td>";
+                                            }else if(v.realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }else if(v.realisation == 'avg'){
+
+                                                var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                html +="<td>"+ summ.toFixed(1) +"</td>";
+                                            }
+
+                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                        }
+                                        rowTracker ++
+                                    });
+                                }
+
+
+                            }
+
+
+                        });
+                    }
+                });
+                $("table").append(html);
+                $('.lastColumn').each(function () {
+                    //processing this row
+                    var num = $(this).prev('td').text();
+                    var num1 = $(this).prev('td').prev('td').text();
+                    num = num.replace(",", "");
+                    if(num != '0'){
+                        if($.isNumeric(parseInt(num1))){
+                            var parc = (parseInt(num1)*100)/parseInt(num);
+                            if(parc < 41 ){
+                                $(this).text(parseInt(parc)).css('background','#FF0000')
+                            }else if(parc >41 && parc <81){
+                                $(this).text(parseInt(parc)).css('background','#FFFF00')
+                            }else if(parc > 80){
+                                $(this).text(parseInt(parc)).css('background','#92D050')
+                            }
+                            $(this).text(parseInt(parc))
+                        }else{
+                            $(this).text('').css('background','#E6DADA')
+                        }
+
+                    }
+                });
+                $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                var periodName = getPeroidName(periods[0]);
+
+                $(".orgUnit").html(orgUnit.name);
+                $(".period").html(periodName);
+                $(".loader").hide();
+                $(".header").show();
+                });
+            });
+        }
+
+        loadData('national','riuabH1sYe6');
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+        var data = [{"title":"Objective 1) Roll-out a preventive education program for expectant mothers and young women in order to provide MNCH information","color":"#D6E3BC","content":[{"indicator":"1.1 Increased knowledge of CHWs in MNCH","rows":"2","num":"","defination":[{"term":"1.1.1. Number of CHWs trained in community-based MNCH, PMTCT, and Option B+","id":"PMPMMHDE001","realisation":"sum","targett":"PMPMMHTG001"},{"term":"1.1.2. Annual  Number of CHWs using MMH  mobile phone platforms to improve capacity of MNCH information delivery","id":"PMPMMHDE002","realisation":"sum","targett":"PMPMMHTG002"}]},{"indicator":"1.2 Increased ANC Visits","rows":"4","num":"3","defination":[{"term":"1.2.1. Annual number of pregnant women attending first visit","id":"qN1zFaX9mVe","realisation":"sum","targett":"PMPMMHTG003"},{"term":"1.2.2. Annual number of pregnant women attending fourth visit","id":"yqA1CfsfBHQ","realisation":"sum","targett":"PMPMMHTG004"},{"term":"1.2.3 Number of women receiving referral from CHW for ANC or danger signs","id":"PMPMMHDE005","realisation":"sum","targett":"PMPMMHTG005"},{"term":"1.2.4 Number of women who completed referral from CHW","id":"PMPMMHDE006","realisation":"sum","targett":"PMPMMHTG006"}]},{"indicator":"1.3 Increased geographic coverage by CHWs","rows":"2","num":"3","defination":[{"term":"1.3.1. Number of women contacted/visited by CHWs and given a maternal/child health message","id":"PMPMMHDE007","realisation":"sum","targett":"PMPMMHTG007"},{"term":"1.3.2. Number of community events during which CHWs give talks on MNCH","id":"PMPMMHDE008","realisation":"sum","targett":"PMPMMHTG008"}]},{"indicator":"1.4 Increased number of people reached through SMS campaigns (e.g. Wazazi Nipendeni, National Family Planning and Safe Motherhood Campaigns)","rows":"2","num":"3","defination":[{"term":"1.4.1. Number of CHWs educated on SMS campaigns","id":"PMPMMHDE009","realisation":"sum","targett":"PMPMMHTG009"},{"term":"1.4.2. Number of people enrolled in SMS campaign","id":"PMPMMHDE010","realisation":"sum","targett":"PMPMMHTG010"}]},{"indicator":"1.5 Increased number of women educated in SRH during surgical recovery","rows":"1","num":"3","defination":[{"term":"1.5.1. Number of women educated in SRH/HIV/STI/nutrition during VVF rehab","id":"PMPMMHDE011","realisation":"sum","targett":"PMPMMHTG011"}]},{"indicator":"1.6 Increased awareness about dangers of fistula, risk factors, and treatment","rows":"3","num":"3","defination":[{"term":"1.6.1. Number of SRH and fistula educational products delivered to communities during outreach visits","id":"PMPMMHDE012","realisation":"sum","targett":"PMPMMHTG012"},{"term":"1.6.2. Number of unique regions covered during outreach visits by CCBRT on obstetric fistula and safe delivery","id":"PMPMMHDE013","realisation":"sum","targett":"PMPMMHTG013"},{"term":"1.6.3. Number of individuals contacted with information about fistula dangers, prevention and treatment in Sengerema","id":"PMPMMHDE014","realisation":"sum","targett":"PMPMMHTG014"}]}]},{"title":"2) Increase the provision of safe deliveries for women","color":"#D6E3BC","content":[{"indicator":"2.1 Strengthened provider capacity for MNCH services in EmONC","rows":"3","num":"3","defination":[{"term":"2.1.1. Number of clinical providers in hospitals trained in CEmONC","id":"PMPMMHDE015","realisation":"sum","targett":"PMPMMHTG015"},{"term":"2.1.2. Percent of providers observed demonstrating a minimum standard of quality EmONC skills at the hospitals (observed) ","id":"PMPMMHDE016","realisation":"sum","targett":"PMPMMHTG016"},{"term":"2.1.3. Number of service providers at health centers and dispensaries trained in MNCH services and BEmONC ","id":"PMPMMHDE017","realisation":"sum","targett":"PMPMMHTG017"}]},{"indicator":"2.2 Increased number of safe deliveries at health facilities","rows":"4","num":"3","defination":[{"term":"2.2.1. Number of pregnant women using maternity waiting homes","id":"PMPMMHDE018","realisation":"sum","targett":"PMPMMHTG018"},{"term":"2.2.2. Annual number of deliveries performed by skilled health workers at project supported facilities","id":"DPLR0aQemYC","realisation":"sum","targett":"PMPMMHTG019"},{"term":"2.2.3. Annual number of C sections at project supported facilities","id":"snAJ4ADu50F","realisation":"sum","targett":"PMPMMHTG020"},{"term":"2.2.4. Number of dispensaries and health centers providing skilled delivery services per MOHSW standards","id":"PMPMMHDE021","realisation":"sum","targett":"PMPMMHTG021"}]},{"indicator":"2.3 Increased communication between CHWs and health facilities in Sengerema and Shinyanga to longitudinally track women and infant care","rows":"2","num":"3","defination":[{"term":"2.3.1. The number of women contacted by CHW for follow-up of EID","id":"PMPMMHDE022","realisation":"sum","targett":"PMPMMHTG022"},{"term":"2.3.2.  Number of post-partum women returned to health facility for EID results ","id":"PMPMMHDE023","realisation":"sum","targett":"PMPMMHTG023"}]}]},{"title":"3) Improve maternal health referral system ","color":"#D6E3BC","content":[{"indicator":"3.1 Increased number of high risk clients referred to health facilities for delivery","rows":"2","num":"3","defination":[{"term":"3.1.1 Number of HR women referred for hospital delivery through MMH HR registration system","id":"PMPMMHDE024","realisation":"sum","targett":"PMPMMHTG024"},{"term":"3.1.2  Percent of HR women at Maternity Waiting Home referred through MMH system ","id":"PMPMMHDE025","realisation":"sum","targett":"PMPMMHTG025"}]},{"indicator":"3.2 Increased availability of referrals and  transportation to health facilities","rows":"5","num":"3","defination":[{"term":"3.2.1. Number of  CHWs and providers trained to use mobile referral & transport system","id":"PMPMMHDE026","realisation":"sum","targett":"PMPMMHTG026"},{"term":"3.2.2. Number of community drivers providing emergency transport services","id":"PMPMMHDE027","realisation":"sum","targett":"PMPMMHTG027"},{"term":"3.2.4 Number of women provided transport to facilities through M-Pesa","id":"PMPMMHDE028","realisation":"sum","targett":"PMPMMHTG028"},{"term":"3.2.5. Number of cases provided emergency referral and transportation to health facilities","id":"PMPMMHDE029","realisation":"sum","targett":"PMPMMHTG029"},{"term":"3.2.5. Number of cases provided emergency referral and transportation to health facilities","id":"PMPMMHDE030","realisation":"sum","targett":"PMPMMHTG030"}]}]},{"title":"4) Strengthen capacity to identify and treat VVF in Tanzania","color":"#D6E3BC","content":[{"indicator":"4.1 Increased access to VVF treatment","rows":"4","num":"3","defination":[{"term":"4.1.1. Number of patients treated for fistula at CCBRT and associated satellite clinics","id":"PMPMMHDE031","realisation":"sum","targett":"PMPMMHTG031"},{"term":"4.1.2. Number of patients in Sengerema referred for treatment of fistula ","id":"PMPMMHDE032","realisation":"sum","targett":"PMPMMHTG032"},{"term":"4.1.3. % of patients transported to CCBRT or satellites with mobile money through M-Pesa ","id":"PMPMMHDE033","realisation":"sum","targett":"PMPMMHTG033"},{"term":"4.1.4. Annual number of active ambassadors (referring at least one woman) ","id":"PMPMMHDE034","realisation":"sum","targett":"PMPMMHTG034"}]}]},{"title":"Additioinal Indicator","color":"RED"},{"title":"1.Strengthen community health systems to mobilize and educate community members to address the four delays leading to maternal morbidity and mortality and the five stages of woman and newborn care","color":"#D6E3BC","content":[{"indicator":"IR.1.3: Increased knowledge of CHWs  and TBA in  maternal health service","rows":"3","num":"","defination":[{"term":" Number of TBAs oriented on MNCH services (ELMA PMP 5) ","id":"PMPMMHDEE01","realisation":"sum","targett":"PMPMMHA0001"},{"term":"Percentage of low birth weight babies referred to health facilities by CHWs (ELMA PMP 9)","id":"PMPMMHDEE02","realisation":"sum","targett":"PMPMMHA0002"},{"term":"Number of household visited (ELMA PMP 7)","id":"PMPMMHDEE03","realisation":"sum","targett":"PMPMMHA0003"}]}]},{"title":"2.  Strengthen provider capacity for MNH services and EmONC at Health Centers and Health Dispensaries","color":"#D6E3BC","content":[{"indicator":"IR 2.0: Improved quality of MNCH care","rows":"2","num":"","defination":[{"term":"Percent of faciltiies reporting use of NASG for women who go into hypovolemic shock ((ELMA PMP 9)","id":"PMPMMHDEE04","realisation":"sum","targett":"PMPMMHA0004"},{"term":" Number of community-led audits of maternal deaths and near misses conducted (ELMA PMP 13)","id":"PMPMMHDEE05","realisation":"sum","targett":"PMPMMHA0005"}]},{"indicator":"IR 2.1. Increased access to maternal health services in health facilities","rows":"6","num":"","defination":[{"term":"Service providers at health centers and dispensaries trained in community MNCH supervision","id":"PMPMMHDEE06","realisation":"sum","targett":"PMPMMHA0006"},{"term":"Number of dispensaries and health centers conducting maternal deaths and near misses audits (ELMA PMP 20)","id":"PMPMMHDEE07","realisation":"sum","targett":"PMPMMHA0007"},{"term":"Over 80% of district HD and HF compliant with 3 key MNCH protocols (to be agreed)","id":"PMPMMHDEE08","realisation":"sum","targett":"PMPMMHA0008"},{"term":"Over 80% of district  delivery facilities compliant with quality standards for MNCH, safe delivery and newborn resuscitation (see indicator 17)","id":"PMPMMHDEE09","realisation":"sum","targett":"PMPMMHA0009"},{"term":"Over 80% of districts  report on activities to examine client satisfaction with delivery care (see indicator 19)","id":"PMPMMHDEE10","realisation":"sum","targett":"PMPMMHA0010"},{"term":"National policy on use of NASG finalized","id":"PMPMMHDEE11","realisation":"sum","targett":"PMPMMHA0011"}]}]},{"title":"8. Disseminate knowledge gained and lessons learned to the local health management leadership and the wider global health community","color":"#D6E3BC","content":[{"indicator":"IR 8.1:  Disseminated lessorns learned","rows":"2","num":"","defination":[{"term":"Annual number of quarterly review meetings conducted with district health authorities (ELMA PMP 40)","id":"PMPMMHDEE12","realisation":"sum","targett":"PMPMMHA0012"},{"term":"Annual number of quarterly review meetings conducted with CHWs and supservisors","id":"PMPMMHDEE13","realisation":"sum","targett":"PMPMMHA0013"}]}]},{"title":"Overall Program Outcomes","color":"#D6E3BC","content":[{"indicator":"Reduced maternal morbidity and mortality","rows":"6","num":"","defination":[{"term":"Percent decrease in maternal deaths in supported  over project cycle ","id":"PMPMMHDEE14","realisation":"sum","targett":"PMPMMHA0014"},{"term":"Percent decrease in newborn deaths in institutions","id":"PMPMMHDEE15","realisation":"sum","targett":"PMPMMHA0015"},{"term":"Percent of women delivering at a health facility with a skilled provider","id":"PMPMMHDEE16","realisation":"sum","targett":"PMPMMHA0016"},{"term":"Percent of women attending 4th ANC visit","id":"PMPMMHDEE17","realisation":"sum","targett":"PMPMMHA0017"},{"term":"Increased rate of early exclusive breast feeding","id":"PMPMMHDEE18","realisation":"sum","targett":"PMPMMHA0018"}]}]}];
+        return data;
+    }
+    function download(name){
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">{table}</table><br /><table border="1">{table}</table></body></html>',
+            base64 = function(s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        },
+        format = function(s, c) {
+            return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+        })
+        };
+        // console.log("Table:",nativeElement.innerHTML);
+        var ctx = {worksheet: "Sheet 1"};
+        var str = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        var el = $(".listTable");
+        ($(".listTable").find("td.hidden").each(function(index2){
+            // console.log("Remove Index:",index2);
+            this.remove();
+        }));
+        ctx["table1"] = el.innerHTML;
+
+        str += '<table border="1">{table1}</table><br />';
+        str += '</body></html>';
+
+        setTimeout(function () {
+
+        var link = document.createElement('a');
+        link.download = name +".xlsx";
+        link.href = uri + base64(format(str, ctx));
+        link.click();},100);
+    }
+
+</script>
+<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+<!--<button class="btn bt-small btn-default" onclick="download('report')">Download Excel</button>-->
+<h3 class="header text-center">PMP MMH - <span class="period"></span> -  <span id="orgUnits"></span></h3>
+<div class="col-sm-10 col-sm-offset-1" >
+    <table class="listTable table table-bordered table-responsive">
+        <thead class="header">
+
+        </thead>
+    </table>
+</div>

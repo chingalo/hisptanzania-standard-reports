@@ -1,0 +1,308 @@
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="/dhis-web-commons/javascripts/angular/angular.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script>
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+    angular.module("report", [])
+        .value("DHIS2BASEURL", "/")
+
+        .controller("report", function ($scope, $http, DHIS2BASEURL, $location,$filter, $q) {
+
+            //data definition
+            $scope.dataElements = [
+                {
+                    'name':'Number of new contraceptive users (all methods)',
+                    'reported':'vQWBl3vVkKY',
+                    'target':'V5K1ZlQiOoe'
+                },
+                {
+                    'name':'Number of new pill users_INTERVAL_FACILITY',
+                    'reported':'WIiqmTC96Rb',
+                    'target':'Pq5wfN2MtHK'
+                },
+                {
+                    'name':'Number of new pill users_INTERVAL_OUTREACH',
+                    'reported':'uXvDtKGmsql',
+                    'target':'AUQuApHR9Ro'
+                },
+                {
+                    'name':'Number of new injectable users_INTERVAL_FACILITY',
+                    'reported':'pergmrZieZa',
+                    'target':'gprKgLRFnl8'
+                },
+                {
+                    'name':'Number of new LAPM users _PPFP+INTERVAL_FACILITY',
+                    'reported':'TVI7YhWakbT',
+                    'target':'zPkGwF88fRu'
+                },
+                {
+                    'name':'Number of new LAPM users _INTERVAL_OUTREACH',
+                    'reported':'x8zBXmDvXfL',
+                    'target':'NylKAqG0uLV'
+                },
+                {
+                    'name':'Number of new implant users _PPFP+INTERVAL_FACILITY',
+                    'reported':'zzHhECZGsqo',
+                    'target':'BYIeYgsYdLe'
+                },
+                {
+                    'name':'Number of new implant users _INTERVAL_OUTREACH',
+                    'reported':'HzzSMOGNjU0',
+                    'target':'v3gzVOQgsZq'
+                },
+                {
+                    'name':'FP - interval implant _FACILITY',
+                    'reported':'Y3blmZ9sHZS',
+                    'target':'tTRKWGI9cXA'
+                },
+                {
+                    'name':'postpartum implant',
+                    'reported':'vb2OZm89b2C',
+                    'target':'GDwZjiBE4eI'
+                },
+                {
+                    'name':'Number of new IUD users (interval + PPIUD)_FACILITY',
+                    'reported':'q4e8YALiRYp',
+                    'target':'o9dw4LXQ0bI'
+                },
+                {
+                    'name':'FP - interval IUD_FACILITY',
+                    'reported':'UjGebiXNg0t',
+                    'target':'XPU9CtOj4zv'
+                },
+                {
+                    'name':'FP - interval IUD_OUTREACH',
+                    'reported':'RfSsrHPGBXV',
+                    'target':'j4IrR4ayKjw'
+                },
+                {
+                    'name':'PPIUD',
+                    'reported':'Xj8WJ8PCha2',
+                    'target':'wMSeEwodcsa'
+                },
+                {
+                    'name':'Number of new PM users (interval+PPFP)_FACILITY',
+                    'reported':'jueLJ5BnV92',
+                    'target':'l6W8oYKYU9Z'
+                },
+                {
+                    'name':'Number of new PM users (interval+PPFP)_OUTREACH',
+                    'reported':'FQTOaHChofW',
+                    'target':'mRYBAMGicJY'
+                },
+                {
+                    'name':'Number of new PM users (interval)_FACILITY',
+                    'reported':'aXPh1HJwmYo',
+                    'target':'pysKH5fXCw0'
+                },
+                {
+                    'name':'Number of new PM users (PPFP)',
+                    'reported':'OvBms4b9cES',
+                    'target':'c4ZQFFPW9Xm'
+                },
+                {
+                    'name':'Number New PPLAPM users',
+                    'reported':'CW80EgfKJqR',
+                    'target':'bSdy97ahDbr'
+                },
+                {
+                    'name':'Number of women receiving cPAC services',
+                    'reported':'T9ZFwCCgkcK',
+                    'target':'XqzIKpu533b'
+                },
+                {
+                    'name':'Number of total cPAC clients that adopt a modern method of contraception',
+                    'reported':'aZsMhTzOQqW',
+                    'target':'dkiBklK9tNv'
+                },
+                {
+                    'name':'Number of deliveries',
+                    'reported':'kLI4iGDbN3p',
+                    'target':'L3tdu6yetO1'
+                },
+                {
+                    'name':'PPFP counceling',
+                    'reported':'AWHMo7iNCQn',
+                    'target':'oeG1s5O6Vts'
+                },
+                {
+                    'name':'ANC 4th Visit',
+                    'reported':'yqA1CfsfBHQ',
+                    'target':'hh7YjdgaCsY'
+                }
+            ];
+
+            //get list of all data elements and indicators to be called monthly
+            $scope.prepareMonthlyData = function(dataElement){
+                var dataElementsArr = [];
+                dataElementsArr.push(dataElement.reported);
+                dataElementsArr.push(dataElement.target);
+                return dataElementsArr.join(";");
+            };
+
+            //report dimension defination
+            $scope.reportDimensions = {
+                period : dhis2.report.periods,
+                orgUnit : dhis2.report.organisationUnit,
+                name : dhis2.report.organisationUnit.name,
+                orgUnitChildren: dhis2.report.organisationUnitChildren
+
+            };
+
+            $scope.percent = 0;
+            $scope.done = 0;
+            $scope.loading = false;
+            $scope.printedON = JSON.stringify(Date()).replace('"','').replace('GMT+0300 (','').replace(')','').replace('"','');
+
+
+
+            $scope.loading_message = "Getting unit Fee information";
+
+            angular.forEach($scope.dataElements,function(dataElement,index){
+                var monthlyUrl = DHIS2BASEURL + "api/analytics.json?dimension=dx:" + $scope.prepareMonthlyData(dataElement) + "&dimension=ou:" + $scope.reportDimensions.orgUnit.id + "&dimension=pe:" + $scope.reportDimensions.period + "&displayProperty=NAME";
+
+                $http.get(monthlyUrl).success(function (resp) {
+                    $scope.done += 1;
+                    $scope.percent = ( $scope.done/$scope.dataElements.length ) * 100;
+                    $scope.dataElements[index]['target_value'] = getDataFromUrl(resp.rows,dataElement.target).num;
+                    $scope.dataElements[index]['target_available'] = getDataFromUrl(resp.rows,dataElement.target).available;
+                    if($scope.dataElements[index]['target_available']){
+                        $scope.dataElements[index]['target_achived'] = $scope.dataElements[index]['target_available'] < $scope.dataElements[index]['indicator_value'];
+                        if(target_achived){
+                            $scope.dataElements[index]['bgcolor'] = "green";
+                        }else {
+                            $scope.dataElements[index]['bgcolor'] = "red";
+                        }
+                    }
+                    $scope.dataElements[index]['indicator_value'] = getDataFromUrl(resp.rows,dataElement.reported).num;
+                }, function (error) {
+
+                });
+            });
+
+
+            $scope.quater = $scope.reportDimensions.period[0].substr(5, 1);
+            $scope.yeard = $scope.reportDimensions.period[0].substr(0, 4)
+        });
+    //finding sum
+
+
+    function getDataFromUrl(arr,de){
+        var num = 0;
+        var available  = false;
+        $.each(arr,function(k,v){
+            if(v[0]== de){
+                num = v[3];
+                available =  true;
+            }
+        });
+        return {num:num,available:available};
+    }
+
+
+    //supporting sorting of organisation units
+    jQuery.fn.sort = function() {
+        return this.pushStack( [].sort.apply( this, arguments ), []);
+    };
+
+    function sortLastName(a,b){
+        if (a.name == b.name){
+            return 0;
+        }
+        return a.name< b.name ? 1 : -1;
+    }
+
+
+    // American Numbering System
+    var th = ['','thousand','million', 'billion','trillion'];
+    // uncomment this line for English Number System
+    // var th = ['','thousand','million', 'milliard','billion'];
+    var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine']; var tn = ['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen', 'seventeen','eighteen','nineteen']; var tw = ['twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
+    function toWords(s){s = s.toString(); s = s.replace(/[\, ]/g,''); if (s != parseFloat(s)) return 'not a number'; var x = s.indexOf('.'); if (x == -1) x = s.length; if (x > 15) return 'too big'; var n = s.split(''); var str = ''; var sk = 0; for (var i=0; i < x; i++) {if ((x-i)%3==2) {if (n[i] == '1') {str += tn[Number(n[i+1])] + ' '; i++; sk=1;} else if (n[i]!=0) {str += tw[n[i]-2] + ' ';sk=1;}} else if (n[i]!=0) {str += dg[n[i]] +' '; if ((x-i)%3==0) str += 'hundred ';sk=1;} if ((x-i)%3==1) {if (sk) str += th[(x-i-1)/3] + ' ';sk=0;}} if (x != s.length) {var y = s.length; str += 'point '; for (var i=x+1; i<y; i++) str += dg[n[i]] +' ';} return str.replace(/\s+/g,' ');}
+
+</script>
+<!--loading Image-->
+<div ng-app="report" ng-controller="report">
+    <!--<h4 ng-if="loading" class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>-->
+    <h4 ng-if="percent < 100" ><img src="/images/ajax-loader-circle.gif" style="height: 25px; width: 25px"> {{ loading_message }} ...</span> </h4>
+    <div class="progress" ng-if="percent < 100">
+        <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">
+            <span class="sr-only">{{ percent }}% Complete</span>
+        </div>
+    </div>
+    <div class="row" style="margin-left: 20px" ng-if="!loading">
+        <div class='row'>
+            <div class='col-md-12' style='text-align:center;font-weight:bolder;'>THE UNITED REPUBLIC OF TANZANIA</div>
+            <div class='col-md-12'>
+                <div class='row' style='text-align:center;'>
+                    MINISTRY OF HEALTH, COMMUNITY DEVELOPMENT, GENDER, ELDERLY AND CHILDREN
+                </div>
+                <div class='row' style='text-align:center;'>
+                    <div class='col-md-5'>
+                    </div>
+                    <div class='col-md-2'>
+                        <a href='#' class='thumbnail' style='width:50px!important;padding:10px;font-weight:bolder;position:relative;margin: auto;top: 0;left: 0;right: 0;bottom: 0;border: 0px solid #ffffff!important;border-radius: 0px!important;-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;'><img class=''  src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/30px-Coat_of_arms_of_Tanzania.svg.png'/></a>
+                    </div>
+                    <div class='col-md-5'>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='row' style='text-align:center;font-weight:bolder;'>
+            LAD HMIS INDICATORS
+        </div>
+        <div class='row'>
+            <div class='col-md-5' style='text-align:left;font-weight:bolder;'>
+                AREA: {{ reportDimensions.name }} <span style='padding-left:50px;'>
+			PERIOD: QUARTER {{ quater }} YEAR: {{ yeard }}</span>
+            </div>
+            <div class='col-md-5 pull-right' style='font-weight:bolder;text-align:right;'>
+                Printed On:{{ printedON }}
+            </div>
+        </div>
+        <div class='col-md-12'>
+            <div style='margin-bottom:-20px;' class='row'>
+
+                <table id='invoice_table' class='table table-hover table-striped table-condensed table-bordered' style='font-size:9px!important;width: 95%'>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Indicator</th>
+                            <th>Target</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="value in dataElements  | orderBy : 'name'">
+                            <td>{{ $index+1 }}</td>
+                            <td>{{ value.name }}</td>
+                            <td>{{ value.target_value }}</td>
+                            <td style="background-color: {{ value.bgcolor }}">{{ value.indicator_value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

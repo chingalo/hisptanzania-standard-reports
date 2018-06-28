@@ -1,0 +1,233 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var chwDateElmsArr = [];
+        var targetsArr = [];
+        var targets = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        $("#orgUnits").html(orgUnit.name)
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0]);
+
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(dateElmsArr.indexOf(val.id) == -1){
+                            if(val.id != ""){
+                                if(val.hasOwnProperty("chw")){
+                                    chwDateElmsArr.push(val.id);
+                                }else{
+                                    dateElmsArr.push(val.id);
+                                    dataElems += val.id+";";
+                                }
+                            }
+                        }if(targetsArr.indexOf(val.targett) == -1){
+                            if(val.targett != ""){
+                                targetsArr.push(val.targett);
+                                targets += val.targett+";";
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData( ){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+            html += '<th style="width: 5%">#</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:Il0voyZUlOw&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url2 = "/api/analytics.json?dimension=dx:"+chwDateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            console.log(url,url1);
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                    $.getJSON(url2,function(resp2){
+                        $.each(data,function(key,value){
+                            html +="<tr style='background-color: "+value.color+"'><td colspan='9'>"+value.title+"</td> </tr>";
+                            if(value.hasOwnProperty('content')){
+                                $.each(value.content,function(k,val){
+
+                                    if(val.hasOwnProperty('indicator')){
+
+                                        html +="</tr>";
+                                        html +="<td>"+val.num+"</td>";
+                                        html +="<td>"+val.indicator+"</td>";
+                                        var amooounts = [];
+                                        $.each(period.split(";"),function(m,per){
+                                            if(val.hasOwnProperty("chw")){
+                                                var value22 = getDataFromUrl(resp2.rows,per,val.id);
+                                            }else{
+                                                var value22 = getDataFromUrl1(resp.rows,per,val.id);
+                                            }
+                                            html +="<td>"+value22+"</td>";
+                                            amooounts.push(value22);
+                                        })
+
+                                        var summ = 0;
+                                        if(val.hasOwnProperty("realization")){
+                                            var summ = Math.floor((amooounts[0] + amooounts[2] + amooounts[1])/3);
+                                        }else{
+                                            var summ = amooounts[0] + amooounts[2] + amooounts[1];
+                                        }
+                                        html +="<td>"+summ+"</td>";
+
+
+                                        html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.targett);"+</td>";
+
+                                        html +="<td class='lastColumn'></td>";
+                                        html +="</tr>";
+
+                                    }
+
+
+                                });
+                            }
+                        });
+                        $("table").append(html);
+                        $('.lastColumn').each(function () {
+                            //processing this row
+                            var num = $(this).prev('td').text();
+                            var num1 = $(this).prev('td').prev('td').text();
+                            num = num.replace(",", "");
+                            if(num != '0'){
+                                if($.isNumeric(parseInt(num1))){
+                                    var parc = (parseInt(num1)*100)/parseInt(num);
+                                    if(parc < 41 ){
+                                        $(this).text(parseInt(parc)).css('background','#FF0000')
+                                    }else if(parc >40 && parc <81){
+                                        $(this).text(parseInt(parc)).css('background','#FFFF00')
+                                    }else if(parc > 81){
+                                        $(this).text(parseInt(parc)).css('background','#92D050')
+                                    }
+                                    $(this).text(parseInt(parc))
+                                }else{
+                                    $(this).text('').css('background','#E6DADA')
+                                }
+
+                            }
+                        });
+                        $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                        var periodName = getPeroidName(periods[0]);
+
+                        $(".orgUnit").html(orgUnit.name);
+                        $(".period").html(periodName);
+                        $(".loader").hide();
+                        $(".header").show();
+                    });
+                });
+            });
+        }
+
+        loadData();
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+    function getDataElements(){
+        var data = [{"title":"Intermediate Result 1.1: Reduce shortage of contraceptives and essential drugs","color":"#EBC2A1","content":[{"indicator":"Number of facilities that report stock out of contraceptives, disaggregated by type","num":"1","id":"","targett":""},{"indicator":"Number of facilities that report stock out of contraceptives, IUD","num":"2","id":"PMPTUUDE001","targett":"PMPTUUTG001"},{"indicator":"Number of facilities that report stock out of contraceptives, Implant","num":"3","id":"PMPTUUDE002","targett":"PMPTUUTG002"},{"indicator":"Number of facilities that report stock out of contraceptives, Injectables","num":"4","id":"PMPTUUDE003","targett":"PMPTUUTG003"},{"indicator":"Number of facilities that report stock out of contraceptives, Pills","num":"5","id":"PMPTUUDE004","targett":"PMPTUUTG004"},{"indicator":"Number of facilities that report stock out of contraceptives, Condoms","num":"6","id":"PMPTUUDE005","targett":"PMPTUUTG005"},{"indicator":"Number of facilities that report stock out of essential drugs, disaggregated by type","num":"7","id":"","targett":""},{"indicator":"Number of facilities that report stock out of essential drugs, IFA tablets","num":"8","id":"PMPTUUDE006","targett":"PMPTUUTG006"},{"indicator":"Number of facilities that report stock out of essential drugs, albendazole","num":"9","id":"PMPTUUDE007","targett":"PMPTUUTG007"},{"indicator":"Number of facilities that report stock out of essential drugs, solutions","num":"10","id":"PMPTUUDE008","targett":"PMPTUUTG008"},{"indicator":"Number of facilities that report stock out of essential drugs, antimalarial","num":"11","id":"PMPTUUDE009","targett":"PMPTUUTG009"},{"indicator":"Number of facilities that report stock out of essential drugs, Oxytocin/Miso/Ergometrin","num":"12","id":"PMPTUUDE010","targett":"PMPTUUTG010"},{"indicator":"Number of facilities that report stock out of essential drugs, antibiotics","num":"13","id":"PMPTUUDE011","targett":"PMPTUUTG011"}]},{"title":"Intermediate Result 1.2: Increase access of Family Planning (FP) services in the community via Community Health Workers (CHW).","color":"#EBC2A1","content":[{"indicator":"Number of community health workers (CHW) trained to deliver FP servicers by district by sex","num":"14","id":"","targett":""},{"indicator":"Number of community health workers (CHW) trained to deliver FP servicers by district, female","num":"15","id":"PMPTUUDE012","targett":"PMPTUUTG012"},{"indicator":"Number of community health workers (CHW) trained to deliver FP servicers by district, male","num":"16","id":"PMPTUUDE013","targett":"PMPTUUTG013"}]},{"title":"Number of contraceptives distributed by CHW, by type","color":"#81A594","content":[{"indicator":"Number of contraceptives distributed by CHW, condoms","num":"17","id":"cbdind00035","targett":"PMPTUUTG014","chw":"chw"},{"indicator":"Number of contraceptives distributed by CHW, pills","num":"18","id":"cbdind00029","targett":"PMPTUUTG015","chw":"chw"},{"indicator":"Number of FP clients at community recruited by CHW, by sex ","num":"19","id":"","targett":"","chw":"chw"},{"indicator":"Number of  FP clients at community recruited by CHW, female ","num":"20","id":"DHDd7rcbRFv","targett":"PMPTUUTG016","chw":"chw"},{"indicator":"Number of  FP clients at community recruited by CHW, male","num":"21","id":"SFjLlj0G3Fj","targett":"PMPTUUTG017","chw":"chw"},{"indicator":"Number of new FP women of reproductive age (WRA) clients at community by age","num":"22","id":"","targett":"","chw":"chw"},{"indicator":"Number of new FP women of reproductive age (WRA) clients at community, 10-14","num":"23","id":"pkRX1MEMCAK","targett":"PMPTUUTG018","chw":"chw"},{"indicator":"Number of new FP women of reproductive age (WRA) clients at community, 15-19","num":"24","id":"I9zu9kpwE2S","targett":"PMPTUUTG019","chw":"chw"},{"indicator":"Number of new FP women of reproductive age (WRA) clients at community, 20-24","num":"25","id":"Z2b9FnvIB4i","targett":"PMPTUUTG020","chw":"chw"},{"indicator":"Number of new FP women of reproductive age (WRA) clients at community, 25+","num":"26","id":"Hx0TFHSro4b","targett":"PMPTUUTG021","chw":"chw"}]},{"title":"Number of revisiting FP WRA clients in the community, by method","color":"#81A594","content":[{"indicator":"Number of revisiting FP WRA clients in the community by method, pills ","num":"27","id":"otqny2gd7GY","targett":"PMPTUUTG022","chw":"chw"},{"indicator":"Number of revisiting FP WRA clients in the community by method, condoms","num":"28","id":"z9WUaGedhpa","targett":"PMPTUUTG023","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, by method","num":"29","id":"kbfawA902f2","targett":"","chw":"chw"},{"indicator":" Number of referrals made by CHW for contraceptive methods, female sterilization","num":"30","id":"v526jj7mjqg","targett":"PMPTUUTG024","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, male sterilization","num":"31","id":"OMalyrWabrK","targett":"PMPTUUTG025","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, IUD","num":"32","id":"f198ORv9kkk","targett":"PMPTUUTG026","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, implant","num":"33","id":"qB4WKxlOoCp","targett":"PMPTUUTG027","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, injectable","num":"34","id":"IFpFerRisDV","targett":"PMPTUUTG028","chw":"chw"},{"indicator":"Number of referrals made by CHW for contraceptive methods, pills","num":"35","id":"","targett":"PMPTUUTG029","chw":"chw"},{"indicator":"Number of referrals from CHW completed, by method","num":"36","id":"","targett":"","chw":"chw"},{"indicator":"Number of referrals from CHW completed, female sterilization","num":"37","id":"gCbdL5JVnHM","targett":"PMPTUUTG030","chw":"chw"},{"indicator":"Number of referrals from CHW completed, male sterilization","num":"38","id":"tdoTUqvoI2G","targett":"PMPTUUTG031","chw":"chw"},{"indicator":"Number of referrals from CHW completed, IUD","num":"39","id":"seoEscQQqUb","targett":"PMPTUUTG032","chw":"chw"},{"indicator":"Number of referrals from CHW completed, implant","num":"40","id":"Wbig1PC63FP","targett":"PMPTUUTG033","chw":"chw"},{"indicator":"Number of referrals from CHW completed, injectable","num":"41","id":"dzMXFKO8cg7","targett":"PMPTUUTG034","chw":"chw"},{"indicator":"Number of referrals from CHW completed, pills","num":"42","id":"PMPTUUDE035","targett":"PMPTUUTG035","chw":"chw"}]},{"title":"Intermediate Result 1.3: Increase access of FP services at 20 dispensaries and 4 health centers","color":"#EBC2A1","content":[{"indicator":"Number of facility-based providers trained to deliver FP services","num":"43","id":"PMPTUUDE036","targett":"PMPTUUTG036"}]},{"title":"Number of contraceptives distributed in the facility, disaggregated by type","color":"#81A594","content":[{"indicator":"Number of contraceptives distributed in the facility, pills","num":"44","id":"bjkeLqFDDjo","targett":"PMPTUUTG037"},{"indicator":"Number of contraceptives distributed in the facility, condoms","num":"45","id":"oAdnR7jRTSN","targett":"PMPTUUTG038"},{"indicator":"Number of new FP clients recruited by Facilities, dissegrageted by sex d","num":"46","id":"","targett":""},{"indicator":"Number of new FP clients recruited by Facilities, female","num":"47","id":"ngKHPb5IfDw","targett":"PMPTUUTG040"},{"indicator":"Number of new FP clients recruited by Facilities, male","num":"48","id":"gwchBKpyJ62","targett":"PMPTUUTG041"},{"indicator":"Number of new WRA FP clients enrolled in the facilities, by age","num":"49","id":"","targett":""},{"indicator":"Number of new WRA FP clients enrolled in the facilities, 10-14 ","num":"50","id":"OIsWASIKhFI","targett":"PMPTUUTG042"},{"indicator":" Number of new WRA FP clients enrolled in the facilities, 15-19","num":"51","id":"KHk45qgIUgx","targett":"PMPTUUTG043"},{"indicator":"Number of new WRA FP clients enrolled in the facilities, 20-24","num":"52","id":"fMZMgRlUxYK","targett":"PMPTUUTG044"},{"indicator":"Number of new WRA FP clients enrolled in the facilities, 25+","num":"53","id":"ya78GSsUFB5","targett":"PMPTUUTG045"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, by method","num":"54","id":"","targett":""},{"indicator":" Number of new WRA FP clients enrolled at the facilities, female sterilization","num":"55","id":"V1tZJGfdeL6","targett":"PMPTUUTG046"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, male sterilization","num":"56","id":"v8X8GNnoX2M","targett":"PMPTUUTG047"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, IUD","num":"57","id":"cLGchHOHUPP","targett":"PMPTUUTG048"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, implant","num":"58","id":"F1jtqafoS9m","targett":"PMPTUUTG049"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, injectable","num":"59","id":"stUhpCLQHdo","targett":"PMPTUUTG050"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, pills","num":"60","id":"QsG09ni0Vck","targett":"PMPTUUTG051"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, female condom","num":"61","id":"pK1gZxC2yzO","targett":"PMPTUUTG052"},{"indicator":"Number of new WRA FP clients enrolled at the facilities, male condom","num":"62","id":"vrYUVlPjGHX","targett":"PMPTUUTG053"},{"indicator":"Number of new FP clients enrolled through outreach activities, by method","num":"63","id":"","targett":""},{"indicator":"Number of new FP clients enrolled through outreach activities, female sterilization","num":"64","id":"xip1SDutimh","targett":"PMPTUUTG054"},{"indicator":"Number of new FP clients enrolled through outreach activities, male sterilization","num":"65","id":"chmWn8ksICz","targett":"PMPTUUTG055"},{"indicator":"Number of new FP clients enrolled through outreach activities, IUD","num":"66","id":"RfSsrHPGBXV","targett":"PMPTUUTG056"},{"indicator":"Number of new FP clients enrolled through outreach activities, implant","num":"67","id":"ZnTi99UdGCS","targett":"PMPTUUTG057"},{"indicator":"Number of new FP clients enrolled through outreach activities, injectable","num":"68","id":"","targett":"PMPTUUTG058"},{"indicator":" Number of new FP clients enrolled through outreach activities, pills","num":"69","id":"","targett":"PMPTUUTG059"},{"indicator":"Number of new FP clients enrolled through outreach activities, male condoms","num":"70","id":"","targett":"PMPTUUTG060"},{"indicator":"Number of new FP clients enrolled through outreach activities, female condoms","num":"71","id":"","targett":"PMPTUUTG061"},{"indicator":"Number of revisiting FP clients in the facilities, by method","num":"72","id":"","targett":""},{"indicator":"Number of revisiting FP clients in the facilities, IUD","num":"75","id":"","targett":"PMPTUUTG064"},{"indicator":"Number of revisiting FP clients in the facilities, implant","num":"76","id":"","targett":"PMPTUUTG065"},{"indicator":"Number of revisiting FP clients in the facilities, injectable","num":"77","id":"epPM7fO8CnH.RcgnLQy1MxN","targett":"PMPTUUTG066"},{"indicator":"Number of revisiting FP clients in the facilities, pills","num":"78","id":"IFxhP0O4k0W.RcgnLQy1MxN","targett":"PMPTUUTG067"},{"indicator":"Number of revisiting FP clients in the facilities, male condoms","num":"79","id":"PHN05p61ByJ.Zi6m8Bfd4YZ","targett":"PMPTUUTG068"},{"indicator":"Number of revisiting FP clients in the facilities, female condoms","num":"80","id":"PHN05p61ByJ.OVPV2za8nOf","targett":"PMPTUUTG069"}]},{"title":"Couple Years of Protection (CYP)","color":"#81A594","content":[{"indicator":"Total CYP","num":"81","id":"rcDPmF2o426","targett":""},{"indicator":"CYP, female sterilization","num":"82","id":"yW22Hy8bWhG","targett":"PMPTUUTG070"},{"indicator":"CYP, male sterilization","num":"83","id":"E77rELQOmiz","targett":"PMPTUUTG071"},{"indicator":"CYP, IUDs","num":"84","id":"DVGDAcamH0Z","targett":"PMPTUUTG072"},{"indicator":"CYP, Implants","num":"85","id":"GXmlVXeIwR8","targett":"PMPTUUTG073"},{"indicator":"CYP, injectables","num":"86","id":"d8hKLrZTgFz","targett":"PMPTUUTG074"},{"indicator":" CYP, pills - facilities","num":"87","id":"EoBKz8qMGY1","targett":"PMPTUUTG075"},{"indicator":"CYP, pills - CHW","num":"88","id":"rTZGvSouddU","targett":"PMPTUUTG076"},{"indicator":"CYP, condoms - facilities","num":"89","id":"bn0yn28mMGQ","targett":"PMPTUUTG077"},{"indicator":"CYP, condoms, CHW","num":"90","id":"wCnp3BNG3bX","targett":"PMPTUUTG078"}]},{"title":"Intermediate Result 1.4: Improve availability of Maternal and Neonatal Health (MNH) services at 20 dispensaries and 4 health centers","color":"#EBC2A1","content":[{"indicator":"Number providers trained in basic emergency obstetrics and neonatal care (BEmONC)","num":"91","id":"PMPTUUDE079","targett":"PMPTUUTG079"},{"indicator":"Number of health facilities meeting three stars or above for quality BEmONC services (SBMR assessment)","num":"92","id":"PMPTUUDE080","targett":"PMPTUUTG080"},{"indicator":"Total deliveries in health facilities","num":"93","id":"kLI4iGDbN3p","targett":""},{"indicator":"Number of deliveries at project-supported facilities by facility (<;20)","num":"94","id":"kLI4iGDbN3p.UVLU1Njotu4","targett":"PMPTUUTG081"},{"indicator":"Number of deliveries at project-supported facilities by faciliity (>;20)","num":"95","id":"kLI4iGDbN3p.lVnpcptMtAD","targett":"PMPTUUTG082"},{"indicator":"Number of night deliveries at project-supported health facilities","num":"96","id":"PMPTUUDE083","targett":"PMPTUUTG083"},{"indicator":"Number of women attending first ANC visit","num":"97","id":"qN1zFaX9mVe","targett":"PMPTUUTG084"},{"indicator":"Number of pregnagnt women atending ANC 4 visit","num":"98","id":"yqA1CfsfBHQ","targett":"PMPTUUTG085"},{"indicator":"# of pregnant women who received IPT2","num":"99","id":"tIs7rshvixe","targett":"PMPTUUTG086"},{"indicator":"Number of women attending postnatal care","num":"100","id":"","targett":""},{"indicator":"Number of women attending postnatal care within 48 hrs after delivery","num":"101","id":"IEMyGwhBTXd","targett":"PMPTUUTG087"},{"indicator":"Number of women attending postnatal care 3-7 days","num":"102","id":"jmiebz1jQDn","targett":"PMPTUUTG088"},{"indicator":"Number of women completed all three  postnatal care visits","num":"103","id":"BmKchKT33Ma","targett":"PMPTUUTG089"},{"indicator":"Number of maternal deaths reported at project supported facilities","num":"104","id":"PMPTUUDE090","targett":"PMPTUUTG090"},{"indicator":"# of neonatal deaths reported at project supported facilities","num":"105","id":"PMPTUUDE091","targett":"PMPTUUTG091"}]},{"title":"Intermediate Result 1.5: Improve social and policy environment for FP","color":"#EBC2A1","content":[{"indicator":"Number of monthly meetings conducted between Project Officers and DRCHCo ","num":"106","id":"PMPTUUDE092","targett":"PMPTUUTG092"},{"indicator":"Number of community sensitization events conducted","num":"107","id":"PMPTUUDE093","targett":"PMPTUUTG093"},{"indicator":"Number of quarterly progress reports shared with district council","num":"108","id":"PMPTUUDE094","targett":"PMPTUUTG094"}]},{"title":"Intermediate Result 2.1: BMU in place and functioning","color":"#EBC2A1","content":[{"indicator":"Number NEW BMUs established","num":"109","id":"PMPTUUDE095","targett":"PMPTUUTG095"},{"indicator":"Number of BMUs who have at least 30% of female membership","num":"110","id":"PMPTUUDE096","targett":"PMPTUUTG096"},{"indicator":"Number of functional BMUs with offices","num":"111","id":"PMPTUUDE097","targett":"PMPTUUTG097"},{"indicator":"Number of Collaborative Fisheries Management Areas (CFMAs) established and functioning","num":"112","id":"PMPTUUDE098","targett":"PMPTUUTG098"},{"indicator":"Number of active BMU members, by sex ","num":"113","id":"PMPTUUDE099","targett":"PMPTUUTG099"},{"indicator":"Number of active BMU members, female","num":"114","id":"PMPTUUDE100","targett":"PMPTUUTG100"},{"indicator":"Number of active BMU members, male ","num":"115","id":"PMPTUUDE101","targett":"PMPTUUTG101"}]},{"title":"Intermediate Result 2.2: Reduce illegal fishing","color":"#EBC2A1","content":[{"indicator":"Number of BMU members trained on patrol guidelines","num":"116","id":"PMPTUUDE102","targett":"PMPTUUTG102"},{"indicator":"Number of illegal fishing incidents reported by BMU at VEO office.","num":"117","id":"PMPTUUDE103","targett":"PMPTUUTG103"},{"indicator":"Number of fish breeding sites identified, by village.","num":"118","id":"PMPTUUDE104","targett":"PMPTUUTG104"},{"indicator":"Number of fish breeding sites established, by village.","num":"119","id":"PMPTUUDE105","targett":"PMPTUUTG105"},{"indicator":" Village water area (in sq.m) protected as fish breeding site, by village","num":"120","id":"PMPTUUDE106","targett":"PMPTUUTG106"},{"indicator":"Number of fish breeding sites reported no fishing activities","num":"121","id":"PMPTUUDE107","targett":"PMPTUUTG107"},{"indicator":"Number of fisherman punished due to illegal fishing practices by village, by type of punishment (warning, fine, imprisonent)","num":"122","id":"PMPTUUDE108","targett":"PMPTUUTG108"},{"indicator":"Number of fisherman provided (at reduced price) with recommended gears after surrendering illegal gears","num":"123","id":"PMPTUUDE109","targett":"PMPTUUTG109"},{"indicator":"Number of illegal fishing gears confiscated, by type","num":"124","id":"PMPTUUDE110","targett":"PMPTUUTG110"}]},{"title":"Intermediate Result 2.3: Improve quality of fisheries products","color":"#EBC2A1","content":[{"indicator":"Number of BMU members using improved fish processing techniques (e.g., fish drying racks)","num":"125","id":"PMPTUUDE111","targett":"PMPTUUTG111"}]},{"title":"Intermediate Result 2.4: Improve BMU Financial sustainability through own income generating activities","color":"#EBC2A1","content":[{"indicator":"Number of BMU members with increased income as a result of project activities","num":"126","id":"PMPTUUDE112","targett":"PMPTUUTG112"},{"indicator":"Number of BMUs with established income generating business","num":"127","id":"PMPTUUDE113","targett":"PMPTUUTG113"},{"indicator":"Number of BMUs reportign income gain  from own income generating activities","num":"128","id":"PMPTUUDE114","targett":"PMPTUUTG114"},{"indicator":"Number of BMUs which provide income and expenditure reports to BMU assembly meeting and Village government","num":"129","id":"PMPTUUDE115","targett":"PMPTUUTG115"}]},{"title":"Intermediate Result 3.1: Support creation of  Local Authority Forest Reserves in project sites","color":"#EBC2A1","content":[{"indicator":"Number of Local Authority Forest Reserves (LAFRs) established in the GME with project support","num":"130","id":"PMPTUUDE116","targett":"PMPTUUTG116"},{"indicator":"Number of Local Authority Forest Reserves (VLFRs) with approved management plans at national level, disagregrated by district","num":"131","id":"PMPTUUDE117","targett":"PMPTUUTG117"}]},{"title":"Intermediate Result 3.2: Village Land Use Plans established and in use","color":"#EBC2A1","content":[{"indicator":" Percent of female community members participating in development of Land-Use Plans (VLUPs) ","num":"132","id":"PMPTUUDE118","targett":"PMPTUUTG118"},{"indicator":"Number of Village Land-Use Plans (VLUPs) approved by district council and central government levels","num":"133","id":"PMPTUUDE119","targett":"PMPTUUTG119"},{"indicator":"Number of Village Land Forest Reserves (VLFRs) with approved management plans at district level with project support","num":"134","id":"PMPTUUDE120","targett":"PMPTUUTG120"},{"indicator":"Number of hectares designated for firewood collection in VLFRs, by village","num":"135","id":"PMPTUUDE121","targett":"PMPTUUTG121"},{"indicator":"Number of villages implementing  VLUPs  as per approved land use plans.","num":"136","id":"PMPTUUDE122","targett":"PMPTUUTG122"},{"indicator":"Number of households/ community groups with approved CCROs( Certificate of Customary Rights of Occupancy) in project villages.","num":"137","id":"PMPTUUDE123","targett":"PMPTUUTG123"}]},{"title":"Intermediate Result 3.3: Climate Smart agricultural practices reduce sedimentation, maintain food security, and increase income ","color":"#EBC2A1","content":[{"indicator":"Number of farmers trained on climate smart agriculture practices within project villages, disaggregated by sex","num":"138","id":"","targett":""},{"indicator":"Number of farmers trained in Climate Smart Agriculture (CSA) practices, male","num":"139","id":"PMPTUUDE124","targett":"PMPTUUTG124"},{"indicator":"Number of farmers trained in Climate Smart Agriculture (CSA) practices, female","num":"140","id":"PMPTUUDE125","targett":"PMPTUUTG125"},{"indicator":"Proportion of female farmers practicing CSA","num":"141","id":"PMPTUUDE126","targett":"PMPTUUTG126"},{"indicator":"Percent of trained farmers practicing climate smart agriculture within project villages","num":"142","id":"PMPTUUDE127","targett":"PMPTUUTG127"},{"indicator":"Percent of trained farmers reporting increase in crop productivity per unit area, by sex","num":"143","id":"","targett":""},{"indicator":"Percent of trained farmers reporting increase in crop productivity per unit area, female","num":"144","id":"PMPTUUDE128","targett":"PMPTUUTG128"},{"indicator":" Percent of trained farmers reporting increase in crop productivity per unit area, male","num":"145","id":"PMPTUUDE129","targett":"PMPTUUTG129"},{"indicator":"Proportion of female farmers reporting increase in crop productivity","num":"146","id":"PMPTUUDE130","targett":"PMPTUUTG130"},{"indicator":"Number of farmers reporting an increase in income as result of climate smart agriculture practices from sales of agricultural/ livestock products within project villages ","num":"147","id":"PMPTUUDE131","targett":"PMPTUUTG131"},{"indicator":"Percect of farmers reporting an increase in income as result of climate smart agriculture practices from sales of agricultural/ livestock products within project villages ","num":"148","id":"PMPTUUDE132","targett":"PMPTUUTG132"},{"indicator":"Proportion of female farmers reporting increase in income as a result of CSA practices","num":"149","id":"PMPTUUDE133","targett":"PMPTUUTG133"},{"indicator":"Number of farms found less than 60M from the lake and 30M from key rivers within project villages","num":"150","id":"PMPTUUDE134","targett":"PMPTUUTG134"}]},{"title":"Intermediate Result 3.4: Reduce threats to Village Land Forest Reserves","color":"#EBC2A1","content":[{"indicator":"Number forest scouts trained in forest patrols, monitoring and reporting","num":"151","id":"PMPTUUDE135","targett":"PMPTUUTG135"},{"indicator":"Number of active forest scouts participating in patrols in project villages.","num":"152","id":"PMPTUUDE136","targett":"PMPTUUTG136"},{"indicator":"Number of persons arrested as result of illegal logging/timber harvesting/ encroachment, by quarter and by village","num":"153","id":"PMPTUUDE137","targett":"PMPTUUTG137"},{"indicator":"Number of  forest fire events recorded in VLFRs within project villages","num":"154","id":"PMPTUUDE138","targett":"PMPTUUTG138"},{"indicator":"Number of forest fire events contained by Forest Scouts/ Community in VLFRs within project villages.","num":"155","id":"PMPTUUDE139","targett":"PMPTUUTG139"}]},{"title":"Intermediate Result 4.1: Adoption of positive PHE behaviors at household level ","color":"#EBC2A1","content":[{"indicator":"Number of community-based groups&#39; members considered multi-purpose resource persons   ","num":"156","id":"PMPTUUDE140","targett":"PMPTUUTG140"},{"indicator":"Number of active PHE champions, by sex and village","num":"157","id":"","targett":""},{"indicator":"Number of active PHE champions, male","num":"158","id":"PMPTUUDE141","targett":"PMPTUUTG141"},{"indicator":"Number of active PHE champions, female","num":"159","id":"PMPTUUDE142","targett":"PMPTUUTG142"},{"indicator":"Number of active model households, dissagregated by class status","num":"160","id":"PMPTUUDE143","targett":"PMPTUUTG143"},{"indicator":"Number of active model households, male headed","num":"161","id":"PMPTUUDE144","targett":"PMPTUUTG144"},{"indicator":"Number of active model households, female headed","num":"162","id":"PMPTUUDE145","targett":"PMPTUUTG145"},{"indicator":"Number of  ACTIVE model households, Class 1","num":"163","id":"PMPTUUDE146","targett":"PMPTUUTG146"},{"indicator":"Number of  ACTIVE model households, Class 2","num":"164","id":"PMPTUUDE147","targett":"PMPTUUTG147"},{"indicator":"Number of ACTIVE model households, Class 3","num":"165","id":"PMPTUUDE148","targett":"PMPTUUTG148"},{"indicator":"Number of new model households established, disaggregated by class","num":"166","id":"PMPTUUDE149","targett":"PMPTUUTG149"},{"indicator":"Number of NEW model Households, Class 1","num":"167","id":"PMPTUUDE150","targett":"PMPTUUTG150"},{"indicator":"Number of NEW model households, Class 3","num":"168","id":"PMPTUUDE151","targett":"PMPTUUTG151"},{"indicator":"Number of  NEW model households, Class 2","num":"169","id":"PMPTUUDE152","targett":"PMPTUUTG152"},{"indicator":"Number of model villages (A model village is a village that has at least 50% of the households as model households)","num":"170","id":"PMPTUUDE153","targett":"PMPTUUTG153"},{"indicator":"Number of FP/ RH/PHE Intergrated IEC Materials Developed and disseminated","num":"171","id":"PMPTUUDE154","targett":"PMPTUUTG154"}]},{"title":"Intermediate Result 4.2: Improve savings and investment through the continued strengthening and expansion of Community Conservation Banks (COCOBAs)","color":"#EBC2A1","content":[{"indicator":"Number of NEW COCOBA groups established","num":"172","id":"PMPTUUDE155","targett":"PMPTUUTG155"},{"indicator":"Number of COCOBA members, by sex within project villages","num":"173","id":"PMPTUUDE156","targett":"PMPTUUTG156"},{"indicator":"Proportion of female COCOBA members","num":"174","id":"PMPTUUDE157","targett":"PMPTUUTG157"},{"indicator":"Amount of savings made by COCOBA groups per quarter, per village","num":"175","id":"PMPTUUDE158","targett":"PMPTUUTG158"},{"indicator":"Number of COCOBA members with increased income due to COCOBA loans.","num":"176","id":"PMPTUUDE159","targett":"PMPTUUTG159"}]},{"title":"Intermediate Result 4.3: Increase youth engagment in  PHE program activities","color":"#EBC2A1","content":[{"indicator":"Number of new  youth clubs established promoting PHE messages within project villages, disagregrated by in-school, out- of school.","num":"177","id":"","targett":""},{"indicator":"Number of new  youth clubs established promoting PHE messages within project villages, in-school","num":"178","id":"PMPTUUDE160","targett":"PMPTUUTG160"},{"indicator":"Number of new youth clubs established promoting PHE messages within project villages, out-of-school ","num":"179","id":"PMPTUUDE161","targett":"PMPTUUTG161"},{"indicator":"Number of young girls participating in youth club PHE activities, disagregrated by in-school, out- of school.","num":"180","id":"","targett":""},{"indicator":"Number of  young girls participating in youth club PHE activities, in-school","num":"181","id":"PMPTUUDE162","targett":"PMPTUUTG162"},{"indicator":"Number of  young girls participating in youth club PHE activities, out- of school.","num":"182","id":"PMPTUUDE163","targett":"PMPTUUTG163"}]},{"title":"Intermediate Result 4.4:  Improve leadership among village leaders","color":"#EBC2A1","content":[{"indicator":"Number of local leaders ( Village, Ward & Council) who received training on governance by training type within project villages.","num":"183","id":"PMPTUUDE164","targett":"PMPTUUTG164"},{"indicator":"Number of the villages providing regular feedback to community about PHE action plan implementation within project villages. ","num":"184","id":"PMPTUUDE165","targett":"PMPTUUTG165"},{"indicator":"Number of project villages implementing 70% of PHE action plan, per year","num":"185","id":"PMPTUUDE166","targett":"PMPTUUTG166"}]},{"title":"Intermediate Result 4.5: Improve community participation in civic and governance activities.","color":"#EBC2A1","content":[{"indicator":"Number of project villages where at least 20% of participants in village assembly meetings are youths under age of 24.","num":"186","id":"PMPTUUDE167","targett":"PMPTUUTG167"},{"indicator":"Number of project villages where at least 50% of participants in village assembly meetings are female","num":"187","id":"PMPTUUDE168","targett":"PMPTUUTG168"},{"indicator":"Number of project villages implementing Community Score Card approch, by quarter.","num":"188","id":"PMPTUUDE169","targett":"PMPTUUTG169"}]}];
+        return data;
+    }
+
+</script>
+<div class="selectOrgUnit"></div>
+<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+<h3 class="header text-center">PMP TUUNGANE - <span class="period"></span> -  <span id="orgUnits"></span></h3>
+<div class="col-sm-10 col-sm-offset-1" >
+    <table class="listTable table table-bordered table-responsive">
+        <thead class="header">
+
+        </thead>
+    </table>
+</div>
