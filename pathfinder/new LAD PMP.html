@@ -14,6 +14,8 @@
         $(".header").hide();
         var html = "";
         var indicatorIdsArray = [];
+        var indicatorIdsArrayWithOuGroup = [];
+        var indicatorIdsArrayWithoutOuGroup = [];
         var targetIdsArray = [];
         var orgUnit = dhis2.report.organisationUnit;
         $("#orgUnits").html(orgUnit.name);
@@ -28,6 +30,11 @@
                         if (indicatorIdsArray.indexOf(indicatorContent.id) == -1) {
                             if (indicatorContent.id != "") {
                                 indicatorIdsArray.push(indicatorContent.id);
+                                if (indicatorContent.includeOuGroup) {
+                                    indicatorIdsArrayWithOuGroup.push(indicatorContent.id)
+                                } else {
+                                    indicatorIdsArrayWithoutOuGroup.push(indicatorContent.id)
+                                }
                             }
                         }
                         if (targetIdsArray.indexOf(indicatorContent.target) == -1) {
@@ -39,6 +46,7 @@
                 });
             }
         });
+
         var periodForIndicators = getThreeMonth(periods[0]);
 
         function loadData() {
@@ -54,8 +62,14 @@
             html += '<th style="width: 5%">Target</th>'
             html += '<th style="width: 5%">Achievement</th>'
             html += "</tr>"
-            var indicatorsAnalyticsUrl = "/api/analytics.json?dimension=YCxAoZQVNgT:rDTsuZLCsux&dimension=dx:" +
-                indicatorIdsArray.join(
+            var indicatorsAnalyticsUrlWithOuGroup =
+                "/api/analytics.json?dimension=YCxAoZQVNgT:rDTsuZLCsux&dimension=dx:" +
+                indicatorIdsArrayWithOuGroup.join(
+                    ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
+                "&displayProperty=NAME";
+            var indicatorsAnalyticsUrlWithOutOuGroup =
+                "/api/analytics.json?dimension=dx:" +
+                indicatorIdsArrayWithoutOuGroup.join(
                     ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
                 "&displayProperty=NAME";
             var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:" + targetIdsArray.join(";") +
@@ -63,93 +77,131 @@
                     0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
             $(".loader").show("slow");
             $(".header").hide();
-            $.getJSON(indicatorsAnalyticsUrl, function (indicatorsResponse) {
-                $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
-                    $.each(data, function (key, value) {
-                        html += "<tr style='background-color: " + value.color +
-                            "'><td colspan='9'>" + value.title + "</td> </tr>";
-                        if (value.hasOwnProperty('content')) {
-                            $.each(value.content, function (indicatorIndex,
-                                indicatorContent) {
-                                if (indicatorContent.hasOwnProperty('indicator')) {
-                                    html += "</tr>";
-                                    html += "<td>" + indicatorContent.indicatorNumber +
-                                        "</td>";
-                                    html += "<td>" + indicatorContent.indicator +
-                                        "</td>";
-                                    var indicatorDataArray = [];
-                                    var amooounts = [];
-                                    $.each(periodForIndicators.split(";"),
-                                        function (
-                                            periodIndex, period) {
-                                            var indicatorValue =
-                                                getDataFromIndicatorsAnalyticsUrl(
-                                                    indicatorsResponse.rows,
-                                                    period,
-                                                    indicatorContent.id);
-                                            html += "<td>" + indicatorValue +
-                                                "</td>";
-                                            indicatorDataArray.push(
-                                                indicatorValue)
-                                        });
-                                    var realization = 0;
+            $.getJSON(indicatorsAnalyticsUrlWithOuGroup, function (indicatorsWithOuGroupResponse) {
+                $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
+                    indicatorsWithoutOuGroupResponse) {
+                    $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
+                        $.each(data, function (key, value) {
+                            html += "<tr style='background-color: " + value.color +
+                                "'><td colspan='9'>" + value.title +
+                                "</td> </tr>";
+                            if (value.hasOwnProperty('content')) {
+                                $.each(value.content, function (indicatorIndex,
+                                    indicatorContent) {
                                     if (indicatorContent.hasOwnProperty(
-                                            "realization")) {
-                                        realization = getRealizationValue(
-                                            indicatorDataArray,
-                                            indicatorContent.realization
-                                        )
+                                            'indicator')) {
+                                        html += "</tr>";
+                                        html += "<td>" +
+                                            indicatorContent.indicatorNumber +
+                                            "</td>";
+                                        html += "<td>" +
+                                            indicatorContent.indicator +
+                                            "</td>";
+                                        var indicatorDataArray = [];
+                                        var amooounts = [];
+                                        $.each(periodForIndicators.split(
+                                                ";"),
+                                            function (
+                                                periodIndex, period
+                                            ) {
+                                                var indicatorValue;
+                                                if (
+                                                    indicatorContent
+                                                    .includeOuGroup
+                                                ) {
+                                                    indicatorValue =
+                                                        getDataFromIndicatorsWithOuGroupAnalyticsUrl(
+                                                            indicatorsWithOuGroupResponse
+                                                            .rows,
+                                                            period,
+                                                            indicatorContent
+                                                            .id);
+                                                } else {
+                                                    indicatorValue =
+                                                        getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(
+                                                            indicatorsWithoutOuGroupResponse
+                                                            .rows,
+                                                            period,
+                                                            indicatorContent
+                                                            .id);
+                                                }
+                                                html += "<td>" +
+                                                    indicatorValue +
+                                                    "</td>";
+                                                indicatorDataArray.push(
+                                                    indicatorValue
+                                                )
+                                            });
+                                        var realization = 0;
+                                        if (indicatorContent.hasOwnProperty(
+                                                "realization")) {
+                                            realization =
+                                                getRealizationValue(
+                                                    indicatorDataArray,
+                                                    indicatorContent.realization
+                                                )
+                                        }
+                                        html += "<td>" + realization +
+                                            "</td>";
+                                        html += "<td>" +
+                                            getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(
+                                                targetsResponse.rows,
+                                                periods[0],
+                                                indicatorContent.target
+                                            );
+                                        "+</td>";
+                                        html +=
+                                            "<td class='lastColumn'></td>";
+                                        html += "</tr>";
                                     }
-                                    html += "<td>" + realization + "</td>";
-                                    html += "<td>" +
-                                        getDataFromTargetsAnalyticsUrl(
-                                            targetsResponse.rows,
-                                            periods[0], indicatorContent.target
-                                        );
-                                    "+</td>";
-                                    html += "<td class='lastColumn'></td>";
-                                    html += "</tr>";
-                                }
-                            });
-                        }
-                    });
-                    $("table").append(html);
-                    $('.lastColumn').each(function () {
-                        var targetValue = $(this).prev('td').text();
-                        var realizationValue = $(this).prev('td').prev('td').text();
-                        if ($.isNumeric(targetValue) && $.isNumeric(realizationValue)) {
-                            targetValue = parseInt(targetValue);
-                            realizationValue = parseInt(realizationValue);
-                            if (targetValue !== 0) {
-                                var achievementPercentage = parseInt((parseInt(
-                                        realizationValue) *
-                                    100) / parseInt(targetValue));
-                                if (achievementPercentage <= 25) {
-                                    $(this).text(achievementPercentage + "%").css(
-                                        'background',
-                                        '#FF0000');
-                                } else if (achievementPercentage > 25 &&
-                                    achievementPercentage < 80) {
-                                    $(this).text(achievementPercentage + "%").css(
-                                        'background',
-                                        '#FFFF00');
-                                } else if (achievementPercentage >= 80) {
-                                    $(this).text(achievementPercentage + "%").css(
-                                        'background',
-                                        '#008000');
-                                } else {
-                                    $(this).text(achievementPercentage);
+                                });
+                            }
+                        });
+                        $("table").append(html);
+                        $('.lastColumn').each(function () {
+                            var targetValue = $(this).prev('td').text();
+                            var realizationValue = $(this).prev('td').prev('td')
+                                .text();
+                            if ($.isNumeric(targetValue) && $.isNumeric(
+                                    realizationValue)) {
+                                targetValue = parseInt(targetValue);
+                                realizationValue = parseInt(realizationValue);
+                                if (targetValue !== 0) {
+                                    var achievementPercentage = parseInt((
+                                        parseInt(
+                                            realizationValue) *
+                                        100) / parseInt(targetValue));
+                                    if (achievementPercentage <= 25) {
+                                        $(this).text(achievementPercentage +
+                                            "%").css(
+                                            'background',
+                                            '#FF0000');
+                                    } else if (achievementPercentage > 25 &&
+                                        achievementPercentage < 80) {
+                                        $(this).text(achievementPercentage +
+                                            "%").css(
+                                            'background',
+                                            '#FFFF00');
+                                    } else if (achievementPercentage >= 80) {
+                                        $(this).text(achievementPercentage +
+                                            "%").css(
+                                            'background',
+                                            '#008000');
+                                    } else {
+                                        $(this).text(achievementPercentage);
+                                    }
                                 }
                             }
-                        }
+                        });
+                        $('.listTable').addClass(
+                            'bordered-table zebra-striped dataTable');
+                        var periodName = getPeroidName(periods[0]);
+                        $(".orgUnit").html(orgUnit.name);
+                        $(".period").html(periodName);
+                        $(".loader").hide();
+                        $(".header").show();
                     });
-                    $('.listTable').addClass('bordered-table zebra-striped dataTable');
-                    var periodName = getPeroidName(periods[0]);
-                    $(".orgUnit").html(orgUnit.name);
-                    $(".period").html(periodName);
-                    $(".loader").hide();
-                    $(".header").show();
-                });
+                })
             });
         }
         loadData();
@@ -223,7 +275,7 @@
         return names;
     }
 
-    function getDataFromTargetsAnalyticsUrl(array, period, de) {
+    function getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(array, period, de) {
         var data = 0
         $.each(array, function (index, value) {
             if (value[0] == de && value[1] == period) {
@@ -233,7 +285,7 @@
         return data;
     }
 
-    function getDataFromIndicatorsAnalyticsUrl(array, period, de) {
+    function getDataFromIndicatorsWithOuGroupAnalyticsUrl(array, period, de) {
         var data = 0
         $.each(array, function (index, value) {
             if (value[0] == de && value[2] == period) {
@@ -252,18 +304,21 @@
                     "indicatorNumber": "1",
                     "id": "LADPMPDE001",
                     "target": "LADPMPTG001",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities offering all contraceptive services (including short-acting, long-acting and permanent methods)",
                     "indicatorNumber": "2",
                     "id": "LADPMPDE002",
                     "target": "LADPMPTG002",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities that meet essential quality standards for contraception",
                     "indicatorNumber": "3a",
                     "id": "LADPMPDE003",
                     "target": "LADPMPTG003",
+                    "includeOuGroup": false,
                     "realization": "last"
                 },
                 {
@@ -271,228 +326,266 @@
                     "indicatorNumber": "3b",
                     "id": "ysBIqR14o9l",
                     "target": "CQaY91aX8Dw",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "% of facilities that meet quality standards for contraception",
                     "indicatorNumber": "4",
                     "id": "qdvGEMjBTBQ",
                     "target": "LADPMPTG004",
+                    "includeOuGroup": true,
                     "realization": "last"
                 }, {
                     "indicator": "# of new contraceptive users (all methods), disaggregated by age ",
                     "indicatorNumber": "5",
                     "id": "uJFFZD2dps9",
                     "target": "LADPMPTG005",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new contraceptive users (all methods): 10-14 years",
                     "indicatorNumber": "6",
                     "id": "yc0rMUj9N2L",
                     "target": "LADPMPTG006",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new contraceptive users (all methods): 15-19 years",
                     "indicatorNumber": "7",
                     "id": "PDVksUnoegQ",
                     "target": "LADPMPTG007",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new contraceptive users (all methods): 20-24 years",
                     "indicatorNumber": "8",
                     "id": "X1rwIqm8kwZ",
                     "target": "LADPMPTG008",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of new contraceptive users (all methods): 25 and older",
                     "indicatorNumber": "9",
                     "id": "Xy51Axr9Rcz",
                     "target": "LADPMPTG009",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "Number of new pills users",
                     "indicatorNumber": "10",
                     "id": "RK2RCrO83Kq",
                     "target": "LADPMPTG010",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "number of new Injectable users",
                     "indicatorNumber": "11",
                     "id": "vdlua6iOmzV",
                     "target": "LADPMPTG011",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new LAPM users (includes interval IUD, PPIUD, implant, PM)",
                     "indicatorNumber": "12",
                     "id": "TVI7YhWakbT",
                     "target": "LADPMPTG012",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new implant users",
                     "indicatorNumber": "13",
                     "id": "zTBdJsPLk3Y",
                     "target": "LADPMPTG013",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new implant users:PP implant",
                     "indicatorNumber": "14",
                     "id": "iEe74AuVOzs",
                     "target": "LADPMPTG014",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new implant users: FP interval implant",
                     "indicatorNumber": "15",
                     "id": "HPvRcyzXvT6",
                     "target": "LADPMPTG015",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new implant users: PNC postpartum implant",
                     "indicatorNumber": "16",
                     "id": "LADPMPDE016",
                     "target": "LADPMPTG016",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of new IUD users (Interval + PPiUD)",
                     "indicatorNumber": "17",
                     "id": "Ygp5Uwg0eio",
                     "target": "LADPMPTG017",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new IUD users : FP interval IUD",
                     "indicatorNumber": "18",
                     "id": "UjGebiXNg0t",
                     "target": "LADPMPTG018",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new IUCD : L&D and PNC PPIUD",
                     "indicatorNumber": "19",
                     "id": "Xj8WJ8PCha2",
                     "target": "LADPMPTG019",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of new permanent method users Interval",
                     "indicatorNumber": "20",
                     "id": "aXPh1HJwmYo",
                     "target": "LADPMPTG020",
+                    "includeOuGroup": true,
                     "realization": "total"
                 }, {
                     "indicator": "# of facility assessments conducted on contraceptive service delivery",
                     "indicatorNumber": "21",
                     "id": "LADPMPDE021",
                     "target": "LADPMPTG021",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of master trainers re-oriented on FP prior to offering training",
                     "indicatorNumber": "22",
                     "id": "LADPMPDE022",
                     "target": "LADPMPTG022",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of providers oriented on general FP and short-acting methods (required by government prior to LAPM training)",
                     "indicatorNumber": "23",
                     "id": "LADPMPDE023",
                     "target": "LADPMPTG023",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of Master Trainers trained as trainers for PPIUD insertion",
                     "indicatorNumber": "24",
                     "id": "LADPMPDE024",
                     "target": "LADPMPTG024",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of providers (MDs and AMOs; clinical officers and nurses/nurse- midwives) trained in long-acting methods",
                     "indicatorNumber": "25",
                     "id": "LADPMPDE025",
                     "target": "LADPMPTG025",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of providers (subset of those trained on long-acting methods) trained on PPIUD",
                     "indicatorNumber": "26",
                     "id": "LADPMPDE026",
                     "target": "LADPMPTG026",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of providers (medical officers and AMOs) trained in permanent methods (subset of those trained on long-acting methods)",
                     "indicatorNumber": "27",
                     "id": "LADPMPDE027",
                     "target": "LADPMPTG027",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of providers trained/oriented on contraceptive counseling in ANC, PNC, immunization and HIV services",
                     "indicatorNumber": "28",
                     "id": "LADPMPDE028",
                     "target": "LADPMPTG028",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of project-supported facilities offering contraceptive counseling during ANC visits",
                     "indicatorNumber": "29",
                     "id": "LADPMPDE029",
                     "target": "LADPMPTG029",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of project-supported facilities offering contraceptive method provision during PNC visits",
                     "indicatorNumber": "30",
                     "id": "LADPMPDE030",
                     "target": "LADPMPTG030",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of project-supported facilities offering FP information and (in- facility) referrals during immunization services",
                     "indicatorNumber": "31",
                     "id": "LADPMPDE031",
                     "target": "LADPMPTG031",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of project-supported facilities which have integrated FP into HIV treatment services",
                     "indicatorNumber": "32",
                     "id": "LADPMPDE032",
                     "target": "LADPMPTG032",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of mentorship team members trained",
                     "indicatorNumber": "33",
                     "id": "LADPMPDE033",
                     "target": "LADPMPTG033",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of facilities receiving at least one mentorship visit per quarter",
                     "indicatorNumber": "34",
                     "id": "LADPMPDE034",
                     "target": "LADPMPTG034",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities receiving at least one supervision visit per quarter for contraceptive services",
                     "indicatorNumber": "35",
                     "id": "LADPMPDE035",
                     "target": "LADPMPTG035",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities that have adequate equipment and supplies to provide contraceptive services",
                     "indicatorNumber": "36",
                     "id": "LADPMPDE036",
                     "target": "LADPMPTG036",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities using established referral form process to confirm contraceptive referrals (from CHW) ",
                     "indicatorNumber": "37",
                     "id": "LADPMPDE037",
                     "target": "LADPMPTG037",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of quarterly data review meetings held by district (Temeke and Ilala)",
                     "indicatorNumber": "38",
                     "id": "LADPMPDE038",
                     "target": "LADPMPTG038",
+                    "includeOuGroup": false,
                     "realization": "total"
                 }, {
                     "indicator": "# of facilities holding regular data review meetings",
                     "indicatorNumber": "39",
                     "id": "LADPMPDE039",
                     "target": "LADPMPTG039",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }, {
                     "indicator": "# of facilities provided with job aids to support quality counseling",
                     "indicatorNumber": "40",
                     "id": "LADPMPDE040",
                     "target": "LADPMPTG040",
+                    "includeOuGroup": false,
                     "realization": "last"
                 }
             ]
@@ -504,168 +597,196 @@
                 "indicatorNumber": "41 a",
                 "id": "LADPMPDE041",
                 "target": "LADPMPTG041",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "# of facilities that meet essential quality standards for cPAC",
                 "indicatorNumber": "41 b",
                 "id": "nFgFizKRHvW",
                 "target": "e2Ke7dAffn7",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "# of facilities assessed on essential quality standards for cPAC services",
                 "indicatorNumber": "41 c",
                 "id": "K47KRmBTm3M",
                 "target": "GtI2Ad3BNFc",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "% of facilities that meet essential quality standards for cPAC",
                 "indicatorNumber": "42",
                 "id": "y974OHLVSen",
                 "target": "LADPMPTG042",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "# of women receiving cPAC services from project-supported facilities (MVA + D&C +Medical Abortion)",
                 "indicatorNumber": "43",
                 "id": "aPmbK2NicWq",
                 "target": "LADPMPTG043",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving medical abortion for cPAC",
                 "indicatorNumber": "44",
                 "id": "LADPMPDE044",
                 "target": "LADPMPTG044",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving MVA for cPAC",
                 "indicatorNumber": "45",
                 "id": "epSeyeRZEKk",
                 "target": "LADPMPTG045",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of total cPAC clients that adopt a modern method of contraception",
                 "indicatorNumber": "46",
                 "id": "aZsMhTzOQqW",
                 "target": "LADPMPTG046",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving short-acting method (pill, injectable) for postabortion contraception",
                 "indicatorNumber": "47",
                 "id": "VTZSpfU22cp",
                 "target": "LADPMPTG047",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving IUD for postabortion contraception",
                 "indicatorNumber": "48",
                 "id": "FdAyaohqbtT",
                 "target": "LADPMPTG048",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving implant+Jadele for postabortion contraception",
                 "indicatorNumber": "49",
                 "id": "qpskMjr3Xue",
                 "target": "LADPMPTG049",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving PM for postabortion contraception",
                 "indicatorNumber": "50",
                 "id": "tNHAIZE2Svs",
                 "target": "LADPMPTG050",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of total cPAC clients that adopt a modern method of contraception",
                 "indicatorNumber": "51",
                 "id": "WpOoiQEa8To",
                 "target": "LADPMPTG051",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of cPAC clients accepting contraception who choose LAPM",
                 "indicatorNumber": "52",
                 "id": "HisHsoEycnC",
                 "target": "LADPMPTG052",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "# of total cPAC clients that adopt a modern method of contraception",
                 "indicatorNumber": "53",
                 "id": "aZsMhTzOQqW",
                 "target": "LADPMPTG053",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of cPAC LAPM acceptors who choose IUD",
                 "indicatorNumber": "54",
                 "id": "hNzeZBXYTkl",
                 "target": "LADPMPTG054",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving IUD for postabortion contraception",
                 "indicatorNumber": "55",
                 "id": "FdAyaohqbtT",
                 "target": "PMPLADTG055",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of cPAC LAPM acceptors who choose implants",
                 "indicatorNumber": "56",
                 "id": "e8FKAYha0i7",
                 "target": "LADPMPTG056",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of cPAC clients receiving implant+Jadele for postabortion contraception",
                 "indicatorNumber": "57",
                 "id": "qpskMjr3Xue",
                 "target": "LADPMPTG057",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of cPAC LAPM acceptors who choose PM",
                 "indicatorNumber": "58",
                 "id": "PagjI6K7Izx",
                 "target": "LADPMPTG058",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of facility assessments conducted on cPAC service delivery",
                 "indicatorNumber": "59",
                 "id": "LADPMPDE059",
                 "target": "LADPMPTG059",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of trainers trained in cPAC",
                 "indicatorNumber": "60",
                 "id": "LADPMPDE060",
                 "target": "PMPLADTG060",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses trained on cPAC",
                 "indicatorNumber": "61",
                 "id": "LADPMPDE061",
                 "target": "LADPMPTG061",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of nurses and non-physician providers trained on harm reduction practices",
                 "indicatorNumber": "62",
                 "id": "LADPMPDE062",
                 "target": "LADPMPTG062",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of facilities receive at least one supervision visit per quarter for cPAC services ",
                 "indicatorNumber": "63",
                 "id": "LADPMPDE063",
                 "target": "LADPMPTG063",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of facilities that have adequate equipment and supplies to provide cPAC services",
                 "indicatorNumber": "64",
                 "id": "LADPMPDE064",
                 "target": "LADPMPTG064",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of facilities using established referral system for cPAC and postabortion contraception uptake",
                 "indicatorNumber": "65",
                 "id": "LADPMPDE065",
                 "target": "LADPMPTG065",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "# of health facilities providing referrals to cPAC",
                 "indicatorNumber": "66",
                 "id": "LADPMPDE066",
                 "target": "LADPMPTG066",
+                "includeOuGroup": false,
                 "realization": "last"
             }]
         }, {
@@ -676,132 +797,154 @@
                 "indicatorNumber": "67",
                 "id": "LADPMPDE067",
                 "target": "LADPMPTG067",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of referrals for contraception services by CHWs",
                 "indicatorNumber": "68",
                 "id": "LADPMPDE068",
                 "target": "LADPMPTG068",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "% of referrals for contraception services by CHWs that are completed ",
                 "indicatorNumber": "69",
                 "id": "LADPMPDE069",
                 "target": "LADPMPTG069",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of referrals for contraception services by CHWs completed",
                 "indicatorNumber": "70",
                 "id": "LADPMPDE070",
                 "target": "LADPMPTG070",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of referrals for cPAC services by CHWs",
                 "indicatorNumber": "71",
                 "id": "LADPMPDE071",
                 "target": "LADPMPTG071",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "% of referrals for cPAC services by CHWs that are completed. ",
                 "indicatorNumber": "72",
                 "id": "LADPMPDE072",
                 "target": "LADPMPTG072",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of referrals by CHWs for cPAC services that are completed (the client goes to the facility)",
                 "indicatorNumber": "73",
                 "id": "LADPMPDE073",
                 "target": "LADPMPTG073",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of CHWs recruited",
                 "indicatorNumber": "74",
                 "id": "LADPMPDE074",
                 "target": "LADPMPTG074",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of trainers trained to conduct CHW training",
                 "indicatorNumber": "75",
                 "id": "LADPMPDE075",
                 "target": "LADPMPTG075",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of CHWs trained",
                 "indicatorNumber": "76",
                 "id": "LADPMPDE076",
                 "target": "LADPMPTG076",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving home visits and  counselling  by the CHW",
                 "indicatorNumber": "77",
                 "id": "LADPMPDE077",
                 "target": "LADPMPTG077",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving home visits and counseling by the CHW: 19 and under",
                 "indicatorNumber": "78",
                 "id": "LADPMPDE078",
                 "target": "LADPMPTG078",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving home visits and counseling by the CHW: 20-24 years old",
                 "indicatorNumber": "79",
                 "id": "LADPMPDE079",
                 "target": "LADPMPTG079",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women receiving home visits and counseling by the CHW: 25 and older",
                 "indicatorNumber": "80",
                 "id": "LADPMPDE080",
                 "target": "LADPMPTG080",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of CHWs use mHealth system for all contraceptive counseling, referrals and follow-up",
                 "indicatorNumber": "81",
                 "id": "LADPMPDE081",
                 "target": "LADPMPTG081",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of CHWs completing full sequence of counseling using mobile application",
                 "indicatorNumber": "82",
                 "id": "LADPMPDE082",
                 "target": "LADPMPTG082",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of District and NGO staff trained on mHealth system",
                 "indicatorNumber": "83",
                 "id": "LADPMPDE083",
                 "target": "LADPMPTG083",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of district and NGO staff accessing the mHealth system at least once per quarter in order to inform quality improvement",
                 "indicatorNumber": "84",
                 "id": "LADPMPDE084",
                 "target": "LADPMPTG084",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of NGO field officers and supervisors trained in CHW supervision",
                 "indicatorNumber": "85",
                 "id": "LADPMPDE085",
                 "target": "LADPMPTG085",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of monthly supervision meetings held with CHWs",
                 "indicatorNumber": "86",
                 "id": "LADPMPDE086",
                 "target": "LADPMPTG086",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of CHWs receiving performance-based incentives",
                 "indicatorNumber": "87",
                 "id": "LADPMPDE087",
                 "target": "LADPMPTG087",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of facility health committees that include CHWs",
                 "indicatorNumber": "88",
                 "id": "LADPMPDE088",
                 "target": "LADPMPTG088",
+                "includeOuGroup": false,
                 "realization": "last"
             }]
         }, {
@@ -812,24 +955,28 @@
                 "indicatorNumber": "89",
                 "id": "LADPMPDE089",
                 "target": "LADPMPTG089",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "# of CHWs using Citizen Report Card questionnaire with clients",
                 "indicatorNumber": "90",
                 "id": "LADPMPDE090",
                 "target": "LADPMPTG090",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of meetings held with district and facility staff to review report card findings",
                 "indicatorNumber": "91",
                 "id": "LADPMPDE091",
                 "target": "LADPMPTG091",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of health facility, facility health committee, and LGA staff trained on use of data for decision making",
                 "indicatorNumber": "92",
                 "id": "LADPMPDE092",
                 "target": "LADPMPTG092",
+                "includeOuGroup": false,
                 "realization": "total"
             }]
         }, {
@@ -840,24 +987,28 @@
                 "indicatorNumber": "93",
                 "id": "LADPMPDE093",
                 "target": "LADPMPTG093",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of local partners implementing CHW component",
                 "indicatorNumber": "94",
                 "id": "LADPMPDE094",
                 "target": "LADPMPTG094",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of community engagement activities held by local partners to foster a supportive environment for women and youth to seek services",
                 "indicatorNumber": "95",
                 "id": "LADPMPDE095",
                 "target": "LADPMPTG095",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of data review meetings held by local partners",
                 "indicatorNumber": "96",
                 "id": "LADPMPDE096",
                 "target": "LADPMPTG096",
+                "includeOuGroup": false,
                 "realization": "total"
             }]
         }, {
@@ -868,12 +1019,14 @@
                 "indicatorNumber": "97",
                 "id": "LADPMPDE097",
                 "target": "LADPMPTG097",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of in-person project team meetings held",
                 "indicatorNumber": "98",
                 "id": "LADPMPDE098",
                 "target": "LADPMPTG098",
+                "includeOuGroup": false,
                 "realization": "total"
             }]
         }, {
@@ -884,54 +1037,63 @@
                 "indicatorNumber": "99",
                 "id": "LADPMPDE099",
                 "target": "LADPMPTG099",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "# of women counseled on PPIUD",
                 "indicatorNumber": "100",
                 "id": "EdAxKjVrEJl",
                 "target": "LADPMPTG100",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of LAPM due to IUD ",
                 "indicatorNumber": "101",
                 "id": "vWzr1Q8a71m",
                 "target": "LADPMPTG101",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "total number of new LAPM users at project-supported facilities",
                 "indicatorNumber": "102",
                 "id": "dmbNvsEuoaG",
                 "target": "LADPMPTG102",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of LAPM due to implants",
                 "indicatorNumber": "103",
                 "id": "jFDIzFKa8A3",
                 "target": "LADPMPTG103",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "% of LAPM due to PM ",
                 "indicatorNumber": "104",
                 "id": "S8uBrUXHrkL",
                 "target": "LADPMPTG104",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "total # of PPIUD providers",
                 "indicatorNumber": "105",
                 "id": "LADPMPDE105",
                 "target": "LADPMPTG105",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "total # of LAPM providers",
                 "indicatorNumber": "106",
                 "id": "LADPMPDE106",
                 "target": "LADPMPTG106",
+                "includeOuGroup": false,
                 "realization": "last"
             }, {
                 "indicator": "total # of cPAC providers",
                 "indicatorNumber": "107",
                 "id": "LADPMPDE107",
                 "target": "LADPMPTG107",
+                "includeOuGroup": false,
                 "realization": "last"
             }]
         }, {
@@ -942,42 +1104,49 @@
                 "indicatorNumber": "108",
                 "id": "LADPMPDE108",
                 "target": "LADPMPTG108",
+                "includeOuGroup": false,
                 "realization": "total"
             }, {
                 "indicator": "Total CYP",
                 "indicatorNumber": "109",
                 "id": "anok3vsBsaI",
                 "target": "LADPMPTG109",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "CYP, permanent methods",
                 "indicatorNumber": "110",
                 "id": "PXCyFJ1eGFx",
                 "target": "LADPMPTG110",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "CYP, IUDs",
                 "indicatorNumber": "111",
                 "id": "f0AnfzIUFjM",
                 "target": "LADPMPTG111",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "CYP, implants",
                 "indicatorNumber": "112",
                 "id": "OyDMX64418C",
                 "target": "LADPMPTG112",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "CYP, injectables",
                 "indicatorNumber": "113",
                 "id": "vnI1PnHFcFW",
                 "target": "nmrTssRqQAq",
+                "includeOuGroup": true,
                 "realization": "total"
             }, {
                 "indicator": "CYP, pills",
                 "indicatorNumber": "114",
                 "id": "EoBKz8qMGY1",
                 "target": "gOZkliCSNqv",
+                "includeOuGroup": true,
                 "realization": "total"
             }]
         }];
