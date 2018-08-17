@@ -62,11 +62,7 @@
             html += '<th style="width: 5%">Target</th>'
             html += '<th style="width: 5%">Achievement</th>'
             html += "</tr>"
-            var indicatorsAnalyticsUrlWithOuGroup =
-                "/api/analytics.json?dimension=YCxAoZQVNgT:rDTsuZLCsux&dimension=dx:" +
-                indicatorIdsArrayWithOuGroup.join(
-                    ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
-                "&displayProperty=NAME";
+            var LADOurl = "/api/organisationUnitGroups/rDTsuZLCsux.json?fields=organisationUnits[id]";
             var indicatorsAnalyticsUrlWithOutOuGroup =
                 "/api/analytics.json?dimension=dx:" +
                 indicatorIdsArrayWithoutOuGroup.join(
@@ -77,132 +73,181 @@
                     0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
             $(".loader").show("slow");
             $(".header").hide();
-            $.getJSON(indicatorsAnalyticsUrlWithOuGroup, function (indicatorsWithOuGroupResponse) {
-                $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
-                    indicatorsWithoutOuGroupResponse) {
-                    $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
-                        $.each(data, function (key, value) {
-                            html += "<tr style='background-color: " + value.color +
-                                "'><td colspan='9'>" + value.title +
-                                "</td> </tr>";
-                            if (value.hasOwnProperty('content')) {
-                                $.each(value.content, function (indicatorIndex,
-                                    indicatorContent) {
-                                    if (indicatorContent.hasOwnProperty(
-                                            'indicator')) {
-                                        html += "</tr>";
-                                        html += "<td>" +
-                                            indicatorContent.indicatorNumber +
-                                            "</td>";
-                                        html += "<td>" +
-                                            indicatorContent.indicator +
-                                            "</td>";
-                                        var indicatorDataArray = [];
-                                        var amooounts = [];
-                                        $.each(periodForIndicators.split(
-                                                ";"),
-                                            function (
-                                                periodIndex, period
-                                            ) {
-                                                var indicatorValue;
-                                                if (
-                                                    indicatorContent
-                                                    .includeOuGroup
-                                                ) {
-                                                    indicatorValue =
-                                                        getDataFromIndicatorsWithOuGroupAnalyticsUrl(
-                                                            indicatorsWithOuGroupResponse
-                                                            .rows,
-                                                            period,
-                                                            indicatorContent
-                                                            .id);
-                                                } else {
-                                                    indicatorValue =
-                                                        getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(
-                                                            indicatorsWithoutOuGroupResponse
-                                                            .rows,
-                                                            period,
-                                                            indicatorContent
-                                                            .id);
-                                                }
-                                                html += "<td>" +
-                                                    indicatorValue +
-                                                    "</td>";
-                                                indicatorDataArray.push(
-                                                    indicatorValue
-                                                )
-                                            });
-                                        var realization = 0;
+            $.getJSON(LADOurl, function (response) {
+                var ousId = [];
+                $.each(response.organisationUnits, function (key, organisationUnit) {
+                    if (organisationUnit && organisationUnit.id) {
+                        ousId.push(organisationUnit.id)
+                    }
+                })
+                var indicatorsAnalyticsUrlWithOuGroup =
+                    "/api/analytics.json?dimension=dx:" +
+                    indicatorIdsArrayWithOuGroup.join(
+                        ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" +
+                    ousId.join(";") +
+                    "&displayProperty=NAME";
+                $.getJSON(indicatorsAnalyticsUrlWithOuGroup, function (indicatorsWithOuGroupResponse) {
+                    $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
+                        indicatorsWithoutOuGroupResponse) {
+                        $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
+                            $.each(data, function (key, value) {
+                                html += "<tr style='background-color: " +
+                                    value.color +
+                                    "'><td colspan='9'>" + value.title +
+                                    "</td> </tr>";
+                                if (value.hasOwnProperty('content')) {
+                                    $.each(value.content, function (
+                                        indicatorIndex,
+                                        indicatorContent) {
                                         if (indicatorContent.hasOwnProperty(
-                                                "realization")) {
-                                            realization =
-                                                getRealizationValue(
-                                                    indicatorDataArray,
-                                                    indicatorContent.realization
-                                                )
+                                                'indicator')) {
+                                            html += "</tr>";
+                                            html += "<td>" +
+                                                indicatorContent
+                                                .indicatorNumber +
+                                                "</td>";
+                                            html += "<td>" +
+                                                indicatorContent
+                                                .indicator +
+                                                "</td>";
+                                            var
+                                                indicatorDataArray = [];
+                                            var amooounts = [];
+                                            $.each(
+                                                periodForIndicators
+                                                .split(
+                                                    ";"),
+                                                function (
+                                                    periodIndex,
+                                                    period
+                                                ) {
+                                                    var
+                                                        indicatorValue;
+                                                    if (
+                                                        indicatorContent
+                                                        .includeOuGroup
+                                                    ) {
+                                                        indicatorValue
+                                                            =
+                                                            getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                                                indicatorsWithOuGroupResponse
+                                                                .rows,
+                                                                period,
+                                                                indicatorContent
+                                                                .id
+                                                            );
+                                                    } else {
+                                                        indicatorValue
+                                                            =
+                                                            getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                                                indicatorsWithoutOuGroupResponse
+                                                                .rows,
+                                                                period,
+                                                                indicatorContent
+                                                                .id
+                                                            );
+                                                    }
+                                                    html +=
+                                                        "<td>" +
+                                                        indicatorValue +
+                                                        "</td>";
+                                                    indicatorDataArray
+                                                        .push(
+                                                            indicatorValue
+                                                        )
+                                                });
+                                            var realization = 0;
+                                            if (
+                                                indicatorContent
+                                                .hasOwnProperty(
+                                                    "realization"
+                                                )) {
+                                                realization =
+                                                    getRealizationValue(
+                                                        indicatorDataArray,
+                                                        indicatorContent
+                                                        .realization
+                                                    )
+                                            }
+                                            html += "<td>" +
+                                                realization +
+                                                "</td>";
+                                            html += "<td>" +
+                                                getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                                    targetsResponse
+                                                    .rows,
+                                                    periods[0],
+                                                    indicatorContent
+                                                    .target
+                                                );
+                                            "+</td>";
+                                            html +=
+                                                "<td class='lastColumn'></td>";
+                                            html += "</tr>";
                                         }
-                                        html += "<td>" + realization +
-                                            "</td>";
-                                        html += "<td>" +
-                                            getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(
-                                                targetsResponse.rows,
-                                                periods[0],
-                                                indicatorContent.target
+                                    });
+                                }
+                            });
+                            $("table").append(html);
+                            $('.lastColumn').each(function () {
+                                var targetValue = $(this).prev('td').text();
+                                var realizationValue = $(this).prev(
+                                        'td').prev('td')
+                                    .text();
+                                if ($.isNumeric(targetValue) && $.isNumeric(
+                                        realizationValue)) {
+                                    targetValue = parseInt(targetValue);
+                                    realizationValue = parseInt(
+                                        realizationValue);
+                                    if (targetValue !== 0) {
+                                        var achievementPercentage =
+                                            parseInt((
+                                                parseInt(
+                                                    realizationValue
+                                                ) *
+                                                100) / parseInt(
+                                                targetValue));
+                                        if (achievementPercentage <= 25) {
+                                            $(this).text(
+                                                achievementPercentage +
+                                                "%").css(
+                                                'background',
+                                                '#FF0000');
+                                        } else if (
+                                            achievementPercentage > 25 &&
+                                            achievementPercentage < 80) {
+                                            $(this).text(
+                                                achievementPercentage +
+                                                "%").css(
+                                                'background',
+                                                '#FFFF00');
+                                        } else if (
+                                            achievementPercentage >= 80
+                                        ) {
+                                            $(this).text(
+                                                achievementPercentage +
+                                                "%").css(
+                                                'background',
+                                                '#008000');
+                                        } else {
+                                            $(this).text(
+                                                achievementPercentage
                                             );
-                                        "+</td>";
-                                        html +=
-                                            "<td class='lastColumn'></td>";
-                                        html += "</tr>";
-                                    }
-                                });
-                            }
-                        });
-                        $("table").append(html);
-                        $('.lastColumn').each(function () {
-                            var targetValue = $(this).prev('td').text();
-                            var realizationValue = $(this).prev('td').prev('td')
-                                .text();
-                            if ($.isNumeric(targetValue) && $.isNumeric(
-                                    realizationValue)) {
-                                targetValue = parseInt(targetValue);
-                                realizationValue = parseInt(realizationValue);
-                                if (targetValue !== 0) {
-                                    var achievementPercentage = parseInt((
-                                        parseInt(
-                                            realizationValue) *
-                                        100) / parseInt(targetValue));
-                                    if (achievementPercentage <= 25) {
-                                        $(this).text(achievementPercentage +
-                                            "%").css(
-                                            'background',
-                                            '#FF0000');
-                                    } else if (achievementPercentage > 25 &&
-                                        achievementPercentage < 80) {
-                                        $(this).text(achievementPercentage +
-                                            "%").css(
-                                            'background',
-                                            '#FFFF00');
-                                    } else if (achievementPercentage >= 80) {
-                                        $(this).text(achievementPercentage +
-                                            "%").css(
-                                            'background',
-                                            '#008000');
-                                    } else {
-                                        $(this).text(achievementPercentage);
+                                        }
                                     }
                                 }
-                            }
+                            });
+                            $('.listTable').addClass(
+                                'bordered-table zebra-striped dataTable');
+                            var periodName = getPeroidName(periods[0]);
+                            $(".orgUnit").html(orgUnit.name);
+                            $(".period").html(periodName);
+                            $(".loader").hide();
+                            $(".header").show();
                         });
-                        $('.listTable').addClass(
-                            'bordered-table zebra-striped dataTable');
-                        var periodName = getPeroidName(periods[0]);
-                        $(".orgUnit").html(orgUnit.name);
-                        $(".period").html(periodName);
-                        $(".loader").hide();
-                        $(".header").show();
-                    });
-                })
-            });
+                    })
+                });
+            })
         }
         loadData();
     });
@@ -275,7 +320,7 @@
         return names;
     }
 
-    function getDataFromTargetsOrIndicatorWithoutOuGroupAnalyticsUrl(array, period, de) {
+    function getDataFromTargetsOrIndicatorAnalyticsUrl(array, period, de) {
         var data = 0
         $.each(array, function (index, value) {
             if (value[0] == de && value[1] == period) {
@@ -285,15 +330,6 @@
         return data;
     }
 
-    function getDataFromIndicatorsWithOuGroupAnalyticsUrl(array, period, de) {
-        var data = 0
-        $.each(array, function (index, value) {
-            if (value[0] == de && value[2] == period) {
-                data = parseInt(value[3])
-            }
-        });
-        return data;
-    }
 
     function getDataElements() {
         var data = [{
