@@ -299,6 +299,35 @@
         return data;
     }
 
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Feed_the_nature";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+
     function getDataElements() {
         return [{
             "title": "",
@@ -335,16 +364,21 @@
         }]
     }
 </script>
-<div id="">
+
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div>
     <div class="selectOrgUnit"></div>
     <h4 class="loader">
         <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
-    <h3 class="header text-center">FEED THE FUTURE TANZANIA ADVANCING YOUTH ACTIVITY -
-        <span class="period"></span> -
-        <span id="orgUnits"></span>
-    </h3>
-    <div class="col-sm-10 col-sm-offset-1">
-        <table class="listTable table table-bordered table-responsive">
-        </table>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">FEED THE FUTURE TANZANIA ADVANCING YOUTH ACTIVITY -
+            <span class="period"></span> -
+            <span id="orgUnits"></span>
+        </h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+            </table>
+        </div>
     </div>
+
 </div>
