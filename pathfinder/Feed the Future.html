@@ -1,0 +1,350 @@
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var indicatorIdsArray = [];
+        var indicatorIdsArrayWithOuGroup = [];
+        var indicatorIdsArrayWithoutOuGroup = [];
+        var targetIdsArray = [];
+        var orgUnit = dhis2.report.organisationUnit;
+        $("#orgUnits").html(orgUnit.name);
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0]);
+        var data = getDataElements();
+        $.each(data, function (index, value) {
+            if (value.hasOwnProperty('content')) {
+                $.each(value.content, function (indicatorIndex,
+                    indicatorContent) {
+                    if (indicatorContent.hasOwnProperty('indicator')) {
+                        if (indicatorIdsArray.indexOf(indicatorContent.id) == -1) {
+                            if (indicatorContent.id != "") {
+                                indicatorIdsArray.push(indicatorContent.id);
+                                if (indicatorContent.includeOuGroup) {
+                                    indicatorIdsArrayWithOuGroup.push(indicatorContent.id)
+                                } else {
+                                    indicatorIdsArrayWithoutOuGroup.push(indicatorContent.id)
+                                }
+                            }
+                        }
+                        if (targetIdsArray.indexOf(indicatorContent.target) == -1) {
+                            if (indicatorContent.target != "") {
+                                targetIdsArray.push(indicatorContent.target);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        var periodForIndicators = getThreeMonth(periods[0]);
+        loadData();
+
+        function loadData() {
+            html = "";
+            $('table').html("")
+            html += "<tr>";
+            html += '<th style="width: 5%">#</th>';
+            html += '<th style="width: 25%">Component 3: Life Skills for Healthy Living Enhanced</th>';
+            $.each(periodNames.split(";"), function (periodIndex, periodName) {
+                html += "<th style='width: 10%'>" + periodName + "</th>"
+            })
+            html += '<th style="width: 10%">Total</th>'
+            html += '<th style="width: 5%">Target</th>'
+            html += '<th style="width: 5%">% achieved</th>'
+            html += "</tr>"
+            $(".loader").show("slow");
+            $(".header").hide();
+            var indicatorsAnalyticsUrlWithOutOuGroup =
+                "/api/analytics.json?dimension=dx:" +
+                indicatorIdsArrayWithoutOuGroup.join(
+                    ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
+                "&displayProperty=NAME";
+            var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:" + targetIdsArray.join(";") +
+                "&dimension=pe:" + periods[
+                    0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+            $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
+                indicatorsWithoutOuGroupResponse) {
+                $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
+                    $.each(data, function (key, value) {
+                        if (value && value.title && value.title !==
+                            "") {
+                            html +=
+                                "<tr style='background-color: " +
+                                value.color +
+                                "'><td colspan='9'>" + value.title +
+                                "</td> </tr>";
+                        }
+                        if (value.hasOwnProperty('content')) {
+                            $.each(value.content, function (
+                                indicatorIndex,
+                                indicatorContent) {
+                                if (indicatorContent.hasOwnProperty(
+                                        'indicator')) {
+                                    html += "</tr>";
+                                    html += "<td>" +
+                                        indicatorContent
+                                        .indicatorNumber +
+                                        "</td>";
+                                    html += "<td>" +
+                                        indicatorContent
+                                        .indicator +
+                                        "</td>";
+                                    var
+                                        indicatorDataArray = [];
+                                    var amooounts = [];
+                                    $.each(
+                                        periodForIndicators
+                                        .split(
+                                            ";"),
+                                        function (
+                                            periodIndex,
+                                            period
+                                        ) {
+                                            var
+                                                indicatorValue =
+                                                getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                                    indicatorsWithoutOuGroupResponse
+                                                    .rows,
+                                                    period,
+                                                    indicatorContent
+                                                    .id
+                                                );
+                                            html +=
+                                                "<td>" +
+                                                indicatorValue +
+                                                "</td>";
+                                            indicatorDataArray
+                                                .push(
+                                                    indicatorValue
+                                                )
+                                        });
+                                    var realization = 0;
+                                    if (
+                                        indicatorContent
+                                        .hasOwnProperty(
+                                            "realization"
+                                        )) {
+                                        realization =
+                                            getRealizationValue(
+                                                indicatorDataArray,
+                                                indicatorContent
+                                                .realization
+                                            )
+                                    }
+                                    html += "<td>" +
+                                        realization +
+                                        "</td>";
+                                    html += "<td>" +
+                                        getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                            targetsResponse
+                                            .rows,
+                                            periods[0],
+                                            indicatorContent
+                                            .target
+                                        );
+                                    "+</td>";
+                                    html +=
+                                        "<td class='lastColumn'></td>";
+                                    html += "</tr>";
+                                }
+                            });
+                        }
+                    });
+                    $("table").append(html);
+                    $('.lastColumn').each(function () {
+                        var targetValue = $(this).prev('td').text();
+                        var realizationValue = $(this).prev(
+                                'td').prev('td')
+                            .text();
+                        if ($.isNumeric(targetValue) && $.isNumeric(
+                                realizationValue)) {
+                            targetValue = parseInt(targetValue);
+                            realizationValue = parseInt(
+                                realizationValue);
+                            if (targetValue !== 0) {
+                                var achievementPercentage =
+                                    parseInt((
+                                        parseInt(
+                                            realizationValue
+                                        ) *
+                                        100) / parseInt(
+                                        targetValue));
+                                if (achievementPercentage <= 25) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#FF0000');
+                                } else if (
+                                    achievementPercentage > 25 &&
+                                    achievementPercentage < 80) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#FFFF00');
+                                } else if (
+                                    achievementPercentage >= 80
+                                ) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#008000');
+                                } else {
+                                    $(this).text(
+                                        achievementPercentage
+                                    );
+                                }
+                            }
+                        }
+                    });
+                    $('.listTable').addClass(
+                        'bordered-table zebra-striped dataTable');
+                    var periodName = getPeroidName(periods[0]);
+                    $(".orgUnit").html(orgUnit.name);
+                    $(".period").html(periodName);
+                    $(".loader").hide();
+                    $(".header").show();
+                });
+            })
+        }
+
+    });
+
+
+    function getRealizationValue(dataArray, realizationType) {
+        var realization = 0;
+        if (realizationType === "total") {
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value)) {
+                    realization += parseInt(value)
+                }
+            });
+        }
+        if (realizationType === "last") {
+            var filteredArray = []
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value) && parseInt(value) > 0) {
+                    filteredArray.push(parseInt(value));
+                }
+            });
+            if (filteredArray.length > 0) {
+                realization = filteredArray.pop();
+            }
+        }
+        return realization;
+    }
+
+    function pushPeriodOneStep(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var time = "";
+        var names = "";
+        if (quater == "Q4") {
+            var yr = parseInt(year) + 1;
+            time = yr + "Q1";
+        } else if (quater == "Q3") {
+            time = year + "Q4";
+        } else if (quater == "Q2") {
+            time = year + "Q3";
+        } else if (quater == "Q1") {
+            time = year + "Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var nextYear = parseInt(year) + 1;
+        var time = year + "Q4;" + nextYear + "Q1;" + nextYear + "Q2;" + nextYear + "Q3";
+        return time;
+    }
+
+    function getThreeMonthName(period) {
+        var year = period.substring(0, 4);
+        var nextyear = parseInt(year) + 1;
+        var quater = period.substring(4, 6);
+        var time = "";
+        names = "Oct - Dec " + year + ";Jan - Mar " + nextyear + ";Apr - Jun " + nextyear + ";July - Sept " + nextyear;
+
+        return names;
+    }
+
+    function getPeroidName(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromTargetsOrIndicatorAnalyticsUrl(array, period, de) {
+        var data = 0
+        $.each(array, function (index, value) {
+            if (value[0] == de && value[1] == period) {
+                data = parseInt(value[2])
+            }
+        });
+        return data;
+    }
+
+    function getDataElements() {
+        return [{
+            "title": "",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "CC1.3 Number of Youth Trained",
+                "indicatorNumber": "1",
+                "id": "bA5MbQkLqpe",
+                "target": "Y3IFF2Nexfu",
+                "includeOuGroup": false,
+                "realization": "total"
+            }, {
+                "indicator": "3.1 Percentage of YEE youth beneficiaries who agree that community-based health services and referrals are now more accessible",
+                "indicatorNumber": "2",
+                "id": "gh3j5w46N3u",
+                "target": "URTYDlnZxzz",
+                "includeOuGroup": false,
+                "realization": "total"
+            }, {
+                "indicator": "3.2 Percentage of YEE youth beneficiaries who were referred for and completed a reproductive health service referral (e.g., for Human Immunodeficiency Virus (HIV) testing, family planning, Sexually Transmitted Infections (STI) diagnosis and treatment, malaria)",
+                "indicatorNumber": "3",
+                "id": "iovkPf5Y15V",
+                "target": "Qg5l57adATo",
+                "includeOuGroup": false,
+                "realization": "total"
+            }, {
+                "indicator": "CC3 Number of YEE youth beneficiaries provided with referrals (business, education, health, etc.).",
+                "indicatorNumber": "4",
+                "id": "ghJB718KZbM",
+                "target": "liLvPIdlSla",
+                "includeOuGroup": false,
+                "realization": "total"
+            }]
+        }]
+    }
+</script>
+<div id="">
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <h3 class="header text-center">FEED THE FUTURE TANZANIA ADVANCING YOUTH ACTIVITY -
+        <span class="period"></span> -
+        <span id="orgUnits"></span>
+    </h3>
+    <div class="col-sm-10 col-sm-offset-1">
+        <table class="listTable table table-bordered table-responsive">
+        </table>
+    </div>
+</div>

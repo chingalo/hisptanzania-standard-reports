@@ -46,8 +46,8 @@
                 });
             }
         });
-
         var periodForIndicators = getThreeMonth(periods[0]);
+        loadData();
 
         function loadData() {
             html = "";
@@ -91,10 +91,14 @@
                         indicatorsWithoutOuGroupResponse) {
                         $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
                             $.each(data, function (key, value) {
-                                html += "<tr style='background-color: " +
-                                    value.color +
-                                    "'><td colspan='9'>" + value.title +
-                                    "</td> </tr>";
+                                if (value && value.title && value.title !==
+                                    "") {
+                                    html +=
+                                        "<tr style='background-color: " +
+                                        value.color +
+                                        "'><td colspan='9'>" + value.title +
+                                        "</td> </tr>";
+                                }
                                 if (value.hasOwnProperty('content')) {
                                     $.each(value.content, function (
                                         indicatorIndex,
@@ -249,8 +253,9 @@
                 });
             })
         }
-        loadData();
+
     });
+
 
     function getRealizationValue(dataArray, realizationType) {
         var realization = 0;
@@ -1189,17 +1194,18 @@
         return data;
     }
 </script>
-<div class="selectOrgUnit"></div>
-<h4 class="loader">
-    <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
-<h3 class="header text-center">PMP LAD -
-    <span class="period"></span> -
-    <span id="orgUnits"></span>
-</h3>
-<div class="col-sm-10 col-sm-offset-1">
-    <table class="listTable table table-bordered table-responsive">
-        <thead class="header">
-
-        </thead>
-    </table>
+<div id="">
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <h3 class="header text-center">PMP LAD -
+        <span class="period"></span> -
+        <span id="orgUnits"></span>
+    </h3>
+    <div class="col-sm-10 col-sm-offset-1">
+        <table class="listTable table table-bordered table-responsive">
+            <thead class="header">
+            </thead>
+        </table>
+    </div>
 </div>
