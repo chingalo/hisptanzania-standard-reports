@@ -1,0 +1,505 @@
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var indicatorIdsArray = [];
+        var indicatorIdsArrayWithOuGroup = [];
+        var indicatorIdsArrayWithoutOuGroup = [];
+        var targetIdsArray = [];
+        var orgUnit = dhis2.report.organisationUnit;
+        $("#orgUnits").html(orgUnit.name);
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0]);
+        var data = getDataElements();
+        $.each(data, function (index, value) {
+            if (value.hasOwnProperty('content')) {
+                $.each(value.content, function (indicatorIndex,
+                    indicatorContent) {
+                    if (indicatorContent.hasOwnProperty('indicator')) {
+                        if (indicatorIdsArray.indexOf(indicatorContent.id) == -1) {
+                            if (indicatorContent.id != "") {
+                                indicatorIdsArray.push(indicatorContent.id);
+                                if (indicatorContent.includeOuGroup) {
+                                    indicatorIdsArrayWithOuGroup.push(indicatorContent.id)
+                                } else {
+                                    indicatorIdsArrayWithoutOuGroup.push(indicatorContent.id)
+                                }
+                            }
+                        }
+                        if (targetIdsArray.indexOf(indicatorContent.target) == -1) {
+                            if (indicatorContent.target != "") {
+                                targetIdsArray.push(indicatorContent.target);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        var periodForIndicators = getThreeMonth(periods[0]);
+        loadData();
+
+        function loadData() {
+            html = "";
+            $('table').html("")
+            html += "<tr>";
+            html += '<th style="width: 5%">Indicator code</th>';
+            html += '<th style="width: 25%">Perfomance Indicator</th>';
+            $.each(periodNames.split(";"), function (periodIndex, periodName) {
+                html += "<th style='width: 10%'>" + periodName + "</th>"
+            })
+            html += '<th style="width: 10%">Total</th>'
+            html += '<th style="width: 5%">Target</th>'
+            html += '<th style="width: 5%">% achieved</th>'
+            html += "</tr>"
+            $(".loader").show("slow");
+            $(".header").hide();
+            var indicatorsAnalyticsUrlWithOutOuGroup =
+                "/api/analytics.json?dimension=dx:" +
+                indicatorIdsArrayWithoutOuGroup.join(
+                    ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
+                "&displayProperty=NAME";
+            var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:" + targetIdsArray.join(";") +
+                "&dimension=pe:" + periods[
+                    0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+            $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
+                indicatorsWithoutOuGroupResponse) {
+                $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
+                    $.each(data, function (key, value) {
+                        if (value && value.title && value.title !==
+                            "") {
+                            html +=
+                                "<tr style='background-color: " +
+                                value.color +
+                                "'><td colspan='9'>" + value.title +
+                                "</td> </tr>";
+                        }
+                        if (value.hasOwnProperty('content')) {
+                            $.each(value.content, function (
+                                indicatorIndex,
+                                indicatorContent) {
+                                if (indicatorContent.hasOwnProperty(
+                                        'indicator')) {
+                                    html += "</tr>";
+                                    html += "<td>" +
+                                        indicatorContent
+                                        .indicatorNumber +
+                                        "</td>";
+                                    html += "<td>" +
+                                        indicatorContent
+                                        .indicator +
+                                        "</td>";
+                                    var
+                                        indicatorDataArray = [];
+                                    var amooounts = [];
+                                    $.each(
+                                        periodForIndicators
+                                        .split(
+                                            ";"),
+                                        function (
+                                            periodIndex,
+                                            period
+                                        ) {
+                                            var
+                                                indicatorValue =
+                                                getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                                    indicatorsWithoutOuGroupResponse
+                                                    .rows,
+                                                    period,
+                                                    indicatorContent
+                                                    .id
+                                                );
+                                            html +=
+                                                "<td>" +
+                                                indicatorValue +
+                                                "</td>";
+                                            indicatorDataArray
+                                                .push(
+                                                    indicatorValue
+                                                )
+                                        });
+                                    var realization = 0;
+                                    if (
+                                        indicatorContent
+                                        .hasOwnProperty(
+                                            "realization"
+                                        )) {
+                                        realization =
+                                            getRealizationValue(
+                                                indicatorDataArray,
+                                                indicatorContent
+                                                .realization
+                                            )
+                                    }
+                                    html += "<td>" +
+                                        realization +
+                                        "</td>";
+                                    html += "<td>" +
+                                        getDataFromTargetsOrIndicatorAnalyticsUrl(
+                                            targetsResponse
+                                            .rows,
+                                            periods[0],
+                                            indicatorContent
+                                            .target
+                                        );
+                                    "+</td>";
+                                    html +=
+                                        "<td class='lastColumn'></td>";
+                                    html += "</tr>";
+                                }
+                            });
+                        }
+                    });
+                    $("table").append(html);
+                    $('.lastColumn').each(function () {
+                        var targetValue = $(this).prev('td').text();
+                        var realizationValue = $(this).prev(
+                                'td').prev('td')
+                            .text();
+                        if ($.isNumeric(targetValue) && $.isNumeric(
+                                realizationValue)) {
+                            targetValue = parseInt(targetValue);
+                            realizationValue = parseInt(
+                                realizationValue);
+                            if (targetValue !== 0) {
+                                var achievementPercentage =
+                                    parseInt((
+                                        parseInt(
+                                            realizationValue
+                                        ) *
+                                        100) / parseInt(
+                                        targetValue));
+                                if (achievementPercentage <= 25) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#FF0000');
+                                } else if (
+                                    achievementPercentage > 25 &&
+                                    achievementPercentage < 80) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#FFFF00');
+                                } else if (
+                                    achievementPercentage >= 80
+                                ) {
+                                    $(this).text(
+                                        achievementPercentage +
+                                        "%").css(
+                                        'background',
+                                        '#008000');
+                                } else {
+                                    $(this).text(
+                                        achievementPercentage
+                                    );
+                                }
+                            }
+                        }
+                    });
+                    $('.listTable').addClass(
+                        'bordered-table zebra-striped dataTable');
+                    var periodName = getPeroidName(periods[0]);
+                    $(".orgUnit").html(orgUnit.name);
+                    $(".period").html(periodName);
+                    $(".loader").hide();
+                    $(".header").show();
+                });
+            })
+        }
+
+    });
+
+
+    function getRealizationValue(dataArray, realizationType) {
+        var realization = 0;
+        if (realizationType === "total") {
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value)) {
+                    realization += parseInt(value)
+                }
+            });
+        }
+        if (realizationType === "last") {
+            var filteredArray = []
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value) && parseInt(value) > 0) {
+                    filteredArray.push(parseInt(value));
+                }
+            });
+            if (filteredArray.length > 0) {
+                realization = filteredArray.pop();
+            }
+        }
+        return realization;
+    }
+
+    function pushPeriodOneStep(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var time = "";
+        var names = "";
+        if (quater == "Q4") {
+            var yr = parseInt(year) + 1;
+            time = yr + "Q1";
+        } else if (quater == "Q3") {
+            time = year + "Q4";
+        } else if (quater == "Q2") {
+            time = year + "Q3";
+        } else if (quater == "Q1") {
+            time = year + "Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var nextYear = parseInt(year) + 1;
+        var time = year + "Q4;" + nextYear + "Q1;" + nextYear + "Q2;" + nextYear + "Q3";
+        return time;
+    }
+
+    function getThreeMonthName(period) {
+        var year = period.substring(0, 4);
+        var nextyear = parseInt(year) + 1;
+        var quater = period.substring(4, 6);
+        var time = "";
+        names = "Oct - Dec " + year + ";Jan - Mar " + nextyear + ";Apr - Jun " + nextyear + ";July - Sept " + nextyear;
+
+        return names;
+    }
+
+    function getPeroidName(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromTargetsOrIndicatorAnalyticsUrl(array, period, de) {
+        var data = 0
+        $.each(array, function (index, value) {
+            if (value[0] == de && value[1] == period) {
+                data = parseInt(value[2])
+            }
+        });
+        return data;
+    }
+
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Feed_the_nature";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+
+    function getDataElements() {
+        return [{
+            "title": "OBJECTIVE 1: Increase the availability of female condoms through strengthening traditional and non-traditional distribution outlets to ensure consistent supply of female condoms where repeat users can easily acquire the product (distribution) and ensure that key stakeholders within the distribution channel are trained on the correct use and counseling of the female condom [supply side, x# of outlets (traditional and non-traditional)]",
+            "color": "#ABE2F4",
+            "content": [
+            {
+                    "indicator": "Number of outlets distributing female condom information and commodities",
+                    "indicatorNumber": "O1.01",
+                    "id": "vi1WaYMjxbR",
+                    "target": "V7UywpFFEfg",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                },
+                {
+                    "indicator": "Number of outlet personnel trained in female condom and commodity management",
+                    "indicatorNumber": "O1.02",
+                    "id": "ROnXATY0cg6",
+                    "target": "JURMYdjzUCo",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                },
+                {
+                    "indicator": "Percent of outlets submitting on-time and complete monthly FC forecasting and distribution reports",
+                    "indicatorNumber": "O1.03",
+                    "id": "ibWoyg4sGHy",
+                    "target": "Q8AnH599GQ9",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                },
+                {
+                    "indicator": "Percent of outlets stocked out of FCs, on the day of assessment",
+                    "indicatorNumber": "O1.04",
+                    "id": "zgqM2U8nA7p",
+                    "target": "WGCyh7jf3bp",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                },
+                {
+                    "indicator": "Number of continuous or repeat female condom users",
+                    "indicatorNumber": "O1.05",
+                    "id": "rYc2xHQJUY5",
+                    "target": "sSv9zeJmJkQ",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                }
+               
+            ] 
+            },
+            {
+                "title": "OBJECTIVE 2: Increase awareness on the benefits of female condoms among the general population, especially mainstream couples (communication) [demand generation]",
+                 "color": "#ABE2F4",
+                 "content": [
+                {
+                    "indicator": "Number of behavior change messaging skits developed for digital/social media broadcast as part of the communication campaign",
+                    "indicatorNumber": "O2.01",
+                    "id": "f7fdT0dL5iw",
+                    "target": "GoEbvCb98XA",
+                    "includeOuGroup": false,
+                    "realization": "total"
+                },
+                {
+                    "indicator": "Number of online views/downloads of female condom educational materials",
+                    "indicatorNumber": "O2.02",
+                    "id": "RZRj5zLKArE",
+                    "target": "P7kqk6CT8Bm",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Number of testimonials endorsing the use of female condoms",
+                    "indicatorNumber": "O2.03",
+                    "id": "xN3jj0j7HKa",
+                    "target": "CpieLmXqjNu",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Percent of audience with a favorable attitude toward female condoms",
+                    "indicatorNumber": "O2.04",
+                    "id": "Qvni1xN3TkA",
+                    "target": "QSMRnjcOk9S",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                }
+            ]
+            },
+            {    "title": "OBJECTIVE 3: Advocate the benefits of the female condom among decision-makers and other relevant stakeholders (awareness raising and capacity development) ",
+                 "color": "#ABE2F4",
+                 "content": [
+                {
+                    "indicator": "Number of advovacy meetings held with government officials that work toward the inclusion of the female condom in the official health training curriculum",
+                    "indicatorNumber": "O3.01",
+                    "id": "bLDWo8bX50c",
+                    "target": "cAVoJ3VfFu2",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Number of government officials and/or personnel trained on the benefits of female condoms",
+                    "indicatorNumber": "O3.02",
+                    "id": "Nn6iq4V0QGu",
+                    "target": "W7XiJHW5Mjz",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Percent of government officials who believe the female condom is a safe and universal contraceptive method that can protect against unwanted pregnancies and STIs",
+                    "indicatorNumber": "O3.03",
+                    "id": "nNggPxz6LYY",
+                    "target": "kddgu3GrPO7",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Number of government officials who publically endorse and/or state the health benefits of the female condom",
+                    "indicatorNumber": "O3.04",
+                    "id": "W9xCul09hHJ",
+                    "target": "jRKaT03mFaS",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Percent of public sector health providers trained by the project who state they would be willing to counsel any FP client on the health benefits of the female condom",
+                    "indicatorNumber": "O3.05",
+                    "id": "Tm4Bhsf4G3d",
+                    "target": "J5DKt99e8zN",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                }
+            ]
+            },
+            {
+                "title": "OBJECTIVE 4: Share the project findings (Dissemination) ",
+                 "color": "#ABE2F4",
+                 "content": [
+
+                {
+                    "indicator": "Number of case studies developed outlining the business case for distributing female condoms in the public sector.",
+                    "indicatorNumber": "O4.01",
+                    "id": "SJzrnAQ6YEt",
+                    "target": "y5Lf9B4f0Qo",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                },
+                {
+                    "indicator": "Number of case study dissemination events held",
+                    "indicatorNumber": "O4.02",
+                    "id": "SJzrnAQ6YEt",
+                    "target": "HaPayjEUn2c",
+                    "includeOuGroup": false,
+                    "realization":  "total"
+                }
+            ]
+        }
+            ]
+        }
+</script>
+
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div>
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">TZ FCP PMP -
+            <span class="period"></span> -
+            <span id="orgUnits"></span>
+        </h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+            </table>
+        </div>
+    </div>
+
+</div>
