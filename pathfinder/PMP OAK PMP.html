@@ -1,0 +1,701 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name)
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+            html += '<th style="width: 1%"></th>';
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Output Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            orgunitsArr = [];
+            $.getJSON("/api/organisationUnitGroups/Ke5RMquBtP8.json?fields=name,organisationUnits",function(org){
+                $.each(org.organisationUnits,function(key,value){
+                    orgunitsArr.push(value.id)
+                });
+                var quarterlyAnalyticsUrl = "/api/analytics.json?dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgunitsArr.join(";")+"&displayProperty=NAME";
+                var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+                $(".loader").show("slow");
+                $(".header").hide();
+                $.getJSON(quarterlyAnalyticsUrl,function(quarterlyresp){
+                    $.getJSON(targetsAnalyticsUrl,function(targetresp){
+                        $.each(data,function(key,value){
+                            html +="<tr style='background-color: "+value.color+"'><td colspan='10'>"+value.title+"</td> </tr>";
+                            if(value.hasOwnProperty('content')){
+                                $.each(value.content,function(k,val){
+
+                                    if(val.hasOwnProperty('indicator')){
+                                        if(val.hasOwnProperty('rows')){
+                                            var valuee1 = [];
+                                            var sumvaluee1 = 0;
+                                            var valuee2 = [];
+                                            var sumvaluee2 = 0;
+                                            html +="<tr>";
+                                            html +="<td rowspan='"+val.defination.length+"'></td>";
+                                            if(val.indicator == ""){
+                                                html +="<td rowspan='"+val.defination.length+"' style='border:none'>"+val.indicator+"</td>"; 
+                                            } 
+                                            else{
+                                            html +="<td rowspan='"+val.defination.length+"'>"+val.indicator+"</td>";
+                                            }
+                                            if(val.defination[0].hasOwnProperty('target')){
+                                                html +="<td colspan='8'>"+val.defination[0].term+"</td>";
+                                                    }
+                                            else{
+                                            html +="<td>"+val.defination[0].term+"</td>";
+                                            if(val.hasOwnProperty('defination')){
+                                                
+                                                if(val.defination[0].hasOwnProperty('id')){
+                                                    $.each(period.split(";"),function(m,per){
+                                                        valuee1[per]= getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
+                                                        html +="<td>"+valuee1[per]+"</td>";
+                                                        sumvaluee1+=valuee1[per];
+                                                    })
+                                                }else if(val.defination[0].hasOwnProperty('target')){
+                                                    $.each(period.split(";"),function(m,per){
+                                                        valuee1[per]= getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
+                                                        html +="<td hidden>"+valuee1[per]+"</td>";
+                                                        sumvaluee1+=valuee1[per];
+                                                    })
+                                                    
+                                                }
+                                            }
+                                            //realization
+                                            if(val.defination[0].realisation == 'sum'){
+                                                html +="<td>"+sumvaluee1+"</td>";
+                                            }else if(val.defination[0].realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }
+                                            if(val.defination[0].realisation == ''){
+                                                html +="<td hidden></td>";}
+                                                if(val.defination[0].targett== ''){
+                                                    html +="<td hidden></td>";
+                                                    html +="<td hidden></td>";}else{
+                                            html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],val.defination[0].targett);"+</td>";
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                                    }
+                                                    }
+
+                                          
+                                            var rowTracker = 0;
+                                            $.each(val.defination,function(j,v){
+                                                if(rowTracker == 0){
+
+                                                }else{
+                                                    html +="<tr>";
+                                                    html +="<td>"+v.term+"</td>";
+                                                    if(v.hasOwnProperty('id')){
+
+                                                        $.each(period.split(";"),function(m,per){
+                                                            valuee2[per] = getDataFromUrl1(quarterlyresp.rows,per,v.id);
+                                                            html +="<td>"+valuee2[per]+"</td>";
+                                                            sumvaluee2 += valuee2[per];
+                                                        })
+                                                    }
+
+                                                    //realization
+                                                    if(v.realisation == 'sum'){
+                                                        html +="<td>"+sumvaluee2+"</td>";
+                                                    }else if(v.realisation == 'last'){
+                                                        html +="<td>"+ valuee1[2] +"</td>";
+                                                    }else if(v.realisation == 'avg'){
+
+                                                        var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                        html +="<td>"+ summ.toFixed(1) +"</td>";
+                                                    }
+
+                                                    html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],v.targett);"+</td>";
+
+                                                    html +="<td  class='lastColumn'></td>";
+                                                    html +="</tr>";
+                                                }
+                                                rowTracker ++
+                                            });
+                                        }
+
+
+                                    }
+
+
+                                });
+                            }
+                        });
+                        $("table").append(html);
+                        $('.lastColumn').each(function () {
+                            //processing this row
+                            var num = $(this).prev('td').text();
+                            var num1 = $(this).prev('td').prev('td').text();
+                            num = num.replace(",", "");
+                            if(num != '0'){
+                                if($.isNumeric(parseInt(num1))){
+                                    var parc = (parseInt(num1)*100)/parseInt(num);
+                                    if(parc < 41 ){
+                                        $(this).text(parseInt(parc)).css('background','#FF0000')
+                                    }else if(parc >41 && parc <81){
+                                        $(this).text(parseInt(parc)).css('background','#FFFF00')
+                                    }else if(parc > 80){
+                                        $(this).text(parseInt(parc)).css('background','#92D050')
+                                    }
+                                    $(this).text(parseInt(parc))
+                                }else{
+                                    $(this).text('').css('background','#E6DADA')
+                                }
+
+                            }
+                        });
+                        $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                        var periodName = getPeroidName(periods[0]);
+
+                        $(".orgUnit").html(orgUnit.name);
+                        $(".period").html(periodName);
+                        $(".loader").hide();
+                        $(".header").show();
+                    });
+                });
+            });
+
+        }
+
+        loadData();
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+    var data =[{"title":"Objective 1: Improve the knowledge, attitudes, and awareness of school and community members on VAC in order to prevent it in their schools, homes, and neighborhoods (in portal abbreviated- To improved knowledge, attitudes and awareness about VAC)",
+                "color":"#D6E3BC",
+                "content":[
+    {"indicator":"1.1. Raise awareness of VAC and child protection in communities",
+                 "rows":"",
+                 "num":"",
+                "defination":[{
+                    "term":"1.1.1 Number of individuals reached with positive VAC and SGBV prevention messages through FMP by age and sex ",
+                    "id":"",
+                    "realisation":"",
+                    "target":"",
+                  },
+                  {
+                    "term":"Women",
+                    "id":"NGfMmSEf6pC.aGZsYIAHAdh",
+                    "realisation":"sum",
+                    "targett":"bsXqIc0jpsf.aGZsYIAHAdh",
+                   },
+                   {
+                    "term":"Men",
+                    "id":"NGfMmSEf6pC.zz0rvYX736i",
+                    "realisation":"sum",
+                    "targett":"bsXqIc0jpsf.zz0rvYX736i"
+                   },
+                   {
+                    "term":"1.1.2 Number of religious leaders trained on positive parenting skills to married and non-married couples",
+                    "id":"bAi4cfxQZUe",
+                    "realisation":"sum",
+                    "targett":"oM5nj3N8FTH"
+                   },
+                   {
+                    "term":"1.1.3 Number of religious leaders advocating VAC/GBV prevention through madrasas and mosques	",
+                    "id":"ZuIjuUgIUjF",
+                    "realisation":"sum",
+                    "targett":"us0v87RoaRk"
+                   },
+                   {
+                    "term":"1.1.4 Number of children reached through madrasa teaching",
+                    "id":"LvY3KsMEi3b",
+                    "realisation":"sum",
+                    "targett":"w4OBMMuqs1s"
+                   },
+                   {
+                    "term":"1.1.5 Number of model fathers and boys who become advocates for prevention of SGBV by the end of the project",
+                    "id":"ToVaxEHzn0B",
+                    "realisation":"sum",
+                    "targett":"T9Ale2sEj4A"
+                   },
+                   {
+                    "term":"1.1.6 Number of individuals reached by model fathers",
+                    "id":"rqDEZmnoHpX",
+                    "realisation":"sum",
+                    "targett":"av3is2lAJCF"
+                   }
+                ]},
+
+    {"indicator":"1.2 Raise awareness of VAC and child protection in schools",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                  {
+                    "term":"1.2.1 Number of SMCs, teachers, and local leaders oriented on VAC and child rights:",
+                    "id":"",
+                    "realisation":"",
+                    "target":"",
+                   },
+                   {
+                    "term":"Teachers",
+                    "id":"rOx9MtwQYr7.HHx9k00d7hb",
+                    "realisation":"sum",
+                    "targett":"Ahb7LJPSWce.HHx9k00d7hb"
+                   },
+                   {
+                    "term":"SMCs",
+                    "id":"rOx9MtwQYr7.PIPPyl0wlU1",
+                    "realisation":"sum",
+                    "targett":"Ahb7LJPSWce.PIPPyl0wlU1"
+                   },
+                   {
+                    "term":"Local leaders",
+                    "id":"rOx9MtwQYr7.md2yuV6lsws",
+                    "realisation":"sum",
+                    "targett":"Ahb7LJPSWce.md2yuV6lsws"
+                   },
+                   {
+                    "term":"1.2.2 Number of teachers trained on child rights and protection	",
+                    "id":"AAtU9WvTksO",
+                    "realisation":"sum",
+                    "targett":"TQdFxUyydT2"
+                   },
+                   ]},
+                  {"indicator":"",
+                    "rows":"5",
+                    "num":"",
+                 "defination":[
+                   {
+                    "term":"1.2.3 Number of children reached through trainings on child rights, forms of VAC, protection, and reporting:",
+                    "id":"",
+                    "realisation":"",
+                    "target":"",
+                   },
+                   {
+                    "term":"Boys",
+                    "id":"IyPmOpLJDkV.C3TXBCcZM3o",
+                    "realisation":"sum",
+                    "targett":"gbldf7HnSWd.C3TXBCcZM3o"
+                   },
+                   {
+                    "term":"Girls",
+                    "id":"IyPmOpLJDkV.N9qWzaNVzks",
+                    "realisation":"sum",
+                    "targett":"gbldf7HnSWd.N9qWzaNVzks"
+                   },
+                   {
+                    "term":"1.2.4 Number of children actively participating in debates on child rights and protection",
+                    "id":"Hj3WpxOfOaB",
+                    "realisation":"sum",
+                    "targett":"tiIvpNdEYnj"
+                   },
+                   {
+                    "term":"1.2.5 Number of boy champions addressing violence against girls",
+                    "id":"HCWsRLUaXOW",
+                    "realisation":"sum",
+                    "targett":"fE3c0Z5f04A"
+                   },
+                   ]},
+                 {"indicator":"",
+                    "rows":"",
+                    "num":"",
+                    "defination":[
+                   {
+                    "term":"1.2.6 Number of materials produced and distributed in school by type:",
+                    "id":"",
+                    "realisation":"",
+                    "target":"",
+                   },
+                   {
+                    "term":"Bulletin",
+                    "id":"W2Y5Tl3WyLy.anWViOiQc04",
+                    "realisation":"sum",
+                    "targett":"lCzXqAwnm0q.anWViOiQc04"
+                   },
+                   {
+                    "term":"Promotion materials",
+                    "id":"W2Y5Tl3WyLy.GGulxKqxBFB",
+                    "realisation":"sum",
+                    "targett":"lCzXqAwnm0q.GGulxKqxBFB"
+                   }
+                   ]},
+{"indicator":"1.3 Raise awareness of VAC and child protection through media",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                  {
+                    "term":"1.3.1 Number of community dialogue sessions conducted ",
+                    "id":"eX88ZYtNfKl",
+                    "realisation":"sum",
+                    "targett":"Ul9lcgAMuEm"
+                   },
+                   {
+                    "term":"1.3.2 Number of individuals reached through radio dialogue",
+                    "id":"VhQOi7Ufyrx",
+                    "realisation":"sum",
+                    "targett":"arVK1GzLIMh"
+                   },
+                   ]},
+                   ]},
+ { "title":"Objective 2 :Strengthen prevention and response systems in schools and communities in order to create a safer environment and increase access to support services for survivors (in portal abbreviated- To strengthen the capacity of formal bodies to prevent and respond to VAC)",
+                "color":"#D6E3BC",
+                "content":[
+ 
+    {"indicator":"2.1 Systems for VAC prevention and response in schools and communities strengthened",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                    
+                   {
+                    "term":"2.1.1 Number of school clubs established and functioning",
+                    "id":"EfNqbwYRmW7",
+                    "realisation":"sum",
+                    "targett":"lHfQoft1IFW"
+                   },
+                   {
+                    "term":"2.1.2 Number of Shehia Committees on VAW/C strengthened and functioning",
+                    "id":"qdrKLPtb6ZG",
+                    "realisation":"sum",
+                    "targett":"UpO8UQ2wAfL"
+                   },
+                   {
+                    "term":"2.1.3 Number of gender desk officers trained on child rights and child protection each year",
+                    "id":"SwpmAKMFWiL",
+                    "realisation":"sum",
+                    "targett":"qlyJbQipK26"
+                   },
+                   {
+                    "term":"2.1.4 Number of schools that have established violence prevention, protection, and response mechanisms (including action plans)	",
+                    "id":"PeGbnKsC1l0",
+                    "realisation":"sum",
+                    "targett":"iOg92Fa3M1W"
+                   },
+                   {
+                    "term":"2.1.5 Number of SMCs with a standing agenda of issues raised from children's clubs and a suggestion box in their meetings",
+                    "id":"OhhnHnpLABJ",
+                    "realisation":"sum",
+                    "targett":"qyIQfxaF9Hd"
+                   }
+                   ]},
+ {"indicator":"2.2 Improved access to justice and psychosocial support to child survivors of violence",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                  {
+                    "term":"2.2.1 Number of VAC cases reported (disaggregated) by One Stop Centres, child helplines, and schools",
+                    "target":"",
+                    "realisation":"",
+                    "targett":""
+                   },
+                   {
+                    "term":"Boys",
+                    "id":"EfsrQRSytLu.C3TXBCcZM3o",
+                    "realisation":"sum",
+                    "targett":"S47qrKMSoKm.C3TXBCcZM3o"
+                   },
+                   {
+                    "term":"Girls",
+                    "id":"EfsrQRSytLu.N9qWzaNVzks",
+                    "realisation":"sum",
+                    "targett":"S47qrKMSoKm.N9qWzaNVzks"
+                   }
+                  
+                   ]}
+
+
+                    ]},
+  { "title":"Objective 3: Undertake evidence-based advocacy work in order to strengthen institutions, improve case management, increase access to justice, and boost collaboration among child protection actors",
+                "color":"#D6E3BC",
+                "content":[
+ 
+    {"indicator":"3.1. Increased collaboration and coordination by Oak Partners (Pathfinder International, ActionAid Tanzania, and C-Sema) with the government of Zanzibar in ensuring proper implementation of project activities throughout the project cycle",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                   {
+                    "term":"3.1.1 Number of quarterly and annual partner meetings held",
+                    "id":"wiyPifk0v5l",
+                    "realisation":"sum",
+                    "targett":"wBWUYn94rID"
+                   },
+                   {
+                    "term":"3.1.2 Number of meetings held with government of Zanzibar to advocate for child rights issues brought up by the project",
+                    "id":"tfTefRlQL1P",
+                    "realisation":"sum",
+                    "targett":"KJrwm8Y1cdx"
+                   }
+                   ]},
+
+    {"indicator":"3.2 Reinforcement of laws on bails and defendant accused for child protection",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                  {
+                    "term":"3.2.1 Laws on bail and sentences for defendant accused for child abuse revised by increasing bail and sentences",
+                    "id":"GdVEz3yC2cv",
+                    "realisation":"sum",
+                    "targett":"KJrwm8Y1cdx"
+                   },
+                   {
+                    "term":"3.2.2 Number of initiatives taken by CSOs in advocating for improved protection laws and their implementation",
+                    "id":"TXE1k6zoNUo",
+                    "realisation":"sum",
+                    "targett":"p42pmWCsStw"
+                   }
+                   ]},
+     {"indicator":"3.3. Shehias Advisory Committees mechanism is adopted by the government throughout Unguja North, and interactions with School Management Committees are formalized to address challenges faced by children in schools and at the community level",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                  {
+                    "term":"3.2.3 Number of joint meetings between Shehias Committees on VAW/C and School Management Committees in the project area",
+                    "id":"U2gRbYq7p23",
+                    "realisation":"sum",
+                    "targett":"tJL1BL9r7oh"
+                   },
+                   {
+                    "term":"3.2.4 Number of Shehias that have integrated FMP Shehias advisor group functions in their Shehias committees",
+                    "id":"VVdMQ13TlKM",
+                    "realisation":"sum",
+                    "targett":"WkovUju81h9"
+                   }
+                   ]}
+
+  
+                    ]},
+
+ { "title":"Outcome level",
+                "color":"#D6E3BC",
+                "content":[
+ 
+    {"indicator":"Outcome: Practices, norms, attitudes, and behaviors that perpetrate VAC in and out of schools are reduced",
+                    "rows":"",
+                    "num":"",
+                "defination":[
+                   {
+                    "term":"Percent of girls and boys who feel safe in schools",
+                    "id":"RPTijRgOEzP",
+                    "realisation":"sum",
+                    "targett":"siQXf9ZO3Wp"
+                   },
+                   {
+                    "term":"Percent of children reporting decrease in harmful/bad practices that perpetuate VAC in and out of schools",
+                    "id":"f5vSscFiqrq",
+                    "realisation":"sum",
+                    "targett":"M8s3spxzjDL"
+                   },
+                   {
+                    "term":"Percent of children who report that they have a trusted adult they could go to",
+                    "id":"v3LmylkNY4D",
+                    "realisation":"sum",
+                    "targett":"Lq78fbz2ydB"
+                   },
+                   {
+                    "term":"Percent of children who report improved communication with their parents",
+                    "id":"mCQZ1hqsVsl",
+                    "realisation":"sum",
+                    "targett":"FRbKsX5Hfv6"
+                   },
+                   {
+                    "term":"Number of VAC cases reported by type (e.g., physical, emotional, and sexual)",
+                    "id":"H8HgbekVXxZ",
+                    "realisation":"sum",
+                    "targett":"j3A2sjEyEdM"
+                   },
+                   {
+                    "term":"Laws on bail and sentences for defendant accused for child abuse revised by increasing bail and sentences",
+                    "id":"PMPE2EDE003",
+                    "realisation":"sum",
+                    "targett":"PMPE2ETG003"
+                   },
+                   {
+                    "term":"FMP advisory groups integrated in the Shehias Women and Children Committee",
+                    "id":"WGBt4f3GPUk",
+                    "realisation":"sum",
+                    "targett":"blodkAzWB24"
+                   }
+                   ]},
+                   
+                  
+]}];
+        return data;
+    }
+
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Feed_the_nature";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+
+</script>
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+<!--<button class="btn bt-small btn-default" onclick="download('report')">Download Excel</button>-->
+<h3 class="header text-center">PMP OAK PMP- <span class="period"></span> -  <span id="orgUnits"> </span></h3>
+<div class="col-sm-10 col-sm-offset-1" >
+    <table class="listTable table table-bordered table-responsive">
+        <thead class="header">
+
+        </thead>
+    </table>
+</div>
+
+</div>          </div>
+    <script type="text/javascript">
+        </script>
+
+    <div id="rightBar">
+      <span id="hideRightBar"><a href="javascript:hideHelpContent()" title="Close">
+        <i class="fa fa-times leftBarIcon"></i></a>
+      </span>
+      <div id="rightBarContents"></div>
+    </div>
+
+    
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-50813409-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+  </body>
+</html>
