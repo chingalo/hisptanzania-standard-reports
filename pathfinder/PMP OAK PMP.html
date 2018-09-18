@@ -55,6 +55,7 @@
             html += '<th style="width: 1%"></th>';
             html += '<th style="width: 25%">Outcome</th>';
             html += '<th style="width: 25%">Output Indicator</th>';
+            html += '<th style="width: 10%">Oak partiner</th>';
             $.each(periodNames.split(";"),function(m,per){
                 html += "<th style='width: 10%'>"+per+"</th>"
             });
@@ -69,7 +70,7 @@
             $.getJSON(quarterlyAnalyticsUrl,function(quarterlyresp){
                     $.getJSON(targetsAnalyticsUrl,function(targetresp){
                         $.each(data,function(key,value){
-                            html +="<tr style='background-color: "+value.color+"'><td colspan='10'>"+value.title+"</td> </tr>";
+                            html +="<tr style='background-color: "+value.color+"'><td colspan='11'>"+value.title+"</td> </tr>";
                             if(value.hasOwnProperty('content')){
                                 $.each(value.content,function(k,val){
 
@@ -82,51 +83,42 @@
                                             html +="<tr>";
                                             html +="<td rowspan='"+val.defination.length+"'></td>";
                                             if(val.indicator == ""){
-                                                html +="<td rowspan='"+val.defination.length+"' style='border:none'>"+val.indicator+"</td>"; 
+                                                html +="<td rowspan='"+val.defination.length+"' style='border:none'></td>"; 
                                             } 
                                             else{
                                             html +="<td rowspan='"+val.defination.length+"'>"+val.indicator+"</td>";
                                             }
+
                                             if(val.defination[0].hasOwnProperty('target')){
-                                                html +="<td colspan='8'>"+val.defination[0].term+"</td>";
+                                                html +="<td colspan='9'>"+val.defination[0].term+"</td>";
                                                     }
                                             else{
                                             html +="<td>"+val.defination[0].term+"</td>";
+                                            html +="<td > "+val.defination[0].partiner+"</td>";
+                                            
                                             if(val.hasOwnProperty('defination')){
-                                                
                                                 if(val.defination[0].hasOwnProperty('id')){
                                                     $.each(period.split(";"),function(m,per){
                                                         valuee1[per]= getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
                                                         html +="<td>"+valuee1[per]+"</td>";
                                                         sumvaluee1+=valuee1[per];
                                                     })
-                                                }else if(val.defination[0].hasOwnProperty('target')){
-                                                    $.each(period.split(";"),function(m,per){
-                                                        valuee1[per]= getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
-                                                        html +="<td hidden>"+valuee1[per]+"</td>";
-                                                        sumvaluee1+=valuee1[per];
-                                                    })
-                                                    
                                                 }
                                             }
-                                            //realization
-                                            if(val.defination[0].realisation == 'sum'){
+                                          //realization
+                                           if(val.defination[0].realisation == 'sum'){
                                                 html +="<td>"+sumvaluee1+"</td>";
                                             }else if(val.defination[0].realisation == 'last'){
                                                 html +="<td>"+ valuee1[2] +"</td>";
                                             }
-                                            if(val.defination[0].realisation == ''){
-                                                html +="<td hidden></td>";}
-                                                if(val.defination[0].targett== ''){
-                                                    html +="<td hidden></td>";
-                                                    html +="<td hidden></td>";}else{
-                                            html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],val.defination[0].targett);"+</td>";
-                                            html +="<td  class='lastColumn'></td>";
-                                            html +="</tr>";
-                                                    }
-                                                    }
 
-                                          
+                                            html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            }
+                                            html +="</tr>";
+
+
                                             var rowTracker = 0;
                                             $.each(val.defination,function(j,v){
                                                 if(rowTracker == 0){
@@ -134,6 +126,9 @@
                                                 }else{
                                                     html +="<tr>";
                                                     html +="<td>"+v.term+"</td>";
+                                                    if(v.hasOwnProperty('partiner')){
+                                                    html +="<td>"+v.partiner+"</td>";
+                                                    }
                                                     if(v.hasOwnProperty('id')){
 
                                                         $.each(period.split(";"),function(m,per){
@@ -279,7 +274,8 @@
     {"indicator":"1.1. Raise awareness of VAC and child protection in communities",
                  "rows":"",
                  "num":"",
-                "defination":[{
+                "defination":
+                [{
                     "term":"1.1.1 Number of individuals reached with positive VAC and SGBV prevention messages through FMP by age and sex ",
                     "id":"",
                     "realisation":"",
@@ -289,44 +285,50 @@
                     "term":"Women",
                     "id":"NGfMmSEf6pC.aGZsYIAHAdh",
                     "realisation":"sum",
-                    
                     "targett":"bsXqIc0jpsf.aGZsYIAHAdh",
+                    "partiner":"PI",
                    },
                    {
                     "term":"Men",
                     "id":"NGfMmSEf6pC.zz0rvYX736i",
                     "realisation":"sum",
-                    "targett":"bsXqIc0jpsf.zz0rvYX736i"
+                    "targett":"bsXqIc0jpsf.zz0rvYX736i",
+                    "partiner":"PI",
                    },
                    {
                     "term":"1.1.2 Number of religious leaders trained on positive parenting skills to married and non-married couples",
                     "id":"bAi4cfxQZUe",
                     "realisation":"sum",
-                    "targett":"oM5nj3N8FTH"
+                    "targett":"oM5nj3N8FTH",
+                    "partiner":"PI",
                    },
                    {
                     "term":"1.1.3 Number of religious leaders advocating VAC/GBV prevention through madrasas and mosques	",
                     "id":"ZuIjuUgIUjF",
                     "realisation":"sum",
-                    "targett":"us0v87RoaRk"
+                    "targett":"us0v87RoaRk",
+                    "partiner":"PI",
                    },
                    {
                     "term":"1.1.4 Number of children reached through madrasa teaching",
                     "id":"LvY3KsMEi3b",
                     "realisation":"sum",
-                    "targett":"w4OBMMuqs1s"
+                    "targett":"w4OBMMuqs1s",
+                    "partiner":"PI",
                    },
                    {
                     "term":"1.1.5 Number of model fathers and boys who become advocates for prevention of SGBV by the end of the project",
                     "id":"ToVaxEHzn0B",
                     "realisation":"sum",
-                    "targett":"T9Ale2sEj4A"
+                    "targett":"T9Ale2sEj4A",
+                    "partiner":"PI",
                    },
                    {
                     "term":"1.1.6 Number of individuals reached by model fathers",
                     "id":"rqDEZmnoHpX",
                     "realisation":"sum",
-                    "targett":"av3is2lAJCF"
+                    "targett":"av3is2lAJCF",
+                    "partiner":"PI",
                    }
                 ]},
 
@@ -344,25 +346,29 @@
                     "term":"Teachers",
                     "id":"rOx9MtwQYr7.HHx9k00d7hb",
                     "realisation":"sum",
-                    "targett":"Ahb7LJPSWce.HHx9k00d7hb"
+                    "targett":"Ahb7LJPSWce.HHx9k00d7hb",
+                    "partiner":"AA",
                    },
                    {
                     "term":"SMCs",
                     "id":"rOx9MtwQYr7.PIPPyl0wlU1",
                     "realisation":"sum",
-                    "targett":"Ahb7LJPSWce.PIPPyl0wlU1"
+                    "targett":"Ahb7LJPSWce.PIPPyl0wlU1",
+                    "partiner":"AA",
                    },
                    {
                     "term":"Local leaders",
                     "id":"rOx9MtwQYr7.md2yuV6lsws",
                     "realisation":"sum",
-                    "targett":"Ahb7LJPSWce.md2yuV6lsws"
+                    "targett":"Ahb7LJPSWce.md2yuV6lsws",
+                    "partiner":"AA",
                    },
                    {
                     "term":"1.2.2 Number of teachers trained on child rights and protection	",
                     "id":"AAtU9WvTksO",
                     "realisation":"sum",
-                    "targett":"TQdFxUyydT2"
+                    "targett":"TQdFxUyydT2",
+                    "partiner":"AA",
                    },
                    ]},
                   {"indicator":"",
@@ -379,25 +385,29 @@
                     "term":"Boys",
                     "id":"IyPmOpLJDkV.C3TXBCcZM3o",
                     "realisation":"sum",
-                    "targett":"gbldf7HnSWd.C3TXBCcZM3o"
+                    "targett":"gbldf7HnSWd.C3TXBCcZM3o",
+                    "partiner":"AA",
                    },
                    {
                     "term":"Girls",
                     "id":"IyPmOpLJDkV.N9qWzaNVzks",
                     "realisation":"sum",
-                    "targett":"gbldf7HnSWd.N9qWzaNVzks"
+                    "targett":"gbldf7HnSWd.N9qWzaNVzks",
+                    "partiner":"AA",
                    },
                    {
                     "term":"1.2.4 Number of children actively participating in debates on child rights and protection",
                     "id":"Hj3WpxOfOaB",
                     "realisation":"sum",
-                    "targett":"tiIvpNdEYnj"
+                    "targett":"tiIvpNdEYnj",
+                    "partiner":"AA",
                    },
                    {
                     "term":"1.2.5 Number of boy champions addressing violence against girls",
                     "id":"HCWsRLUaXOW",
                     "realisation":"sum",
-                    "targett":"fE3c0Z5f04A"
+                    "targett":"fE3c0Z5f04A",
+                    "partiner":"AA",
                    },
                    ]},
                  {"indicator":"",
@@ -414,13 +424,15 @@
                     "term":"Bulletin",
                     "id":"W2Y5Tl3WyLy.anWViOiQc04",
                     "realisation":"sum",
-                    "targett":"lCzXqAwnm0q.anWViOiQc04"
+                    "targett":"lCzXqAwnm0q.anWViOiQc04",
+                    "partiner":"AA",
                    },
                    {
                     "term":"Promotion materials",
                     "id":"W2Y5Tl3WyLy.GGulxKqxBFB",
                     "realisation":"sum",
-                    "targett":"lCzXqAwnm0q.GGulxKqxBFB"
+                    "targett":"lCzXqAwnm0q.GGulxKqxBFB",
+                    "partiner":"AA",
                    }
                    ]},
 {"indicator":"1.3 Raise awareness of VAC and child protection through media",
@@ -431,13 +443,15 @@
                     "term":"1.3.1 Number of community dialogue sessions conducted ",
                     "id":"eX88ZYtNfKl",
                     "realisation":"sum",
-                    "targett":"Ul9lcgAMuEm"
+                    "targett":"Ul9lcgAMuEm",
+                    "partiner":"AA",
                    },
                    {
                     "term":"1.3.2 Number of individuals reached through radio dialogue",
                     "id":"VhQOi7Ufyrx",
                     "realisation":"sum",
-                    "targett":"arVK1GzLIMh"
+                    "targett":"arVK1GzLIMh",
+                    "partiner":"",
                    },
                    ]},
                    ]},
@@ -454,31 +468,36 @@
                     "term":"2.1.1 Number of school clubs established and functioning",
                     "id":"EfNqbwYRmW7",
                     "realisation":"sum",
-                    "targett":"lHfQoft1IFW"
+                    "targett":"lHfQoft1IFW",
+                    "partiner":"",
                    },
                    {
                     "term":"2.1.2 Number of Shehia Committees on VAW/C strengthened and functioning",
                     "id":"qdrKLPtb6ZG",
                     "realisation":"sum",
-                    "targett":"UpO8UQ2wAfL"
+                    "targett":"UpO8UQ2wAfL",
+                    "partiner":"PI/AA",
                    },
                    {
                     "term":"2.1.3 Number of gender desk officers trained on child rights and child protection each year",
                     "id":"SwpmAKMFWiL",
                     "realisation":"sum",
-                    "targett":"qlyJbQipK26"
+                    "targett":"qlyJbQipK26",
+                    "partiner":"PI/AA",
                    },
                    {
                     "term":"2.1.4 Number of schools that have established violence prevention, protection, and response mechanisms (including action plans)	",
                     "id":"PeGbnKsC1l0",
                     "realisation":"sum",
-                    "targett":"iOg92Fa3M1W"
+                    "targett":"iOg92Fa3M1W",
+                    "partiner":"AA",
                    },
                    {
                     "term":"2.1.5 Number of SMCs with a standing agenda of issues raised from children's clubs and a suggestion box in their meetings",
                     "id":"OhhnHnpLABJ",
                     "realisation":"sum",
-                    "targett":"qyIQfxaF9Hd"
+                    "targett":"qyIQfxaF9Hd",
+                    "partiner":"AA",
                    }
                    ]},
  {"indicator":"2.2 Improved access to justice and psychosocial support to child survivors of violence",
@@ -489,19 +508,22 @@
                     "term":"2.2.1 Number of VAC cases reported (disaggregated) by One Stop Centres, child helplines, and schools",
                     "target":"",
                     "realisation":"",
-                    "targett":""
+                    "targett":"",
+                    "id":"",
                    },
                    {
                     "term":"Boys",
                     "id":"EfsrQRSytLu.C3TXBCcZM3o",
                     "realisation":"sum",
-                    "targett":"S47qrKMSoKm.C3TXBCcZM3o"
+                    "targett":"S47qrKMSoKm.C3TXBCcZM3o",
+                    "partiner":"PI/AA/C-SEMA",
                    },
                    {
                     "term":"Girls",
                     "id":"EfsrQRSytLu.N9qWzaNVzks",
                     "realisation":"sum",
-                    "targett":"S47qrKMSoKm.N9qWzaNVzks"
+                    "targett":"S47qrKMSoKm.N9qWzaNVzks",
+                    "partiner":"PI/AA/C-SEMA",
                    }
                   
                    ]}
@@ -520,13 +542,15 @@
                     "term":"3.1.1 Number of quarterly and annual partner meetings held",
                     "id":"wiyPifk0v5l",
                     "realisation":"sum",
-                    "targett":"wBWUYn94rID"
+                    "targett":"wBWUYn94rID",
+                    "partiner":"PI/C-SEMA/AA",
                    },
                    {
                     "term":"3.1.2 Number of meetings held with government of Zanzibar to advocate for child rights issues brought up by the project",
                     "id":"tfTefRlQL1P",
                     "realisation":"sum",
-                    "targett":"KJrwm8Y1cdx"
+                    "targett":"KJrwm8Y1cdx",
+                    "partiner":"PI/C-SEMA/AA",
                    }
                    ]},
 
@@ -538,13 +562,15 @@
                     "term":"3.2.1 Laws on bail and sentences for defendant accused for child abuse revised by increasing bail and sentences",
                     "id":"GdVEz3yC2cv",
                     "realisation":"sum",
-                    "targett":"KJrwm8Y1cdx"
+                    "targett":"KJrwm8Y1cdx",
+                    "partiner":"AA",
                    },
                    {
                     "term":"3.2.2 Number of initiatives taken by CSOs in advocating for improved protection laws and their implementation",
                     "id":"TXE1k6zoNUo",
                     "realisation":"sum",
-                    "targett":"p42pmWCsStw"
+                    "targett":"p42pmWCsStw",
+                    "partiner":"AA",
                    }
                    ]},
      {"indicator":"3.3. Shehias Advisory Committees mechanism is adopted by the government throughout Unguja North, and interactions with School Management Committees are formalized to address challenges faced by children in schools and at the community level",
@@ -555,13 +581,15 @@
                     "term":"3.2.3 Number of joint meetings between Shehias Committees on VAW/C and School Management Committees in the project area",
                     "id":"U2gRbYq7p23",
                     "realisation":"sum",
-                    "targett":"tJL1BL9r7oh"
+                    "targett":"tJL1BL9r7oh",
+                    "partiner":"PI/AA",
                    },
                    {
                     "term":"3.2.4 Number of Shehias that have integrated FMP Shehias advisor group functions in their Shehias committees",
                     "id":"VVdMQ13TlKM",
                     "realisation":"sum",
-                    "targett":"WkovUju81h9"
+                    "targett":"WkovUju81h9",
+                    "partiner":"PI",
                    }
                    ]}
 
@@ -580,43 +608,50 @@
                     "term":"Percent of girls and boys who feel safe in schools",
                     "id":"RPTijRgOEzP",
                     "realisation":"sum",
-                    "targett":"siQXf9ZO3Wp"
+                    "targett":"siQXf9ZO3Wp",
+                    "partiner":"AA",
                    },
                    {
                     "term":"Percent of children reporting decrease in harmful/bad practices that perpetuate VAC in and out of schools",
                     "id":"f5vSscFiqrq",
                     "realisation":"sum",
-                    "targett":"M8s3spxzjDL"
+                    "targett":"M8s3spxzjDL",
+                    "partiner":"PI/ AA and C-SEMA",
                    },
                    {
                     "term":"Percent of children who report that they have a trusted adult they could go to",
                     "id":"v3LmylkNY4D",
                     "realisation":"sum",
-                    "targett":"Lq78fbz2ydB"
+                    "targett":"Lq78fbz2ydB",
+                    "partiner":"PI",
                    },
                    {
                     "term":"Percent of children who report improved communication with their parents",
                     "id":"mCQZ1hqsVsl",
                     "realisation":"sum",
-                    "targett":"FRbKsX5Hfv6"
+                    "targett":"FRbKsX5Hfv6",
+                    "partiner":"PI",
                    },
                    {
                     "term":"Number of VAC cases reported by type (e.g., physical, emotional, and sexual)",
                     "id":"H8HgbekVXxZ",
                     "realisation":"sum",
-                    "targett":"j3A2sjEyEdM"
+                    "targett":"j3A2sjEyEdM",
+                    "partiner":"PI",
                    },
                    {
                     "term":"Laws on bail and sentences for defendant accused for child abuse revised by increasing bail and sentences",
                     "id":"PMPE2EDE003",
                     "realisation":"sum",
-                    "targett":"PMPE2ETG003"
+                    "targett":"PMPE2ETG003",
+                    "partiner":"PI",
                    },
                    {
                     "term":"FMP advisory groups integrated in the Shehias Women and Children Committee",
                     "id":"WGBt4f3GPUk",
                     "realisation":"sum",
-                    "targett":"blodkAzWB24"
+                    "targett":"blodkAzWB24",
+                    "partiner":"PI",
                    }
                    ]},
                    
