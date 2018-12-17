@@ -51,8 +51,8 @@
             html = "";
             $('table').html("")
             html += "<tr>";
-            html += '<th style="width: 5%">#</th>';
-            html += '<th style="width: 25%">Component 3: Life Skills for Healthy Living Enhanced</th>';
+            // html += '<th style="width: 5%">#</th>';
+            html += '<th style="width: 25%"></th>';
             $.each(periodNames.split(";"), function (periodIndex, periodName) {
                 html += "<th style='width: 10%'>" + periodName + "</th>"
             })
@@ -79,7 +79,7 @@
                             html +=
                                 "<tr style='background-color: " +
                                 value.color +
-                                "'><td colspan='9'>" + value.title +
+                                "'><td colspan='8'>" + value.title +
                                 "</td> </tr>";
                         }
                         if (value.hasOwnProperty('content')) {
@@ -89,10 +89,10 @@
                                 if (indicatorContent.hasOwnProperty(
                                         'indicator')) {
                                     html += "</tr>";
-                                    html += "<td>" +
-                                        indicatorContent
-                                        .indicatorNumber +
-                                        "</td>";
+                                    // html += "<td>" +
+                                    //     indicatorContent
+                                    //     .indicatorNumber +
+                                    //     "</td>";
                                     html += "<td>" +
                                         indicatorContent
                                         .indicator +
@@ -290,6 +290,7 @@
     }
 
     function getDataFromTargetsOrIndicatorAnalyticsUrl(array, period, de) {
+        
         var data = 0
         $.each(array, function (index, value) {
             if (value[0] == de && value[1] == period) {
@@ -329,39 +330,7 @@
     }
 
     function getDataElements() {
-        return [{
-            "title": "",
-            "color": "#ABE2F4",
-            "content": [{
-                "indicator": "CC1.3 Number of Youth Trained",
-                "indicatorNumber": "1",
-                "id": "bA5MbQkLqpe",
-                "target": "Y3IFF2Nexfu",
-                "includeOuGroup": false,
-                "realization": "total"
-            }, {
-                "indicator": "3.1 Percentage of YEE youth beneficiaries who agree that community-based health services and referrals are now more accessible",
-                "indicatorNumber": "2",
-                "id": "gh3j5w46N3u",
-                "target": "URTYDlnZxzz",
-                "includeOuGroup": false,
-                "realization": "total"
-            }, {
-                "indicator": "3.2 Percentage of YEE youth beneficiaries who were referred for and completed a reproductive health service referral (e.g., for Human Immunodeficiency Virus (HIV) testing, family planning, Sexually Transmitted Infections (STI) diagnosis and treatment, malaria)",
-                "indicatorNumber": "3",
-                "id": "iovkPf5Y15V",
-                "target": "Qg5l57adATo",
-                "includeOuGroup": false,
-                "realization": "total"
-            }, {
-                "indicator": "CC3 Number of YEE youth beneficiaries provided with referrals (business, education, health, etc.).",
-                "indicatorNumber": "4",
-                "id": "ghJB718KZbM",
-                "target": "liLvPIdlSla",
-                "includeOuGroup": false,
-                "realization": "total"
-            }]
-        }]
+        return [{"title":"Component 3: Life Skills for Healthy Living Enhanced","color":"#91CF51","content":[{"indicator":"3.0 Number of Youth Trained in Life Skills for Healthy Living","indicatorNumber":"1","id":"erVIGKHuZ8u","target":"X5CpSxMzxLi","includeOuGroup":false,"realization":"total"},{"indicator":"3.0.1 Number of participants trained under FTP/Young mothers groups","indicatorNumber":"2","id":"EqIgGKBk3DR","target":"lWp9FY42jm9","includeOuGroup":false,"realization":"total"},{"indicator":"3.1 Percentage of YEE youth beneficiaries who agree that community-based health service and referrals are now more accessible","indicatorNumber":"3","id":"hJTJWVN9CAX","target":"SFnE88bICA0","includeOuGroup":false,"realization":"total"},{"indicator":"3.1.1 Number of YEE youth beneficiaries who agree that community-based health services and referrals are now more accessible","indicatorNumber":"4","id":"wPMpOCnySYP","target":"KLG3v9YJmIK","includeOuGroup":false,"realization":"total"},{"indicator":"3.1.2 Number of YEE youth beneficiaries who were followed up after attending Life skill training","indicatorNumber":"5","id":"MYME0NO9puL","target":"i8kaRfFmn4y","includeOuGroup":false,"realization":"total"}]},{"title":"SELF EFFACACY","color":"#D7D7D7","content":[{"indicator":"CC4 Number of AY youth beneficiaries who report increased self-efficacy after USG assisted training/programming(custom)","indicatorNumber":"7","id":"UbTEqjGN0Rc","target":"P8AZ9JAebBo","includeOuGroup":false,"realization":"total"}]},{"title":"REFERRAL","color":"#D7D7D7","content":[{"indicator":"3.2 #/% YEE youth beneficiaries for reproductive health service referral(HIV,FP,STI,MDIT) - Referred","indicatorNumber":"8","id":"E0sSjvtOICz","target":"tbgZsbG3O8s","includeOuGroup":false,"realization":"total"},{"indicator":"3.2 #/% YEE youth beneficiaries for reproductive health service referral(HIV,FP,STI,MDIT) - Completed referral","indicatorNumber":"9","id":"KGoQObQCBpr","target":"dBWMszMoLqw","includeOuGroup":false,"realization":"total"},{"indicator":"3.2 #/% YEE youth beneficiaries for reproductive health service referral(HIV,FP,STI,MDIT) - Percentage ","indicatorNumber":"10","id":"JiiT0QPYPzB","target":"oKSvxTOOUEF","includeOuGroup":false,"realization":"total"},{"indicator":"CC3 Number of YEE youth beneficiaries provided with referals(education,leadership skills,entreprenuarship etc)","indicatorNumber":"11","id":"ORAQcokXjpV","target":"bbH8TD6cyVw","includeOuGroup":false,"realization":"total"}]}]
     }
 </script>
 
