@@ -31,14 +31,12 @@
                                         if(dateElmsArr.indexOf(v.id) == -1){
                                             dateElmsArr.push(v.id);
                                         }
-
                                     }
                                 }if(v.hasOwnProperty('targett')){
                                     if(v.targett != ""){
                                         if(targetsArr.indexOf(v.targett) == -1){
                                             targetsArr.push(v.targett);
                                         }
-
                                     }
                                 }
                             });
@@ -73,13 +71,10 @@
                             html +="<tr style='background-color: "+value.color+"'><td colspan='11'>"+value.title+"</td> </tr>";
                             if(value.hasOwnProperty('content')){
                                 $.each(value.content,function(k,val){
-
                                     if(val.hasOwnProperty('indicator')){
                                         if(val.hasOwnProperty('rows')){
-                                            var valuee1 = [];
-                                            var sumvaluee1 = 0;
-                                            var valuee2 = [];
-                                            var sumvaluee2 = 0;
+                                            var indicatorDataArray = [];
+                                            var realization = 0;
                                             html +="<tr>";
                                             html +="<td rowspan='"+val.defination.length+"'></td>";
                                             if(val.indicator == ""){
@@ -88,41 +83,32 @@
                                             else{
                                             html +="<td rowspan='"+val.defination.length+"'>"+val.indicator+"</td>";
                                             }
-
                                             if(val.defination[0].hasOwnProperty('target')){
                                                 html +="<td colspan='9'>"+val.defination[0].term+"</td>";
                                                     }
                                             else{
                                             html +="<td>"+val.defination[0].term+"</td>";
-                                            html +="<td > "+val.defination[0].partiner+"</td>";
-                                            
+                                            html +="<td > "+val.defination[0].partiner+"</td>";                                            
                                             if(val.hasOwnProperty('defination')){
                                                 if(val.defination[0].hasOwnProperty('id')){
                                                     $.each(period.split(";"),function(m,per){
-                                                        valuee1[per]= getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
-                                                        html +="<td>"+valuee1[per]+"</td>";
-                                                        sumvaluee1+=valuee1[per];
+                                                        var indicatorData = getDataFromUrl1(quarterlyresp.rows,per,val.defination[0].id);
+                                                        indicatorDataArray.push(indicatorData);
+                                                        html +="<td>"+indicatorData+"</td>";
                                                     })
                                                 }
                                             }
-                                          //realization
-                                           if(val.defination[0].realisation == 'sum'){
-                                                html +="<td>"+sumvaluee1+"</td>";
-                                            }else if(val.defination[0].realisation == 'last'){
-                                                html +="<td>"+ valuee1[2] +"</td>";
-                                            }
-
+                                            realization = getRealizationValue(indicatorDataArray,val.defination[0].realisation);
+                                            html +="<td>"+ realization +"</td>";
                                             html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],val.defination[0].targett);"+</td>";
 
                                             html +="<td  class='lastColumn'></td>";
                                             }
                                             html +="</tr>";
-
-
-                                            var rowTracker = 0;
+                                            var rowTracker = 0;                                            
                                             $.each(val.defination,function(j,v){
+                                                indicatorDataArray = [];
                                                 if(rowTracker == 0){
-
                                                 }else{
                                                     html +="<tr>";
                                                     html +="<td>"+v.term+"</td>";
@@ -130,38 +116,22 @@
                                                     html +="<td>"+v.partiner+"</td>";
                                                     }
                                                     if(v.hasOwnProperty('id')){
-
                                                         $.each(period.split(";"),function(m,per){
-                                                            valuee2[per] = getDataFromUrl1(quarterlyresp.rows,per,v.id);
-                                                            html +="<td>"+valuee2[per]+"</td>";
-                                                            sumvaluee2 += valuee2[per];
+                                                            var  indicatorData= getDataFromUrl1(quarterlyresp.rows,per,v.id)
+                                                            indicatorDataArray.push(indicatorData);
+                                                        html +="<td>"+indicatorData+"</td>";
                                                         })
+                                                        
                                                     }
-
-                                                    //realization
-                                                    if(v.realisation == 'sum'){
-                                                        html +="<td>"+sumvaluee2+"</td>";
-                                                    }else if(v.realisation == 'last'){
-                                                        html +="<td>"+ valuee1[2] +"</td>";
-                                                    }else if(v.realisation == 'avg'){
-
-                                                        var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
-                                                        html +="<td>"+ summ.toFixed(1) +"</td>";
-                                                    }
-
+                                                    html +="<td>"+ getRealizationValue(indicatorDataArray,v.realisation) +"</td>";                                                    
                                                     html +="<td>"+getDataFromUrl(targetresp.rows,periods[0],v.targett);"+</td>";
-
                                                     html +="<td  class='lastColumn'></td>";
                                                     html +="</tr>";
                                                 }
                                                 rowTracker ++
                                             });
                                         }
-
-
                                     }
-
-
                                 });
                             }
                         });
@@ -185,23 +155,42 @@
                                 }else{
                                     $(this).text('').css('background','#E6DADA')
                                 }
-
                             }
                         });
                         $('.listTable').addClass('bordered-table zebra-striped dataTable');
                         var periodName = getPeroidName(periods[0]);
-
                         $(".orgUnit").html(orgUnit.name);
                         $(".period").html(periodName);
                         $(".loader").hide();
                         $(".header").show();
                     });
                 });           
-
         }
-
         loadData();
     });
+
+    function getRealizationValue(dataArray, realizationType) {
+        var realization = 0;
+        if (realizationType === "total" || realizationType === "sum") {
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value)) {
+                    realization += parseInt(value)
+                }
+            });
+        }
+        if (realizationType === "last") {
+            var filteredArray = []
+            $.each(dataArray, function (index, value) {
+                if ($.isNumeric(value) && parseInt(value) > 0) {
+                    filteredArray.push(parseInt(value));
+                }
+            });
+            if (filteredArray.length > 0) {
+                realization = filteredArray.pop();
+            }
+        }
+        return realization;
+    }
 
     function pushPeriodOneStep(period){
         var year = period.substring(0,4);
@@ -220,7 +209,6 @@
         }
         return period;
     }
-
     function getThreeMonth(period){
         var year = period.substring(0,4);
         var quater = period.substring(4,6);
@@ -234,7 +222,6 @@
         var quater = period.substring(4,6);
         var time = "";
         names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
-
         return names;
     }
     function getPeroidName(period){
@@ -242,10 +229,8 @@
         var quater = period.substring(4,6);
         var time = "";
         var names = year
-
         return names;
     }
-
     function getDataFromUrl(arr,pe,de){
         var num = 0
         $.each(arr,function(k,v){
@@ -255,7 +240,6 @@
         });
         return num;
     }
-
     function getDataFromUrl1(arr,pe,de){
         var num = 0
         $.each(arr,function(k,v){
@@ -265,8 +249,6 @@
         });
         return num;
     }
-
-
     function getDataElements(){
     var data =[{"title":"Objective 1: Improve the knowledge, attitudes, and awareness of school and community members on VAC in order to prevent it in their schools, homes, and neighborhoods (in portal abbreviated- To improved knowledge, attitudes and awareness about VAC)",
                 "color":"#D6E3BC",
@@ -331,7 +313,6 @@
                     "partiner":"PI",
                    }
                 ]},
-
     {"indicator":"1.2 Raise awareness of VAC and child protection in schools",
                     "rows":"",
                     "num":"",
@@ -527,8 +508,6 @@
                    }
                   
                    ]}
-
-
                     ]},
   { "title":"Objective 3: Undertake evidence-based advocacy work in order to strengthen institutions, improve case management, increase access to justice, and boost collaboration among child protection actors",
                 "color":"#D6E3BC",
@@ -553,7 +532,6 @@
                     "partiner":"PI/C-SEMA/AA",
                    }
                    ]},
-
     {"indicator":"3.2 Reinforcement of laws on bails and defendant accused for child protection",
                     "rows":"",
                     "num":"",
@@ -592,10 +570,8 @@
                     "partiner":"PI",
                    }
                    ]}
-
   
                     ]},
-
  { "title":"Outcome level",
                 "color":"#D6E3BC",
                 "content":[
@@ -659,7 +635,6 @@
 ]}];
         return data;
     }
-
     function downloadAsExcel() {
         var entryFormDesign = $('div#contentDivExcel').html();
         var orgUnit = $("#orgUnits").html()
@@ -679,7 +654,6 @@
             '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
             '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
         str += entryFormDesign + '</body></html>';
-
         setTimeout(() => {
             const link = document.createElement('a');
             link.download = filename;
@@ -688,7 +662,6 @@
             link.click();
         }, 100);
     }
-
 </script>
 <input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
 <h4 class="loader"><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
@@ -719,7 +692,6 @@
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-50813409-1']);
     _gaq.push(['_trackPageview']);
-
     (function () {
         var ga = document.createElement('script');
         ga.type = 'text/javascript';
