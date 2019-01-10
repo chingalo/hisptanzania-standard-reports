@@ -9,12 +9,12 @@
 <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         $(".loader").hide();
         $(".header").hide();
         var html = "";
-        var dataElems= "";
-        var dataElems1= "";
+        var dataElems = "";
+        var dataElems1 = "";
         var dateElmsArr = [];
         var targetsArr = [];
         var targets = "";
@@ -25,19 +25,20 @@
 
 
         var data = getDataElements();
-        $.each(data,function(key,value){
-            if(value.hasOwnProperty('content')){
-                $.each(value.content,function(k,val){
-                    if(val.hasOwnProperty('indicator')){
-                        if(dateElmsArr.indexOf(val.id) == -1){
-                            if(val.id != ""){
+        $.each(data, function (key, value) {
+            if (value.hasOwnProperty('content')) {
+                $.each(value.content, function (k, val) {
+                    if (val.hasOwnProperty('indicator')) {
+                        if (dateElmsArr.indexOf(val.id) == -1) {
+                            if (val.id != "") {
                                 dateElmsArr.push(val.id);
-                                dataElems += val.id+";";
+                                dataElems += val.id + ";";
                             }
-                        }if(targetsArr.indexOf(val.targett) == -1){
-                            if(val.targett != ""){
+                        }
+                        if (targetsArr.indexOf(val.targett) == -1) {
+                            if (val.targett != "") {
                                 targetsArr.push(val.targett);
-                                targets += val.targett+";";
+                                targets += val.targett + ";";
                             }
                         }
                     }
@@ -46,56 +47,67 @@
         });
         console.log(dateElmsArr);
         var period = getThreeMonth(periods[0]);
-        function loadData(level,cordId){
+
+        function loadData(level, cordId) {
             html = "";
             $('table').html("")
             html += "<tr>";
             html += '<th style="width: 5%">#</th>';
             html += '<th style="width: 25%">Performance Indicator</th>';
-            $.each(periodNames.split(";"),function(m,per){
-                html += "<th style='width: 10%'>"+per+"</th>"
+            $.each(periodNames.split(";"), function (m, per) {
+                html += "<th style='width: 10%'>" + per + "</th>"
             })
             html += '<th style="width: 10%">Realisation</th>'
             html += '<th style="width: 5%">Target</th>'
             html += '<th style="width: 5%">Achievement</th>'
             html += "</tr>"
-            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:rDTsuZLCsux&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
-            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
-            console.log(url,url1);
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:rDTsuZLCsux&dimension=dx:" + dateElmsArr.join(
+                ";") + "&dimension=pe:" + period + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:" + targetsArr.join(";") + "&dimension=pe:" + periods[
+                0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+            console.log(url, url1);
             $(".loader").show("slow");
             $(".header").hide();
-            $.getJSON(url,function(resp){
-                $.getJSON(url1,function(resp1){
-                    $.each(data,function(key,value){
-                        html +="<tr style='background-color: "+value.color+"'><td colspan='9'>"+value.title+"</td> </tr>";
-                        if(value.hasOwnProperty('content')){
-                            $.each(value.content,function(k,val){
+            $.getJSON(url, function (resp) {
+                $.getJSON(url1, function (resp1) {
+                    $.each(data, function (key, value) {
+                        html += "<tr style='background-color: " + value.color +
+                            "'><td colspan='9'>" + value.title + "</td> </tr>";
+                        if (value.hasOwnProperty('content')) {
+                            $.each(value.content, function (k, val) {
 
-                                if(val.hasOwnProperty('indicator')){
+                                if (val.hasOwnProperty('indicator')) {
 
-                                    html +="</tr>";
-                                    html +="<td>"+val.num+"</td>";
-                                    html +="<td>"+val.indicator+"</td>";
+                                    html += "</tr>";
+                                    html += "<td>" + val.num + "</td>";
+                                    html += "<td>" + val.indicator + "</td>";
                                     var amooounts = [];
-                                    $.each(period.split(";"),function(m,per){
-                                        var value22 = getDataFromUrl1(resp.rows,per,val.id);
-                                        html +="<td>"+value22+"</td>";
+                                    $.each(period.split(";"), function (m, per) {
+                                        var value22 = getDataFromUrl1(
+                                            resp.rows, per, val.id);
+                                        html += "<td>" + value22 +
+                                            "</td>";
                                         amooounts.push(value22);
                                     })
 
                                     var summ = 0;
-                                    if(val.hasOwnProperty("realization")){
-                                        var summ = Math.floor((amooounts[0] + amooounts[2] + amooounts[1])/3);
-                                    }else{
-                                        var summ = amooounts[0] + amooounts[2] + amooounts[1];
+                                    if (val.hasOwnProperty("realization")) {
+                                        var summ = Math.floor((amooounts[0] +
+                                            amooounts[2] + amooounts[1]
+                                        ) / 3);
+                                    } else {
+                                        var summ = amooounts[0] + amooounts[2] +
+                                            amooounts[1];
                                     }
-                                    html +="<td>"+summ+"</td>";
+                                    html += "<td>" + summ + "</td>";
 
 
-                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.targett);"+</td>";
+                                    html += "<td>" + getDataFromUrl(resp1.rows,
+                                        periods[0], val.targett);
+                                    "+</td>";
 
-                                    html +="<td class='lastColumn'></td>";
-                                    html +="</tr>";
+                                    html += "<td class='lastColumn'></td>";
+                                    html += "</tr>";
 
                                 }
 
@@ -109,19 +121,22 @@
                         var num = $(this).prev('td').text();
                         var num1 = $(this).prev('td').prev('td').text();
                         num = num.replace(",", "");
-                        if(num != '0'){
-                            if($.isNumeric(parseInt(num1))){
-                                var parc = (parseInt(num1)*100)/parseInt(num);
-                                if(parc < 41 ){
-                                    $(this).text(parseInt(parc)).css('background','#FF0000')
-                                }else if(parc >40 && parc <81){
-                                    $(this).text(parseInt(parc)).css('background','#FFFF00')
-                                }else if(parc > 81){
-                                    $(this).text(parseInt(parc)).css('background','#92D050')
+                        if (num != '0') {
+                            if ($.isNumeric(parseInt(num1))) {
+                                var parc = (parseInt(num1) * 100) / parseInt(num);
+                                if (parc < 41) {
+                                    $(this).text(parseInt(parc)).css('background',
+                                        '#FF0000')
+                                } else if (parc > 40 && parc < 81) {
+                                    $(this).text(parseInt(parc)).css('background',
+                                        '#FFFF00')
+                                } else if (parc > 81) {
+                                    $(this).text(parseInt(parc)).css('background',
+                                        '#92D050')
                                 }
                                 $(this).text(parseInt(parc))
-                            }else{
-                                $(this).text('').css('background','#E6DADA')
+                            } else {
+                                $(this).text('').css('background', '#E6DADA')
                             }
 
                         }
@@ -137,66 +152,68 @@
             });
         }
 
-        loadData('national','riuabH1sYe6');
+        loadData('national', 'riuabH1sYe6');
     });
 
-    function pushPeriodOneStep(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
+    function pushPeriodOneStep(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
         var time = "";
         var names = "";
-        if(quater == "Q4"){
-            var yr = parseInt(year)+1;
-            time = yr+"Q1";
-        }else if(quater == "Q3"){
-            time = year+"Q4";
-        }else if(quater == "Q2"){
-            time = year+"Q3";
-        }else if(quater == "Q1"){
-            time = year+"Q2";
+        if (quater == "Q4") {
+            var yr = parseInt(year) + 1;
+            time = yr + "Q1";
+        } else if (quater == "Q3") {
+            time = year + "Q4";
+        } else if (quater == "Q2") {
+            time = year + "Q3";
+        } else if (quater == "Q1") {
+            time = year + "Q2";
         }
         return period;
     }
 
-    function getThreeMonth(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
+    function getThreeMonth(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
         var nextYear = parseInt(year) + 1;
-        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        var time = year + "Q4;" + nextYear + "Q1;" + nextYear + "Q2;" + nextYear + "Q3";
         return time;
     }
-    function getThreeMonthName(period){
-        var year = period.substring(0,4);
-        var nextyear = parseInt(year)+1;
-        var quater = period.substring(4,6);
+
+    function getThreeMonthName(period) {
+        var year = period.substring(0, 4);
+        var nextyear = parseInt(year) + 1;
+        var quater = period.substring(4, 6);
         var time = "";
-        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+        names = "Oct - Dec " + year + ";Jan - Mar " + nextyear + ";Apr - Jun " + nextyear + ";July - Sept " + nextyear;
 
         return names;
     }
-    function getPeroidName(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
+
+    function getPeroidName(period) {
+        var year = period.substring(0, 4);
+        var quater = period.substring(4, 6);
         var time = "";
         var names = year
 
         return names;
     }
 
-    function getDataFromUrl(arr,pe,de){
+    function getDataFromUrl(arr, pe, de) {
         var num = 0
-        $.each(arr,function(k,v){
-            if(v[0]== de && v[1] == pe){
+        $.each(arr, function (k, v) {
+            if (v[0] == de && v[1] == pe) {
                 num = parseInt(v[2])
             }
         });
         return num;
     }
 
-    function getDataFromUrl1(arr,pe,de){
+    function getDataFromUrl1(arr, pe, de) {
         var num = 0
-        $.each(arr,function(k,v){
-            if(v[0]== de && v[2] == pe){
+        $.each(arr, function (k, v) {
+            if (v[0] == de && v[2] == pe) {
                 num = parseInt(v[3])
             }
         });
@@ -204,16 +221,655 @@
     }
 
 
-    function getDataElements(){
-        var data = [{"title":"Objective 1: Ensure 27 facilities in Temeke and Ilala offer quality, youth-friendly contraceptive services, particularly a balanced selection of long-acting methods, by 2017. Ensure an additional 33 facilities offer both long-acting and permanent methods by 2017.","color":"#ABE2F4","content":[{"indicator":"# of facilities offering contraceptive services, including short-acting and long-acting (IUD and implant)","num":"1","id":"PMPLADDE001","targett":"PMPLADTG001"},{"indicator":"# of facilities offering all contraceptive services (including short-acting, long-acting and permanent methods)","num":"2","id":"PMPLADDE002","targett":"PMPLADTG002"},{"indicator":"pills","num":"","id":"PMPLADDE003","targett":"PMPLADTG003"},{"indicator":"injectables","num":"","id":"PMPLADDE004","targett":"PMPLADTG004"},{"indicator":"# of new LAPM users (includes interval IUD, PPIUD, implant, PM)","num":"5","id":"TVI7YhWakbT","targett":"PMPLADTG005"},{"indicator":"# of new implant users","num":"6","id":"zzHhECZGsqo","targett":"PMPLADTG006"},{"indicator":"FP PNC - within 40 days of delivery","num":"1","id":"xKDFycSgoPb","targett":"PMPLADTG007"},{"indicator":"# of new IUD users (interval + PPIUD)","num":"7","id":"q4e8YALiRYp","targett":"PMPLADTG008"},{"indicator":"FP - interval IUD","num":"","id":"UjGebiXNg0t","targett":"PMPLADTG009"},{"indicator":"L&D - PPIUD","num":"","id":"Xj8WJ8PCha2","targett":"PMPLADTG010"},{"indicator":"Addiitional PPFP Indicators","num":"","id":"","targett":""},{"indicator":"# of new users Implant due PPFP","num":"","id":"EBjqPsUeExn","targett":"PMPLADTG012"},{"indicator":"# of new users Injection due PPFP","num":"","id":"eMZeZodZTQ1","targett":"PMPLADTG013"},{"indicator":"# of new users condom due PPFP","num":"","id":"EI4rC5xR082","targett":"PMPLADTG014"},{"indicator":"# of new users pills due PPFP","num":"","id":"p8wy0RxAed6","targett":"PMPLADTG015"},{"indicator":"# of new post partum BTL (PM)","num":"","id":"nSO8XkAXrFS","targett":"PMPLADTG016"},{"indicator":"# of new permanent method users Interval (Male & Female)","num":"8","id":"aXPh1HJwmYo","targett":"PMPLADTG017"},{"indicator":"Additional service FP  indicators required by LAD ","num":"8.1","id":"","targett":""},{"indicator":"# of deliveries at facilities providing PPIUD","num":"","id":"kLI4iGDbN3p","targett":"PMPLADTG018"},{"indicator":"# of women counseled on PPFP","num":"","id":"vHYq4Tu02Vg","targett":"PMPLADTG019"},{"indicator":"% of LAPM due to IUD  ( Exclude PPIUD)","num":"","id":"vImnjpMhkHf","targett":"PMPLADTG020","realization":"average"},{"indicator":"% of LAPM due to implants","num":"","id":"jFDIzFKa8A3","targett":"PMPLADTG021","realization":"average"},{"indicator":"% of LAPM due to PM ","num":"","id":"S8uBrUXHrkL","targett":"PMPLADTG022","realization":"average"},{"indicator":"total # of PPIUD providers","num":"","id":"PMPLADDE023","targett":"PMPLADTG023"},{"indicator":"total # of LAPM providers","num":"","id":"PMPLADDE024","targett":"PMPLADTG024"},{"indicator":"total # of cPAC providers","num":"","id":"PMPLADDE025","targett":"PMPLADTG025"},{"indicator":"Continuation rate (by method) as measured by CHWs","num":"9","id":"","targett":""},{"indicator":"Pill continuation rateP","num":"10","id":"PMPLADDE026","targett":"PMPLADTG026"},{"indicator":"Injectable continuation rate","num":"11","id":"PMPLADDE027","targett":"PMPLADTG027"},{"indicator":"Implant continuation rateP","num":"12","id":"PMPLADDE028","targett":"PMPLADTG028"},{"indicator":"IUD continuation rate","num":"13","id":"PMPLADDE029","targett":"PMPLADTG029"},{"indicator":"PM continuation rate","num":"14","id":"PMPLADDE030","targett":"PMPLADTG030"},{"indicator":"# of facility assessments conducted on contraceptive service delivery","num":"15","id":"PMPLADDE031","targett":"PMPLADTG031"},{"indicator":"# of master trainers re-oriented on FP prior to offering training","num":"16","id":"PMPLADDE032","targett":"PMPLADTG032"},{"indicator":"# of providers oriented on general FP and short-acting methods (required by government prior to LAPM training)","num":"","id":"PMPLADDE033","targett":"PMPLADTG033"},{"indicator":"# of Master Trainers trained as trainers for PPIUD insertion","num":"18","id":"PMPLADDE034","targett":"PMPLADTG034"},{"indicator":"# of providers (MDs and AMOs; clinical officers and nurses/nurse- midwives) trained in long-acting methods","num":"19","id":"PMPLADDE035","targett":"PMPLADTG035"},{"indicator":"# of providers (subset of those trained on long-acting methods) trained on PPIUD","num":"20","id":"PMPLADDE036","targett":"PMPLADTG036"},{"indicator":"# of providers (medical officers and AMOs) trained in permanent methods (subset of those trained on long-acting methods)","num":"21","id":"PMPLADDE037","targett":"PMPLADTG037"},{"indicator":"# of providers trained/oriented on contraceptive counseling in ANC, PNC, immunization and HIV services","num":"22","id":"PMPLADDE038","targett":"PMPLADTG038"},{"indicator":"# of project-supported facilities offering contraceptive counseling during ANC visits","num":"23","id":"PMPLADDE039","targett":"PMPLADTG039"},{"indicator":"# of project-supported facilities offering contraceptive method provision during PNC visits","num":"23a","id":"PMPLADDE040","targett":"PMPLADTG040"},{"indicator":"# of project-supported facilities offering FP information and (in- facility) referrals during immunization services","num":"24","id":"PMPLADDE041","targett":"PMPLADTG041"},{"indicator":"# of project-supported facilities which have integrated FP into HIV treatment services","num":"25","id":"PMPLADDE042","targett":"PMPLADTG042"},{"indicator":"# of mentorship team members trained","num":"26","id":"PMPLADDE043","targett":"PMPLADTG043"},{"indicator":"# of facilities receiving at least one mentorship visit per quarter","num":"27","id":"PMPLADDE044","targett":"PMPLADTG044"},{"indicator":"Supervision guidelines and checklists incorporate ISQS methodology/content","num":"28","id":"PMPLADDE045","targett":"PMPLADTG045"},{"indicator":"# of facilities receiving at least one supervision visit per quarter for contraceptive services","num":"29","id":"PMPLADDE046","targett":"PMPLADTG046"},{"indicator":"# of facilities that have adequate equipment and supplies to provide contraceptive services","num":"30","id":"PMPLADDE047","targett":"PMPLADTG047"},{"indicator":"mHealth applications developed","num":"32","id":"PMPLADDE048","targett":"PMPLADTG048"},{"indicator":"# of facilities using established referral form process to confirm contraceptive referrals (from CHW) ","num":"33","id":"PMPLADDE049","targett":"PMPLADTG049"},{"indicator":"# of quarterly data review meetings held by district (Temeke and Ilala)","num":"34","id":"PMPLADDE050","targett":"PMPLADTG050"},{"indicator":"# of facilities holding regular data review meetings","num":"20","id":"PMPLADDE051","targett":"PMPLADTG051"},{"indicator":"# of facilities provided with job aids to support quality counseling","num":"36","id":"PMPLADDE052","targett":"PMPLADTG052"}]},{"title":"Objective 2: Ensure 36 facilities in Temeke and Ilala offer quality, youth-friendly cPAC services (as an entry point for CAC) to all women by 2017.","color":"#ABE2F4","content":[{"indicator":"# of facilities offering cPAC services","num":"37","id":"PMPLADDE053","targett":"PMPLADTG053"},{"indicator":"% of facilities that meet essential quality standards for cPAC","num":"38","id":"PMPLADDE054","targett":"PMPLADTG054"},{"indicator":"# of women receiving cPAC services from project-supported facilities (MVA + D&C +Medical Abortion)","num":"39","id":"aPmbK2NicWq","targett":"PMPLADTG055"},{"indicator":"# of women receiving medical abortion for cPAC","num":"40","id":"","targett":"PMPLADTG056"},{"indicator":"# of women receiving MVA for cPAC","num":"41","id":"epSeyeRZEKk","targett":"PMPLADTG057"},{"indicator":"# of women receiving D&C for cPAC","num":"","id":"LC9U5M28wCO","targett":"PMPLADTG057"},{"indicator":"# of total cPAC clients that adopt a modern method of contraception","num":"42","id":"aZsMhTzOQqW","targett":"PMPLADTG058"},{"indicator":"# of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception","num":"","id":"VTZSpfU22cp","targett":"PMPLADTG059"},{"indicator":"# of cPAC clients receiving long term method (Implant,Jadelle, IUCD and PM) for postabortion contraception","num":"","id":"qEFRDYHCdej","targett":"PMPLADTG060"},{"indicator":"# of cPAC clients receiving IUD for postabortion contraception","num":"","id":"FdAyaohqbtT","targett":"PMPLADTG061"},{"indicator":"# of cPAC clients receiving implant+Jadele for postabortion contraception","num":"","id":"qpskMjr3Xue","targett":"PMPLADTG062"},{"indicator":"# of cPAC clients receiving PM for postabortion contraception","num":"","id":"tNHAIZE2Svs","targett":"PMPLADTG063"},{"indicator":"% of total cPAC clients that adopt a modern method of contraception","num":"43","id":"WpOoiQEa8To","targett":"PMPLADTG064","realization":"average"},{"indicator":"% of cPAC clients accepting contraception who choose LAPM","num":"44","id":"HisHsoEycnC","targett":"PMPLADTG065","realization":"average"},{"indicator":"% of cPAC LAPM acceptors who choose IUD","num":"44","id":"hNzeZBXYTkl","targett":"PMPLADTG066","realization":"average"},{"indicator":"% of cPAC LAPM acceptors who choose implants","num":"46","id":"e8FKAYha0i7","targett":"PMPLADTG067","realization":"average"},{"indicator":"% of cPAC LAPM acceptors who choose PM","num":"47","id":"PagjI6K7Izx","targett":"PMPLADTG068","realization":"average"},{"indicator":"# of facility assessments conducted on cPAC service delivery","num":"48","id":"PMPLADDE069","targett":"PMPLADTG069"},{"indicator":"# of trainers trained in cPAC","num":"49","id":"PMPLADDE070","targett":"PMPLADTG070"},{"indicator":"# of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses trained on cPAC","num":"50","id":"PMPLADDE071","targett":"PMPLADTG071"},{"indicator":"# of nurses and non-physician providers trained on harm reduction practices","num":"51","id":"PMPLADDE072","targett":"PMPLADTG072"},{"indicator":"# of facilities receive at least one supervision visit per quarter for cPAC services ","num":"53","id":"PMPLADDE073","targett":"PMPLADTG073"},{"indicator":"# of facilities that have adequate equipment and supplies to provide cPAC services","num":"54","id":"PMPLADDE074","targett":"PMPLADTG074"},{"indicator":"# of facilities using established referral system for cPAC and postabortion contraception uptake","num":"55","id":"PMPLADDE075","targett":"PMPLADTG075"},{"indicator":"# of health facilities providing referrals to cPAC","num":"56","id":"PMPLADDE076","targett":"PMPLADTG076"}]},{"title":"Objective 3: Ensure 165 CHWs in Temeke provide quality counseling and referrals for contraceptive and cPAC services by 2017.","color":"#ABE2F4","content":[{"indicator":"# of trainers trained to conduct CHW training","num":"63","id":"PMPLADDE077","targett":"PMPLADTG077"},{"indicator":"# of CHWs trained","num":"64","id":"PMPLADDE078","targett":"PMPLADTG078"},{"indicator":"# of CHWs received refresher training","num":"","id":"PMPLADDE079","targett":"PMPLADTG079"},{"indicator":"# of CHWs providing counseling and referrals for contraceptive services ","num":"","id":"PMPLADDE080","targett":"PMPLADTG080"},{"indicator":"# of CHWs providing counseling and referrals for cPAC","num":"57","id":"PMPLADDE081","targett":"PMPLADTG081"},{"indicator":"Number of CHW Supervisors trainede","num":"57.1","id":"PMPLADDE082","targett":"PMPLADTG082"},{"indicator":"# of CHWs use mHealth system for all  contraceptive counseling, referrals and follow-up","num":"68","id":"PMPLADDE083","targett":"PMPLADTG083"},{"indicator":"# of CHWs completing full sequence of counseling using mobile application","num":"69","id":"PMPLADDE084","targett":"PMPLADTG084"},{"indicator":"# of CHWs receiving performance-based incentives","num":"74","id":"PMPLADDE085","targett":"PMPLADTG085"},{"indicator":"# of women receiving home visits and  counselling  by the CHW","num":"65","id":"PMPLADDE086","targett":"PMPLADTG086"},{"indicator":"% of CHW clients ( women) receiving more than one visit from a CHW during an annual period","num":"66","id":"PMPLADDE087","targett":"PMPLADTG087"},{"indicator":"# of CHW clients ( women) receiving 7 days follow up visit in the annual period","num":"","id":"PMPLADDE088","targett":"PMPLADTG088"},{"indicator":"# of CHW clients ( women) receiving 30 days follow up visit in the annual period","num":"","id":"PMPLADDE089","targett":"PMPLADTG089"},{"indicator":"Average number of home visits per woman per year","num":"67","id":"PMPLADDE090","targett":"PMPLADTG090"},{"indicator":"# of referrals for contraception services by CHWs","num":"58","id":"PMPLADDE091","targett":"PMPLADTG091"},{"indicator":"# of referrals for contraception services by CHWs completed","num":"59","id":"PMPLADDE092","targett":"PMPLADTG092"},{"indicator":"% of referrals for contraception services by CHWs that are completed ","num":"59","id":"PMPLADDE093","targett":"PMPLADTG093","realization":"average"},{"indicator":"# of referrals for cPAC services by CHWs","num":"60","id":"PMPLADDE094","targett":"PMPLADTG094"},{"indicator":"% of referrals for cPAC services by CHWs that are completed. ","num":"61","id":"PMPLADDE095","targett":"PMPLADTG095","realization":"average"},{"indicator":"# of District and NGO staff trained on mHealth system","num":"70","id":"PMPLADDE096","targett":"PMPLADTG096"},{"indicator":"# of district and NGO staff accessing the mHealth system at least once per quarter in order to inform quality improvement","num":"71","id":"PMPLADDE097","targett":"PMPLADTG097"},{"indicator":"# of NGO field officers and supervisors trained in CHW supervision","num":"72","id":"PMPLADDE098","targett":"PMPLADTG098"},{"indicator":"# of monthly supervision meetings held with CHWs","num":"73","id":"PMPLADDE099","targett":"PMPLADTG099"},{"indicator":"# of facility health committees that include CHWs","num":"75","id":"PMPLADDE100","targett":"PMPLADTG100"}]},{"title":"Objective 4: Ensure 45 health facility catchment areas in Temeke and Ilala are engaged in systematic processes to hold the health system accountable for provision of rights-based contraceptive and cPAC services by 2017.","color":"#ABE2F4","content":[{"indicator":"% of Facility Health Committees working with Council Health Management Teams to address issues regarding service availability/ quality ","num":"76","id":"PMPLADDE101","targett":"PMPLADTG101","realization":"average"},{"indicator":"# of facility health committees established or revitalized","num":"77","id":"PMPLADDE102","targett":"PMPLADTG102"},{"indicator":"# of CHWs using Citizen Report Card questionnaire with clients","num":"78","id":"PMPLADDE103","targett":"PMPLADTG103"},{"indicator":"# of meetings held with district and facility staff to review report card findings","num":"79","id":"PMPLADDE104","targett":"PMPLADTG104"},{"indicator":"# of health facility, facility health committee, and LGA staff trained on use of data for decision making","num":"80","id":"PMPLADDE105","targett":"PMPLADTG105"}]},{"title":"Objective 5: Support two local NGOs to achieve at least 75% of benchmarks related to their capacity to implement a CHW system and facilitate mechanisms for community participation in demanding quality services in Temeke and Ilala by 2017.","color":"#ABE2F4","content":[{"indicator":"# of local NGOs that have achieved 75% of capacity benchmarks related to contraception and cPAC","num":"81","id":"PMPLADDE106","targett":"PMPLADTG106"},{"indicator":"# of organizations selected as a local implementing partner","num":"82","id":"PMPLADDE107","targett":"PMPLADTG107"},{"indicator":"# of participatory organizational assessments conducted for local NGOs","num":"83","id":"PMPLADDE108","targett":"PMPLADTG108"},{"indicator":"# of capacity building plans developed for local NGOs","num":"84","id":"PMPLADDE109","targett":"PMPLADTG109"},{"indicator":"Sets of performance benchmarks identified for local NGOs","num":"85","id":"PMPLADDE110","targett":"PMPLADTG110"},{"indicator":"# of trainings with NGO staff conducted","num":"86","id":"PMPLADDE111","targett":"PMPLADTG111"},{"indicator":"# of local partners implementing CHW component","num":"87","id":"PMPLADDE112","targett":"PMPLADTG112"},{"indicator":"# of community engagement activities held by local partners to foster a supportive environment for women and youth to seek services","num":"88","id":"PMPLADDE113","targett":"PMPLADTG113"},{"indicator":"# of data review meetings held by local partners","num":"89","id":"PMPLADDE114","targett":"PMPLADTG114"}]},{"title":"Cross-cutting learning activities","color":"#00B050","content":[{"indicator":"# of virtual meetings held","num":"90","id":"PMPLADDE115","targett":"PMPLADTG115"},{"indicator":"# of in-person project team meetings held","num":"91","id":"PMPLADDE116","targett":"PMPLADTG116"},{"indicator":"# of publications produced","num":"92","id":"PMPLADDE117","targett":"PMPLADTG117"},{"indicator":"# of end of project dissemination events held","num":"93","id":"PMPLADDE118","targett":"PMPLADTG118"}]}];
+    function getDataElements() {
+        var data = [{
+            "title": "Objective 1: Ensure 27 facilities in Temeke and Ilala offer quality, youth-friendly contraceptive services, particularly a balanced selection of long-acting methods, by 2017. Ensure an additional 33 facilities offer both long-acting and permanent methods by 2017.",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "# of facilities offering contraceptive services, including short-acting and long-acting (IUD and implant)",
+                "num": "1",
+                "id": "PMPLADDE001",
+                "targett": "PMPLADTG001"
+            }, {
+                "indicator": "# of facilities offering all contraceptive services (including short-acting, long-acting and permanent methods)",
+                "num": "2",
+                "id": "PMPLADDE002",
+                "targett": "PMPLADTG002"
+            }, {
+                "indicator": "pills",
+                "num": "",
+                "id": "PMPLADDE003",
+                "targett": "PMPLADTG003"
+            }, {
+                "indicator": "injectables",
+                "num": "",
+                "id": "PMPLADDE004",
+                "targett": "PMPLADTG004"
+            }, {
+                "indicator": "# of new LAPM users (includes interval IUD, PPIUD, implant, PM)",
+                "num": "5",
+                "id": "TVI7YhWakbT",
+                "targett": "PMPLADTG005"
+            }, {
+                "indicator": "# of new implant users",
+                "num": "6",
+                "id": "zzHhECZGsqo",
+                "targett": "PMPLADTG006"
+            }, {
+                "indicator": "FP PNC - within 40 days of delivery",
+                "num": "1",
+                "id": "xKDFycSgoPb",
+                "targett": "PMPLADTG007"
+            }, {
+                "indicator": "# of new IUD users (interval + PPIUD)",
+                "num": "7",
+                "id": "q4e8YALiRYp",
+                "targett": "PMPLADTG008"
+            }, {
+                "indicator": "FP - interval IUD",
+                "num": "",
+                "id": "UjGebiXNg0t",
+                "targett": "PMPLADTG009"
+            }, {
+                "indicator": "L&D - PPIUD",
+                "num": "",
+                "id": "Xj8WJ8PCha2",
+                "targett": "PMPLADTG010"
+            }, {
+                "indicator": "Addiitional PPFP Indicators",
+                "num": "",
+                "id": "",
+                "targett": ""
+            }, {
+                "indicator": "# of new users Implant due PPFP",
+                "num": "",
+                "id": "EBjqPsUeExn",
+                "targett": "PMPLADTG012"
+            }, {
+                "indicator": "# of new users Injection due PPFP",
+                "num": "",
+                "id": "eMZeZodZTQ1",
+                "targett": "PMPLADTG013"
+            }, {
+                "indicator": "# of new users condom due PPFP",
+                "num": "",
+                "id": "EI4rC5xR082",
+                "targett": "PMPLADTG014"
+            }, {
+                "indicator": "# of new users pills due PPFP",
+                "num": "",
+                "id": "p8wy0RxAed6",
+                "targett": "PMPLADTG015"
+            }, {
+                "indicator": "# of new post partum BTL (PM)",
+                "num": "",
+                "id": "nSO8XkAXrFS",
+                "targett": "PMPLADTG016"
+            }, {
+                "indicator": "# of new permanent method users Interval (Male & Female)",
+                "num": "8",
+                "id": "aXPh1HJwmYo",
+                "targett": "PMPLADTG017"
+            }, {
+                "indicator": "Additional service FP  indicators required by LAD ",
+                "num": "8.1",
+                "id": "",
+                "targett": ""
+            }, {
+                "indicator": "# of deliveries at facilities providing PPIUD",
+                "num": "",
+                "id": "kLI4iGDbN3p",
+                "targett": "PMPLADTG018"
+            }, {
+                "indicator": "# of women counseled on PPFP",
+                "num": "",
+                "id": "vHYq4Tu02Vg",
+                "targett": "PMPLADTG019"
+            }, {
+                "indicator": "% of LAPM due to IUD  ( Exclude PPIUD)",
+                "num": "",
+                "id": "vImnjpMhkHf",
+                "targett": "PMPLADTG020",
+                "realization": "average"
+            }, {
+                "indicator": "% of LAPM due to implants",
+                "num": "",
+                "id": "jFDIzFKa8A3",
+                "targett": "PMPLADTG021",
+                "realization": "average"
+            }, {
+                "indicator": "% of LAPM due to PM ",
+                "num": "",
+                "id": "S8uBrUXHrkL",
+                "targett": "PMPLADTG022",
+                "realization": "average"
+            }, {
+                "indicator": "total # of PPIUD providers",
+                "num": "",
+                "id": "PMPLADDE023",
+                "targett": "PMPLADTG023"
+            }, {
+                "indicator": "total # of LAPM providers",
+                "num": "",
+                "id": "PMPLADDE024",
+                "targett": "PMPLADTG024"
+            }, {
+                "indicator": "total # of cPAC providers",
+                "num": "",
+                "id": "PMPLADDE025",
+                "targett": "PMPLADTG025"
+            }, {
+                "indicator": "Continuation rate (by method) as measured by CHWs",
+                "num": "9",
+                "id": "",
+                "targett": ""
+            }, {
+                "indicator": "Pill continuation rateP",
+                "num": "10",
+                "id": "PMPLADDE026",
+                "targett": "PMPLADTG026"
+            }, {
+                "indicator": "Injectable continuation rate",
+                "num": "11",
+                "id": "PMPLADDE027",
+                "targett": "PMPLADTG027"
+            }, {
+                "indicator": "Implant continuation rateP",
+                "num": "12",
+                "id": "PMPLADDE028",
+                "targett": "PMPLADTG028"
+            }, {
+                "indicator": "IUD continuation rate",
+                "num": "13",
+                "id": "PMPLADDE029",
+                "targett": "PMPLADTG029"
+            }, {
+                "indicator": "PM continuation rate",
+                "num": "14",
+                "id": "PMPLADDE030",
+                "targett": "PMPLADTG030"
+            }, {
+                "indicator": "# of facility assessments conducted on contraceptive service delivery",
+                "num": "15",
+                "id": "PMPLADDE031",
+                "targett": "PMPLADTG031"
+            }, {
+                "indicator": "# of master trainers re-oriented on FP prior to offering training",
+                "num": "16",
+                "id": "PMPLADDE032",
+                "targett": "PMPLADTG032"
+            }, {
+                "indicator": "# of providers oriented on general FP and short-acting methods (required by government prior to LAPM training)",
+                "num": "",
+                "id": "PMPLADDE033",
+                "targett": "PMPLADTG033"
+            }, {
+                "indicator": "# of Master Trainers trained as trainers for PPIUD insertion",
+                "num": "18",
+                "id": "PMPLADDE034",
+                "targett": "PMPLADTG034"
+            }, {
+                "indicator": "# of providers (MDs and AMOs; clinical officers and nurses/nurse- midwives) trained in long-acting methods",
+                "num": "19",
+                "id": "PMPLADDE035",
+                "targett": "PMPLADTG035"
+            }, {
+                "indicator": "# of providers (subset of those trained on long-acting methods) trained on PPIUD",
+                "num": "20",
+                "id": "PMPLADDE036",
+                "targett": "PMPLADTG036"
+            }, {
+                "indicator": "# of providers (medical officers and AMOs) trained in permanent methods (subset of those trained on long-acting methods)",
+                "num": "21",
+                "id": "PMPLADDE037",
+                "targett": "PMPLADTG037"
+            }, {
+                "indicator": "# of providers trained/oriented on contraceptive counseling in ANC, PNC, immunization and HIV services",
+                "num": "22",
+                "id": "PMPLADDE038",
+                "targett": "PMPLADTG038"
+            }, {
+                "indicator": "# of project-supported facilities offering contraceptive counseling during ANC visits",
+                "num": "23",
+                "id": "PMPLADDE039",
+                "targett": "PMPLADTG039"
+            }, {
+                "indicator": "# of project-supported facilities offering contraceptive method provision during PNC visits",
+                "num": "23a",
+                "id": "PMPLADDE040",
+                "targett": "PMPLADTG040"
+            }, {
+                "indicator": "# of project-supported facilities offering FP information and (in- facility) referrals during immunization services",
+                "num": "24",
+                "id": "PMPLADDE041",
+                "targett": "PMPLADTG041"
+            }, {
+                "indicator": "# of project-supported facilities which have integrated FP into HIV treatment services",
+                "num": "25",
+                "id": "PMPLADDE042",
+                "targett": "PMPLADTG042"
+            }, {
+                "indicator": "# of mentorship team members trained",
+                "num": "26",
+                "id": "PMPLADDE043",
+                "targett": "PMPLADTG043"
+            }, {
+                "indicator": "# of facilities receiving at least one mentorship visit per quarter",
+                "num": "27",
+                "id": "PMPLADDE044",
+                "targett": "PMPLADTG044"
+            }, {
+                "indicator": "Supervision guidelines and checklists incorporate ISQS methodology/content",
+                "num": "28",
+                "id": "PMPLADDE045",
+                "targett": "PMPLADTG045"
+            }, {
+                "indicator": "# of facilities receiving at least one supervision visit per quarter for contraceptive services",
+                "num": "29",
+                "id": "PMPLADDE046",
+                "targett": "PMPLADTG046"
+            }, {
+                "indicator": "# of facilities that have adequate equipment and supplies to provide contraceptive services",
+                "num": "30",
+                "id": "PMPLADDE047",
+                "targett": "PMPLADTG047"
+            }, {
+                "indicator": "mHealth applications developed",
+                "num": "32",
+                "id": "PMPLADDE048",
+                "targett": "PMPLADTG048"
+            }, {
+                "indicator": "# of facilities using established referral form process to confirm contraceptive referrals (from CHW) ",
+                "num": "33",
+                "id": "PMPLADDE049",
+                "targett": "PMPLADTG049"
+            }, {
+                "indicator": "# of quarterly data review meetings held by district (Temeke and Ilala)",
+                "num": "34",
+                "id": "PMPLADDE050",
+                "targett": "PMPLADTG050"
+            }, {
+                "indicator": "# of facilities holding regular data review meetings",
+                "num": "20",
+                "id": "PMPLADDE051",
+                "targett": "PMPLADTG051"
+            }, {
+                "indicator": "# of facilities provided with job aids to support quality counseling",
+                "num": "36",
+                "id": "PMPLADDE052",
+                "targett": "PMPLADTG052"
+            }]
+        }, {
+            "title": "Objective 2: Ensure 36 facilities in Temeke and Ilala offer quality, youth-friendly cPAC services (as an entry point for CAC) to all women by 2017.",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "# of facilities offering cPAC services",
+                "num": "37",
+                "id": "PMPLADDE053",
+                "targett": "PMPLADTG053"
+            }, {
+                "indicator": "% of facilities that meet essential quality standards for cPAC",
+                "num": "38",
+                "id": "PMPLADDE054",
+                "targett": "PMPLADTG054"
+            }, {
+                "indicator": "# of women receiving cPAC services from project-supported facilities (MVA + D&C +Medical Abortion)",
+                "num": "39",
+                "id": "aPmbK2NicWq",
+                "targett": "PMPLADTG055"
+            }, {
+                "indicator": "# of women receiving medical abortion for cPAC",
+                "num": "40",
+                "id": "",
+                "targett": "PMPLADTG056"
+            }, {
+                "indicator": "# of women receiving MVA for cPAC",
+                "num": "41",
+                "id": "epSeyeRZEKk",
+                "targett": "PMPLADTG057"
+            }, {
+                "indicator": "# of women receiving D&C for cPAC",
+                "num": "",
+                "id": "LC9U5M28wCO",
+                "targett": "PMPLADTG057"
+            }, {
+                "indicator": "# of total cPAC clients that adopt a modern method of contraception",
+                "num": "42",
+                "id": "aZsMhTzOQqW",
+                "targett": "PMPLADTG058"
+            }, {
+                "indicator": "# of cPAC clients receiving short-acting method (pill, condom, injectable) for postabortion contraception",
+                "num": "",
+                "id": "VTZSpfU22cp",
+                "targett": "PMPLADTG059"
+            }, {
+                "indicator": "# of cPAC clients receiving long term method (Implant,Jadelle, IUCD and PM) for postabortion contraception",
+                "num": "",
+                "id": "qEFRDYHCdej",
+                "targett": "PMPLADTG060"
+            }, {
+                "indicator": "# of cPAC clients receiving IUD for postabortion contraception",
+                "num": "",
+                "id": "FdAyaohqbtT",
+                "targett": "PMPLADTG061"
+            }, {
+                "indicator": "# of cPAC clients receiving implant+Jadele for postabortion contraception",
+                "num": "",
+                "id": "qpskMjr3Xue",
+                "targett": "PMPLADTG062"
+            }, {
+                "indicator": "# of cPAC clients receiving PM for postabortion contraception",
+                "num": "",
+                "id": "tNHAIZE2Svs",
+                "targett": "PMPLADTG063"
+            }, {
+                "indicator": "% of total cPAC clients that adopt a modern method of contraception",
+                "num": "43",
+                "id": "WpOoiQEa8To",
+                "targett": "PMPLADTG064",
+                "realization": "average"
+            }, {
+                "indicator": "% of cPAC clients accepting contraception who choose LAPM",
+                "num": "44",
+                "id": "HisHsoEycnC",
+                "targett": "PMPLADTG065",
+                "realization": "average"
+            }, {
+                "indicator": "% of cPAC LAPM acceptors who choose IUD",
+                "num": "44",
+                "id": "hNzeZBXYTkl",
+                "targett": "PMPLADTG066",
+                "realization": "average"
+            }, {
+                "indicator": "% of cPAC LAPM acceptors who choose implants",
+                "num": "46",
+                "id": "e8FKAYha0i7",
+                "targett": "PMPLADTG067",
+                "realization": "average"
+            }, {
+                "indicator": "% of cPAC LAPM acceptors who choose PM",
+                "num": "47",
+                "id": "PagjI6K7Izx",
+                "targett": "PMPLADTG068",
+                "realization": "average"
+            }, {
+                "indicator": "# of facility assessments conducted on cPAC service delivery",
+                "num": "48",
+                "id": "PMPLADDE069",
+                "targett": "PMPLADTG069"
+            }, {
+                "indicator": "# of trainers trained in cPAC",
+                "num": "49",
+                "id": "PMPLADDE070",
+                "targett": "PMPLADTG070"
+            }, {
+                "indicator": "# of Medical Officers, Assistant Medical Officers, Clinical Officers, and Registered Nurses trained on cPAC",
+                "num": "50",
+                "id": "PMPLADDE071",
+                "targett": "PMPLADTG071"
+            }, {
+                "indicator": "# of nurses and non-physician providers trained on harm reduction practices",
+                "num": "51",
+                "id": "PMPLADDE072",
+                "targett": "PMPLADTG072"
+            }, {
+                "indicator": "# of facilities receive at least one supervision visit per quarter for cPAC services ",
+                "num": "53",
+                "id": "PMPLADDE073",
+                "targett": "PMPLADTG073"
+            }, {
+                "indicator": "# of facilities that have adequate equipment and supplies to provide cPAC services",
+                "num": "54",
+                "id": "PMPLADDE074",
+                "targett": "PMPLADTG074"
+            }, {
+                "indicator": "# of facilities using established referral system for cPAC and postabortion contraception uptake",
+                "num": "55",
+                "id": "PMPLADDE075",
+                "targett": "PMPLADTG075"
+            }, {
+                "indicator": "# of health facilities providing referrals to cPAC",
+                "num": "56",
+                "id": "PMPLADDE076",
+                "targett": "PMPLADTG076"
+            }]
+        }, {
+            "title": "Objective 3: Ensure 165 CHWs in Temeke provide quality counseling and referrals for contraceptive and cPAC services by 2017.",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "# of trainers trained to conduct CHW training",
+                "num": "63",
+                "id": "PMPLADDE077",
+                "targett": "PMPLADTG077"
+            }, {
+                "indicator": "# of CHWs trained",
+                "num": "64",
+                "id": "PMPLADDE078",
+                "targett": "PMPLADTG078"
+            }, {
+                "indicator": "# of CHWs received refresher training",
+                "num": "",
+                "id": "PMPLADDE079",
+                "targett": "PMPLADTG079"
+            }, {
+                "indicator": "# of CHWs providing counseling and referrals for contraceptive services ",
+                "num": "",
+                "id": "PMPLADDE080",
+                "targett": "PMPLADTG080"
+            }, {
+                "indicator": "# of CHWs providing counseling and referrals for cPAC",
+                "num": "57",
+                "id": "PMPLADDE081",
+                "targett": "PMPLADTG081"
+            }, {
+                "indicator": "Number of CHW Supervisors trainede",
+                "num": "57.1",
+                "id": "PMPLADDE082",
+                "targett": "PMPLADTG082"
+            }, {
+                "indicator": "# of CHWs use mHealth system for all  contraceptive counseling, referrals and follow-up",
+                "num": "68",
+                "id": "PMPLADDE083",
+                "targett": "PMPLADTG083"
+            }, {
+                "indicator": "# of CHWs completing full sequence of counseling using mobile application",
+                "num": "69",
+                "id": "PMPLADDE084",
+                "targett": "PMPLADTG084"
+            }, {
+                "indicator": "# of CHWs receiving performance-based incentives",
+                "num": "74",
+                "id": "PMPLADDE085",
+                "targett": "PMPLADTG085"
+            }, {
+                "indicator": "# of women receiving home visits and  counselling  by the CHW",
+                "num": "65",
+                "id": "PMPLADDE086",
+                "targett": "PMPLADTG086"
+            }, {
+                "indicator": "% of CHW clients ( women) receiving more than one visit from a CHW during an annual period",
+                "num": "66",
+                "id": "PMPLADDE087",
+                "targett": "PMPLADTG087"
+            }, {
+                "indicator": "# of CHW clients ( women) receiving 7 days follow up visit in the annual period",
+                "num": "",
+                "id": "PMPLADDE088",
+                "targett": "PMPLADTG088"
+            }, {
+                "indicator": "# of CHW clients ( women) receiving 30 days follow up visit in the annual period",
+                "num": "",
+                "id": "PMPLADDE089",
+                "targett": "PMPLADTG089"
+            }, {
+                "indicator": "Average number of home visits per woman per year",
+                "num": "67",
+                "id": "PMPLADDE090",
+                "targett": "PMPLADTG090"
+            }, {
+                "indicator": "# of referrals for contraception services by CHWs",
+                "num": "58",
+                "id": "PMPLADDE091",
+                "targett": "PMPLADTG091"
+            }, {
+                "indicator": "# of referrals for contraception services by CHWs completed",
+                "num": "59",
+                "id": "PMPLADDE092",
+                "targett": "PMPLADTG092"
+            }, {
+                "indicator": "% of referrals for contraception services by CHWs that are completed ",
+                "num": "59",
+                "id": "PMPLADDE093",
+                "targett": "PMPLADTG093",
+                "realization": "average"
+            }, {
+                "indicator": "# of referrals for cPAC services by CHWs",
+                "num": "60",
+                "id": "PMPLADDE094",
+                "targett": "PMPLADTG094"
+            }, {
+                "indicator": "% of referrals for cPAC services by CHWs that are completed. ",
+                "num": "61",
+                "id": "PMPLADDE095",
+                "targett": "PMPLADTG095",
+                "realization": "average"
+            }, {
+                "indicator": "# of District and NGO staff trained on mHealth system",
+                "num": "70",
+                "id": "PMPLADDE096",
+                "targett": "PMPLADTG096"
+            }, {
+                "indicator": "# of district and NGO staff accessing the mHealth system at least once per quarter in order to inform quality improvement",
+                "num": "71",
+                "id": "PMPLADDE097",
+                "targett": "PMPLADTG097"
+            }, {
+                "indicator": "# of NGO field officers and supervisors trained in CHW supervision",
+                "num": "72",
+                "id": "PMPLADDE098",
+                "targett": "PMPLADTG098"
+            }, {
+                "indicator": "# of monthly supervision meetings held with CHWs",
+                "num": "73",
+                "id": "PMPLADDE099",
+                "targett": "PMPLADTG099"
+            }, {
+                "indicator": "# of facility health committees that include CHWs",
+                "num": "75",
+                "id": "PMPLADDE100",
+                "targett": "PMPLADTG100"
+            }]
+        }, {
+            "title": "Objective 4: Ensure 45 health facility catchment areas in Temeke and Ilala are engaged in systematic processes to hold the health system accountable for provision of rights-based contraceptive and cPAC services by 2017.",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "% of Facility Health Committees working with Council Health Management Teams to address issues regarding service availability/ quality ",
+                "num": "76",
+                "id": "PMPLADDE101",
+                "targett": "PMPLADTG101",
+                "realization": "average"
+            }, {
+                "indicator": "# of facility health committees established or revitalized",
+                "num": "77",
+                "id": "PMPLADDE102",
+                "targett": "PMPLADTG102"
+            }, {
+                "indicator": "# of CHWs using Citizen Report Card questionnaire with clients",
+                "num": "78",
+                "id": "PMPLADDE103",
+                "targett": "PMPLADTG103"
+            }, {
+                "indicator": "# of meetings held with district and facility staff to review report card findings",
+                "num": "79",
+                "id": "PMPLADDE104",
+                "targett": "PMPLADTG104"
+            }, {
+                "indicator": "# of health facility, facility health committee, and LGA staff trained on use of data for decision making",
+                "num": "80",
+                "id": "PMPLADDE105",
+                "targett": "PMPLADTG105"
+            }]
+        }, {
+            "title": "Objective 5: Support two local NGOs to achieve at least 75% of benchmarks related to their capacity to implement a CHW system and facilitate mechanisms for community participation in demanding quality services in Temeke and Ilala by 2017.",
+            "color": "#ABE2F4",
+            "content": [{
+                "indicator": "# of local NGOs that have achieved 75% of capacity benchmarks related to contraception and cPAC",
+                "num": "81",
+                "id": "PMPLADDE106",
+                "targett": "PMPLADTG106"
+            }, {
+                "indicator": "# of organizations selected as a local implementing partner",
+                "num": "82",
+                "id": "PMPLADDE107",
+                "targett": "PMPLADTG107"
+            }, {
+                "indicator": "# of participatory organizational assessments conducted for local NGOs",
+                "num": "83",
+                "id": "PMPLADDE108",
+                "targett": "PMPLADTG108"
+            }, {
+                "indicator": "# of capacity building plans developed for local NGOs",
+                "num": "84",
+                "id": "PMPLADDE109",
+                "targett": "PMPLADTG109"
+            }, {
+                "indicator": "Sets of performance benchmarks identified for local NGOs",
+                "num": "85",
+                "id": "PMPLADDE110",
+                "targett": "PMPLADTG110"
+            }, {
+                "indicator": "# of trainings with NGO staff conducted",
+                "num": "86",
+                "id": "PMPLADDE111",
+                "targett": "PMPLADTG111"
+            }, {
+                "indicator": "# of local partners implementing CHW component",
+                "num": "87",
+                "id": "PMPLADDE112",
+                "targett": "PMPLADTG112"
+            }, {
+                "indicator": "# of community engagement activities held by local partners to foster a supportive environment for women and youth to seek services",
+                "num": "88",
+                "id": "PMPLADDE113",
+                "targett": "PMPLADTG113"
+            }, {
+                "indicator": "# of data review meetings held by local partners",
+                "num": "89",
+                "id": "PMPLADDE114",
+                "targett": "PMPLADTG114"
+            }]
+        }, {
+            "title": "Cross-cutting learning activities",
+            "color": "#00B050",
+            "content": [{
+                "indicator": "# of virtual meetings held",
+                "num": "90",
+                "id": "PMPLADDE115",
+                "targett": "PMPLADTG115"
+            }, {
+                "indicator": "# of in-person project team meetings held",
+                "num": "91",
+                "id": "PMPLADDE116",
+                "targett": "PMPLADTG116"
+            }, {
+                "indicator": "# of publications produced",
+                "num": "92",
+                "id": "PMPLADDE117",
+                "targett": "PMPLADTG117"
+            }, {
+                "indicator": "# of end of project dissemination events held",
+                "num": "93",
+                "id": "PMPLADDE118",
+                "targett": "PMPLADTG118"
+            }]
+        }];
         return data;
     }
-
 </script>
 <div class="selectOrgUnit"></div>
-<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
-<h3 class="header text-center">PMP LAD - <span class="period"></span> -  <span id="orgUnits"></span></h3>
-<div class="col-sm-10 col-sm-offset-1" >
+<h4 class="loader"><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+<h3 class="header text-center">PMP LAD - <span class="period"></span> - <span id="orgUnits"></span></h3>
+<div class="col-sm-10 col-sm-offset-1">
     <table class="listTable table table-bordered table-responsive">
         <thead class="header">
 

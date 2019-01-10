@@ -9,300 +9,1003 @@
 <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $(".loader").hide();
-        $(".header").hide();
-        var html = "";
-        var dataElems= "";
-        var dataElems1= "";
-        var dateElmsArr = [];
-        var targetsArr = [];
-        var dateElmsArr1 = [];
-        var url = "";
-        var orgUnit = dhis2.report.organisationUnit;
-        var periods = dhis2.report.periods;
-        var periodNames = getThreeMonthName(periods[0])
-        $("#orgUnits").html(orgUnit.name)
-        var data = getDataElements();
-        $.each(data,function(key,value){
-            if(value.hasOwnProperty('content')){
-                $.each(value.content,function(k,val){
-                    if(val.hasOwnProperty('indicator')){
-                        if(val.hasOwnProperty('rows')){
-                            $.each(val.defination,function(j,v){
-                                if(v.hasOwnProperty('id')){
-                                    if(v.id != ""){
-                                        if(dateElmsArr.indexOf(v.id) == -1){
-                                            dateElmsArr.push(v.id);
-                                        }
-
-                                    }
-                                }if(v.hasOwnProperty('targett')){
-                                    if(v.targett != ""){
-                                        if(targetsArr.indexOf(v.targett) == -1){
-                                            targetsArr.push(v.targett);
-                                        }
-
-                                    }
+    $(document).ready(function () {
+    $(".loader").hide();
+    $(".header").hide();
+    var html = "";
+    var indicatorIdsArray = [];
+    var indicatorIdsArrayWithOuGroup = [];
+    var indicatorIdsArrayWithoutOuGroup = [];
+    var targetIdsArray = [];
+    var orgUnit = dhis2.report.organisationUnit;
+    $("#orgUnits").html(orgUnit.name);
+    var periods = dhis2.report.periods;
+    var periodNames = getThreeMonthName(periods[0]);
+    var data = getDataElements();
+    var periodForIndicators = getThreeMonth(periods[0]);
+    $.each(data, function (index, value) {
+        if (value.hasOwnProperty('content')) {
+            $.each(value.content, function (indicatorIndex,
+                indicatorContent) {
+                if (indicatorContent.hasOwnProperty('defination')) {
+                    $.each(indicatorContent.defination, function (index, indicatorContentDefination) {
+                        if (indicatorIdsArray.indexOf(indicatorContentDefination.id) == -1) {
+                            if (indicatorContentDefination.id != "") {
+                                indicatorIdsArray.push(indicatorContentDefination.id);
+                                if (indicatorContentDefination.includeOuGroup) {
+                                    indicatorIdsArrayWithOuGroup.push(indicatorContentDefination.id)
+                                } else {
+                                    indicatorIdsArrayWithoutOuGroup.push(indicatorContentDefination.id)
                                 }
-                            });
+                            }
                         }
-                    }
-                });
-            }
-        });
-        var period = getThreeMonth(periods[0]);
-        function loadData(level,cordId){
-            html = "";
-            $('table').html("");
-            html += "<tr>";
-            html += '<th style="width: 1%">#</th>';
-            html += '<th style="width: 25%">Outcome</th>';
-            html += '<th style="width: 25%">Performance Indicator</th>';
-            $.each(periodNames.split(";"),function(m,per){
-                html += "<th style='width: 10%'>"+per+"</th>"
-            });
-            html += '<th style="width: 10%">Realisation</th>';
-            html += '<th style="width: 5%">Target</th>';
-            html += '<th style="width: 5%">Achievement</th>';
-            html += "</tr>";
-            orgunitsArr = [];
-            $.getJSON("/api/organisationUnitGroups/Ke5RMquBtP8.json?fields=name,organisationUnits",function(org){
-                $.each(org.organisationUnits,function(key,value){
-                    orgunitsArr.push(value.id)
-                });
-                var url = "/api/analytics.json?dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgunitsArr.join(";")+"&displayProperty=NAME";
-                var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
-                $(".loader").show("slow");
-                $(".header").hide();
-                $.getJSON(url,function(resp){
-                    $.getJSON(url1,function(resp1){
-                        $.each(data,function(key,value){
-                            html +="<tr style='background-color: "+value.color+"'><td colspan='9'>"+value.title+"</td> </tr>";
-                            if(value.hasOwnProperty('content')){
-                                $.each(value.content,function(k,val){
+                        if (targetIdsArray.indexOf(indicatorContentDefination.target) == -1) {
+                            if (indicatorContentDefination.target != "") {
+                                targetIdsArray.push(indicatorContentDefination.target);
+                            }
+                        }
+                    })
 
-                                    if(val.hasOwnProperty('indicator')){
-                                        if(val.hasOwnProperty('rows')){
-                                            var valuee1 = [];
-                                            var sumvaluee1 = 0;
-                                            var valuee2 = [];
-                                            var sumvaluee2 = 0;
-                                            html +="<tr>";
-                                            html +="<td rowspan='"+val.rows+"'></td>";
-                                            html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
-                                            html +="<td>"+val.defination[0].term+"</td>";
-                                            if(val.hasOwnProperty('defination')){
-                                                if(val.defination[0].hasOwnProperty('id')){
-                                                    $.each(period.split(";"),function(m,per){
-                                                        valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
-                                                        html +="<td>"+valuee1[per]+"</td>";
-                                                        sumvaluee1+=valuee1[per];
+                }
+            });
+        }
+    });
+    loadData();
+
+    function loadData() {
+        html = "";
+        $('table').html("")
+        html += "<tr>";
+        html += '<th style="width: 5%">#</th>';
+        html += '<th colspan="2" style="width: 25%">Performance Indicator</th>';
+        $.each(periodNames.split(";"), function (periodIndex, periodName) {
+            html += "<th style='width: 10%'>" + periodName + "</th>"
+        })
+        html += '<th style="width: 10%">Total</th>'
+        html += '<th style="width: 5%">Target</th>'
+        html += '<th style="width: 5%">Achievement</th>'
+        html += "</tr>"
+        var ouGroupUrl = "/api/organisationUnitGroups/Ke5RMquBtP8.json?fields=organisationUnits[id]";
+        var indicatorsAnalyticsUrlWithOutOuGroup =
+            "/api/analytics.json?dimension=dx:" +
+            indicatorIdsArrayWithoutOuGroup.join(
+                ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
+            "&displayProperty=NAME";
+        var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:" + targetIdsArray.join(";") +
+            "&dimension=pe:" + periods[
+                0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+        $(".loader").show("slow");
+        $(".header").hide();
+        $.getJSON(ouGroupUrl, function (response) {
+            var ousId = [];
+            $.each(response.organisationUnits, function (key, organisationUnit) {
+                if (organisationUnit && organisationUnit.id) {
+                    ousId.push(organisationUnit.id)
+                }
+            })
+            var indicatorsAnalyticsUrlWithOuGroup =
+                "/api/analytics.json?dimension=dx:" +
+                indicatorIdsArrayWithOuGroup.join(
+                    ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" +
+                ousId.join(";") +
+                "&displayProperty=NAME";
+            $.getJSON(indicatorsAnalyticsUrlWithOuGroup, function (indicatorsWithOuGroupResponse) {
+                $.getJSON(indicatorsAnalyticsUrlWithOutOuGroup, function (
+                    indicatorsWithoutOuGroupResponse) {
+                    $.getJSON(targetsAnalyticsUrl, function (targetsResponse) {
+                        $.each(data, function (key, value) {
+                            html += "<tr style='background-color: " + value.color +
+                                "'><td colspan='100%'>" + value.title +
+                                "</td> </tr>";
+                            if (value.hasOwnProperty('content')) {
+                                $.each(value.content, function (k, val) {
+                                    if (val.hasOwnProperty('indicator')) {
+                                        if (val.hasOwnProperty('rows')) {
+                                            var indicatorDataArray = [];
+                                            var realization = 0;
+                                            html += "<tr>";
+                                            html += "<td rowspan='" +
+                                                val.rows + "'></td>";
+                                            html += "<td rowspan='" +
+                                                val.defination.length + "'>" + val.indicator +
+                                                "</td>";
+                                            html += "<td>" + val.defination[
+                                                0].term + "</td>";
+                                            if (val.hasOwnProperty('defination')) {                                                
+                                                if (val.defination[0].hasOwnProperty('id')) {
+                                                    $.each(periodForIndicators.split(";"), function (m, per) {
+                                                        var indicatorData = 0;
+                                                        if(val.defination[0].includeOuGroup){
+                                                            indicatorData =  getDataFromTargetsOrIndicatorAnalyticsUrl(indicatorsWithOuGroupResponse.rows,per,val.defination[0].id)
+                                                        }else{
+                                                            indicatorData =  getDataFromTargetsOrIndicatorAnalyticsUrl(indicatorsWithoutOuGroupResponse.rows,per,val.defination[0].id)
+                                                        }  
+                                                        indicatorData = parseInt(indicatorData);                                                    
+                                                        indicatorDataArray.push(indicatorData);
+                                                        html += "<td>" + indicatorData + "</td>";
                                                     })
                                                 }
                                             }
-                                            //realization
-                                            if(val.defination[0].realisation == 'sum'){
-                                                html +="<td>"+sumvaluee1+"</td>";
-                                            }else if(val.defination[0].realisation == 'last'){
-                                                html +="<td>"+ valuee1[2] +"</td>";
-                                            }
-
-                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
-
+                                            realization = getRealizationValue(indicatorDataArray,val.defination[0].realisation);
+                                            html +="<td>"+ realization +"</td>";
+                                            html +="<td>"+getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,periods[0],val.defination[0].target);"+</td>";
                                             html +="<td  class='lastColumn'></td>";
-
                                             html +="</tr>";
                                             var rowTracker = 0;
                                             $.each(val.defination,function(j,v){
+                                                indicatorDataArray = [];
                                                 if(rowTracker == 0){
-
                                                 }else{
                                                     html +="<tr>";
-                                                    html +="<td>"+v.term+"</td>";
+                                                    html +="<td>"+v.term+"</td>";                                                    
                                                     if(v.hasOwnProperty('id')){
-
-                                                        $.each(period.split(";"),function(m,per){
-                                                            valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
-                                                            html +="<td>"+valuee2[per]+"</td>";
-                                                            sumvaluee2 += valuee2[per];
-                                                        })
+                                                        $.each(periodForIndicators.split(";"), function (m, per) {
+                                                        var indicatorData = 0;
+                                                        if(val.defination[0].includeOuGroup){
+                                                            indicatorData =  getDataFromTargetsOrIndicatorAnalyticsUrl(indicatorsWithOuGroupResponse.rows,per,v.id)
+                                                        }else{
+                                                            indicatorData =  getDataFromTargetsOrIndicatorAnalyticsUrl(indicatorsWithoutOuGroupResponse.rows,per,v.id)
+                                                        }
+                                                        indicatorData = parseInt(indicatorData);
+                                                        indicatorDataArray.push(indicatorData);
+                                                        html += "<td>" + indicatorData + "</td>";
+                                                    })                                                        
                                                     }
-
-                                                    //realization
-                                                    if(v.realisation == 'sum'){
-                                                        html +="<td>"+sumvaluee2+"</td>";
-                                                    }else if(v.realisation == 'last'){
-                                                        html +="<td>"+ valuee1[2] +"</td>";
-                                                    }else if(v.realisation == 'avg'){
-
-                                                        var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
-                                                        html +="<td>"+ summ.toFixed(1) +"</td>";
-                                                    }
-
-                                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
-
+                                                    html +="<td>"+ getRealizationValue(indicatorDataArray,v.realisation) +"</td>";                                                    
+                                                    html +="<td>"+parseInt(getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,periods[0],v.target));"+</td>";
                                                     html +="<td  class='lastColumn'></td>";
                                                     html +="</tr>";
                                                 }
                                                 rowTracker ++
                                             });
                                         }
-
-
                                     }
-
-
-                                });
+                                })
                             }
                         });
                         $("table").append(html);
-                        $('.lastColumn').each(function () {
-                            //processing this row
-                            var num = $(this).prev('td').text();
-                            var num1 = $(this).prev('td').prev('td').text();
-                            num = num.replace(",", "");
-                            if(num != '0'){
-                                if($.isNumeric(parseInt(num1))){
-                                    var parc = (parseInt(num1)*100)/parseInt(num);
-                                    if(parc < 41 ){
-                                        $(this).text(parseInt(parc)).css('background','#FF0000')
-                                    }else if(parc >41 && parc <81){
-                                        $(this).text(parseInt(parc)).css('background','#FFFF00')
-                                    }else if(parc > 80){
-                                        $(this).text(parseInt(parc)).css('background','#92D050')
-                                    }
-                                    $(this).text(parseInt(parc))
-                                }else{
-                                    $(this).text('').css('background','#E6DADA')
-                                }
-
-                            }
-                        });
-                        $('.listTable').addClass('bordered-table zebra-striped dataTable');
-                        var periodName = getPeroidName(periods[0]);
-
-                        $(".orgUnit").html(orgUnit.name);
-                        $(".period").html(periodName);
-                        $(".loader").hide();
-                        $(".header").show();
-                    });
-                });
-            });
-
-        }
-
-        loadData('national','riuabH1sYe6');
-    });
-
-    function pushPeriodOneStep(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
-        var time = "";
-        var names = "";
-        if(quater == "Q4"){
-            var yr = parseInt(year)+1;
-            time = yr+"Q1";
-        }else if(quater == "Q3"){
-            time = year+"Q4";
-        }else if(quater == "Q2"){
-            time = year+"Q3";
-        }else if(quater == "Q1"){
-            time = year+"Q2";
-        }
-        return period;
-    }
-
-    function getThreeMonth(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
-        var nextYear = parseInt(year) + 1;
-        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
-        return time;
-    }
-    function getThreeMonthName(period){
-        var year = period.substring(0,4);
-        var nextyear = parseInt(year)+1;
-        var quater = period.substring(4,6);
-        var time = "";
-        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
-
-        return names;
-    }
-    function getPeroidName(period){
-        var year = period.substring(0,4);
-        var quater = period.substring(4,6);
-        var time = "";
-        var names = year
-
-        return names;
-    }
-
-    function getDataFromUrl(arr,pe,de){
-        var num = 0
-        $.each(arr,function(k,v){
-            if(v[0]== de && v[1] == pe){
-                num = parseInt(v[2])
-            }
-        });
-        return num;
-    }
-
-    function getDataFromUrl1(arr,pe,de){
-        var num = 0
-        $.each(arr,function(k,v){
-            if(v[0]== de && v[1] == pe){
-                num = parseInt(v[2])
-            }
-        });
-        return num;
-    }
-
-
-    function getDataElements(){
-        var data =[{"title":"Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region","color":"#D6E3BC","content":[{"indicator":"Increase in CYP (disaggregated by method) in project area","rows":"1","num":"","defination":[{"term":"Total target CYP+","id":"PMPE2EDE001","realisation":"sum","targett":"PMPE2ETG001"}]},{"indicator":"CYP contribution by CHW","rows":"8","num":"3","defination":[{"term":"CYP - Condoms ","id":"wCnp3BNG3bX","realisation":"sum","targett":"PMPE2ETG002"},{"term":"CYP - Pills by CHW","id":"PMPE2EDE003","realisation":"sum","targett":"PMPE2ETG003"},{"term":"CYP- Injectable referrals completed","id":"PMPE2EDE004","realisation":"sum","targett":"PMPE2ETG004"},{"term":"CYP-Implant referrals completed","id":"PMPE2EDE005","realisation":"sum","targett":"PMPE2ETG005"},{"term":"CYP-IUD referrals","id":"PMPE2EDE006","realisation":"sum","targett":"PMPE2ETG006"},{"term":"CYP-Tubulagation referrals completed","id":"PMPE2EDE007","realisation":"sum","targett":"PMPE2ETG007"},{"term":"CYP-Vasectomy referrals completed","id":"PMPE2EDE008","realisation":"sum","targett":"PMPE2ETG008"},{"term":"Total CYP by CHW","id":"PMPE2EDE009","realisation":"sum","targett":"PMPE2ETG009"}]},{"indicator":"CYP contribution from facilites  and outreach service","rows":"9","num":"3","defination":[{"term":"CYP - Condoms","id":"C7X8xkHjsXo","realisation":"sum","targett":""},{"term":"CYP - Pills","id":"Jjya4RxmJhT","realisation":"sum","targett":""},{"term":"CYP - Injectables","id":"FPszf08yAVk","realisation":"sum","targett":"PMPE2ETG010"},{"term":"CYP - Implanon","id":"b3A8AvDs3ZY","realisation":"sum","targett":"PMPE2ETG011"},{"term":"CYP - Jadelle","id":"KO9vdzgRXbf","realisation":"sum","targett":"PMPE2ETG012"},{"term":"CYP - Intrauterine Contraceptive Device (IUD) ","id":"kq9N0loL906","realisation":"sum","targett":"PMPE2ETG013"},{"term":"CYP - Tubal Ligation","id":"yi3C16pYffx","realisation":"sum","targett":"PMPE2ETG014"},{"term":"CYP - Vasectomies","id":"iUcrTVinoKD","realisation":"sum","targett":"PMPE2ETG015"},{"term":"Total CYP by  Facility","id":"PMPMMHDE008","realisation":"sum","targett":"PMPE2ETG016"}]}]},{"title":"Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region","color":"#D6E3BC","content":[{"indicator":"1.1.  Number of WRA provided with contraceptive methods by  CHW by type","rows":"5","num":"3","defination":[{"term":"Total target new users ","id":"PMPMMHDE009","realisation":"sum","targett":"PMPE2ETG017"},{"term":"Female Condoms","id":"PMPMMHDE010","realisation":"sum","targett":"PMPE2ETG018"},{"term":"Male Condoms","id":"PMPMMHDE010","realisation":"sum","targett":"PMPE2ETG019"},{"term":"POP","id":"PMPMMHDE010","realisation":"sum","targett":"PMPE2ETG020"},{"term":"COC","id":"PMPMMHDE010","realisation":"sum","targett":"PMPE2ETG021"}]},{"indicator":"1.2. Number of WRA provided with counseling on SRH/ FP by CHW, disaggregated by  age  (10-14, 15-19, 20-24) ","rows":"5","num":"3","defination":[{"term":"Total target","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG022"},{"term":"10-14","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG023"},{"term":"15-19","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG024"},{"term":"20-24","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG025"},{"term":"25+","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG026"}]},{"indicator":"1.3. Number of repeat WRA clients in the community by method","rows":"5","num":"3","defination":[{"term":"Total WRA  target revisits","id":"PMPMMHDE012","realisation":"sum","targett":"PMPE2ETG027"},{"term":"Female Condomsy","id":"PMPMMHDE013","realisation":"sum","targett":"PMPE2ETG028"},{"term":"Male Condoms","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG029"},{"term":"POP","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG030"},{"term":"COC","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG031"}]},{"indicator":"1.3b. Number of contraceptives given out  by CHW","rows":"2","num":"3","defination":[{"term":"Condoms","id":"PMPMMHDE012","realisation":"sum","targett":"PMPE2ETG032"},{"term":"Pills","id":"PMPMMHDE013","realisation":"sum","targett":"PMPE2ETG033"}]},{"indicator":"1.4. Number of referrals made by CHW for contraceptive methods  by method","rows":"6","num":"3","defination":[{"term":"Total Targets","id":"PMPMMHDE012","realisation":"sum","targett":"PMPE2ETG034"},{"term":"Injectable","id":"PMPMMHDE013","realisation":"sum","targett":"PMPE2ETG035"},{"term":"Implants","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG036"},{"term":"IUD","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG037"},{"term":"Female Sterilization","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG038"},{"term":"Vasectomy","id":"PMPMMHDE014","realisation":"sum","targett":"PMPE2ETG039"}]},{"indicator":"1.5. Number of clients who completed referrals made by CHW by method","rows":"6","num":"3","defination":[{"term":"Total Targets","id":"PMPE2EDE040","realisation":"sum","targett":"PMPE2ETG040"},{"term":"Injectable","id":"PMPE2EDE041","realisation":"sum","targett":"PMPE2ETG041"},{"term":"Implants","id":"PMPE2EDE042","realisation":"sum","targett":"PMPE2ETG042"},{"term":"IUD","id":"PMPE2EDE043","realisation":"sum","targett":"PMPE2ETG043"},{"term":"Female Sterilization","id":"PMPE2EDE044","realisation":"sum","targett":"PMPE2ETG044"},{"term":"Vasectomy","id":"PMPE2EDE045","realisation":"sum","targett":"PMPE2ETG045"}]},{"indicator":"1.6. Number of facility-based providers trained to deliver LARC servicers","rows":"1","num":"3","defination":[{"term":"","id":"PMPE2EDE046","realisation":"sum","targett":"PMPE2ETG046"}]},{"indicator":"1.7. New contraceptive users in the health facilities","rows":"9","num":"3","defination":[{"term":"Total Targets","id":"PMPE2EDE064","realisation":"sum","targett":"PMPE2ETG047"},{"term":"Oral Contraceptives","id":"QsG09ni0Vck","realisation":"sum","targett":"PMPE2ETG048"},{"term":"Male Condoms","id":"vrYUVlPjGHX","realisation":"sum","targett":"PMPE2ETG049"},{"term":"Female Condoms","id":"pK1gZxC2yzO","realisation":"sum","targett":"PMPE2ETG049"},{"term":"Injectable","id":"stUhpCLQHdo","realisation":"sum","targett":"PMPMMHTG014"},{"term":"Implants (Implanon NXT and Jadelle)","id":"F1jtqafoS9m","realisation":"sum","targett":"PMPE2ETG050"},{"term":"IUCDs","id":"cLGchHOHUPP","realisation":"sum","targett":"PMPE2ETG051"},{"term":"Female Sterilization","id":"V1tZJGfdeL6","realisation":"sum","targett":"PMPE2ETG052"},{"term":"Vasectomy","id":"v8X8GNnoX2M","realisation":"sum","targett":"PMPE2ETG053"}]},{"indicator":"1.7.1. New contraceptive users Outreach","rows":"9","num":"3","defination":[{"term":"Total Targets","id":"PMPE2EDE064","realisation":"sum","targett":"PMPE2ETG047"},{"term":"Oral Contraceptives","id":"","realisation":"sum","targett":"PMPE2ETG048"},{"term":"Male Condoms","id":"","realisation":"sum","targett":"PMPE2ETG049"},{"term":"Female Condoms","id":"","realisation":"sum","targett":"PMPE2ETG049"},{"term":"Injectable","id":"","realisation":"sum","targett":"PMPMMHTG014"},{"term":"Implants (Implanon NXT and Jadelle)","id":"ZnTi99UdGCS","realisation":"sum","targett":"PMPE2ETG050"},{"term":"IUCDs","id":"RfSsrHPGBXV","realisation":"sum","targett":"PMPE2ETG051"},{"term":"Female Sterilization","id":"chmWn8ksICz","realisation":"sum","targett":"PMPE2ETG052"},{"term":"Vasectomy","id":"xip1SDutimh","realisation":"sum","targett":"PMPE2ETG053"}]},{"indicator":"1.8. Number of new  FP users enrolled in the facilities by age","rows":"5","num":"3","defination":[{"term":"Total target","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG054"},{"term":"10-14","id":"OIsWASIKhFI","realisation":"sum","targett":"PMPE2ETG055"},{"term":"15-19","id":"KHk45qgIUgx","realisation":"sum","targett":"PMPE2ETG056"},{"term":"20-24","id":"fMZMgRlUxYK","realisation":"sum","targett":"PMPE2ETG057"},{"term":"25+","id":"ya78GSsUFB5","realisation":"sum","targett":"PMPE2ETG058"}]},{"indicator":"1.9: Number of revisit users in the health facilities","rows":"4","num":"3","defination":[{"term":"Male Condoms ","id":"PHN05p61ByJ.Zi6m8Bfd4YZ","realisation":"sum","targett":"PMPE2ETG059"},{"term":"Female Condoms ","id":"PMPMMHDE011","realisation":"sum","targett":"PMPE2ETG059"},{"term":"Pills","id":"PHN05p61ByJ.OVPV2za8nOf","realisation":"sum","targett":"PMPE2ETG060"},{"term":"Injectables","id":"epPM7fO8CnH.RcgnLQy1MxN","realisation":"sum","targett":"PMPE2ETG061"}]},{"indicator":"1.2: Number of contraceptives distributed in health facilities","rows":"2","num":"3","defination":[{"term":"Condoms ","id":"oAdnR7jRTSN","realisation":"sum","targett":"PMPE2ETG062"},{"term":"Pills","id":"bjkeLqFDDjo","realisation":"sum","targett":"PMPE2ETG063"}]},{"indicator":"1.21.Number of contraceptives distributed through outreach services","rows":"2","num":"3","defination":[{"term":"Condoms ","id":"","realisation":"sum","targett":""},{"term":"Pills","id":"","realisation":"sum","targett":""}]},{"indicator":"1..2.2 New contraceptive users  through community outreach services","rows":"9","num":"3","defination":[{"term":"Total","id":"","realisation":"sum","targett":""},{"term":"Condoms","id":"","realisation":"sum","targett":""},{"term":"Oral Contraceptives ","id":"","realisation":"sum","targett":""},{"term":"Injectable","id":"","realisation":"sum","targett":""},{"term":"Implanon NXT  ","id":"","realisation":"sum","targett":""},{"term":"Jadelle","id":"","realisation":"sum","targett":""},{"term":"IUCDs","id":"","realisation":"sum","targett":""},{"term":"Female Sterilization","id":"","realisation":"sum","targett":""},{"term":"Vasectomy","id":"","realisation":"sum","targett":""}]}]},{"title":"Objective 2: Build the capacity of facilities such that they meet quality standards for providing comprehensive FP services, including LARC","color":"#D6E3BC","content":[{"indicator":"Output Indicators:","rows":"4","num":"3","defination":[{"term":"2.1: Number of facilities provided with FP supplies and equipment (by type of equipment)","id":"PMPE2EDE065","realisation":"sum","targett":"PMPE2ETG065"},{"term":"2.2: Number of  supportive supervision rounds conducted in health facilities  ","id":"PMPE2EDE066","realisation":"sum","targett":"PMPE2ETG066"},{"term":"2.3: Number of quarterly review meetings conducted  with CHMT ","id":"PMPE2EDE067","realisation":"sum","targett":"PMPE2ETG067"}]}]}];
-        return data;
-    }
-    function download(name){
-        var uri = 'data:application/vnd.ms-excel;base64,',
-            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">{table}</table><br /><table border="1">{table}</table></body></html>',
-            base64 = function(s) {
-                return window.btoa(unescape(encodeURIComponent(s)));
-            },
-            format = function(s, c) {
-                return s.replace(/{(\w+)}/g, function(m, p) {
-                    return c[p];
+                        applyRealizations(periods, orgUnit);
+                    })
                 })
-            };
-        // console.log("Table:",nativeElement.innerHTML);
-        var ctx = {worksheet: "Sheet 1"};
-        var str = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
-        var el = $(".listTable");
-        ($(".listTable").find("td.hidden").each(function(index2){
-            // console.log("Remove Index:",index2);
-            this.remove();
-        }));
-        ctx["table1"] = el.innerHTML;
+            })
+        });
 
-        str += '<table border="1">{table1}</table><br />';
-        str += '</body></html>';
-
-        setTimeout(function () {
-
-            var link = document.createElement('a');
-            link.download = name +".xlsx";
-            link.href = uri + base64(format(str, ctx));
-            link.click();},100);
+        
     }
+});
 
+function applyRealizations(periods,orgUnit) {
+    $('.lastColumn').each(function () {
+        var targetValue = $(this)
+            .prev('td')
+            .text();
+        var realizationValue = $(this)
+            .prev('td')
+            .prev('td')
+            .text();
+        if ($.isNumeric(targetValue) && $.isNumeric(realizationValue)) {
+            targetValue = parseInt(targetValue);
+            realizationValue = parseInt(realizationValue);
+            if (targetValue !== 0) {
+                var achievementPercentage = parseInt(
+                    (parseInt(realizationValue) * 100) / parseInt(targetValue)
+                );
+                if (achievementPercentage <= 25) {
+                    $(this)
+                        .text(achievementPercentage + '%')
+                        .css('background', '#FF0000');
+                } else if (achievementPercentage > 25 && achievementPercentage < 80) {
+                    $(this)
+                        .text(achievementPercentage + '%')
+                        .css('background', '#FFFF00');
+                } else if (achievementPercentage >= 80) {
+                    $(this)
+                        .text(achievementPercentage + '%')
+                        .css('background', '#008000');
+                } else {
+                    $(this).text(achievementPercentage);
+                }
+            }
+        }
+    });
+    $('.listTable').addClass('bordered-table zebra-striped dataTable');
+    var periodName = getPeroidName(periods[0]);
+    $('.orgUnit').html(orgUnit.name);
+    $('.period').html(periodName);
+    $('.loader').hide();
+    $('.header').show();
+}
+
+function getRealizationValue(dataArray, realizationType) {
+    var realization = 0;
+    if (realizationType === "total") {
+        $.each(dataArray, function (index, value) {
+            if ($.isNumeric(value)) {
+                realization += parseInt(value)
+            }
+        });
+    }
+    if (realizationType === "last") {
+        var filteredArray = []
+        $.each(dataArray, function (index, value) {
+            if ($.isNumeric(value) && parseInt(value) > 0) {
+                filteredArray.push(parseInt(value));
+            }
+        });
+        if (filteredArray.length > 0) {
+            realization = filteredArray.pop();
+        }
+    }
+    return realization;
+}
+
+function pushPeriodOneStep(period) {
+    var year = period.substring(0, 4);
+    var quater = period.substring(4, 6);
+    var time = "";
+    var names = "";
+    if (quater == "Q4") {
+        var yr = parseInt(year) + 1;
+        time = yr + "Q1";
+    } else if (quater == "Q3") {
+        time = year + "Q4";
+    } else if (quater == "Q2") {
+        time = year + "Q3";
+    } else if (quater == "Q1") {
+        time = year + "Q2";
+    }
+    return period;
+}
+
+function getThreeMonth(period) {
+    var year = period.substring(0, 4);
+    var quater = period.substring(4, 6);
+    var nextYear = parseInt(year) + 1;
+    var time = year + "Q4;" + nextYear + "Q1;" + nextYear + "Q2;" + nextYear + "Q3";
+    return time;
+}
+
+function getThreeMonthName(period) {
+    var year = period.substring(0, 4);
+    var nextyear = parseInt(year) + 1;
+    var quater = period.substring(4, 6);
+    var time = "";
+    names = "Oct - Dec " + year + ";Jan - Mar " + nextyear + ";Apr - Jun " + nextyear + ";July - Sept " + nextyear;
+
+    return names;
+}
+
+function getPeroidName(period) {
+    var year = period.substring(0, 4);
+    var quater = period.substring(4, 6);
+    var time = "";
+    var names = year
+
+    return names;
+}
+
+function getDataFromTargetsOrIndicatorAnalyticsUrl(array, period, de) {
+    var data = 0;
+    $.each(array, function (index, value) {
+        if (value[0] == de && value[1] == period) {
+            data = parseFloat(value[2])
+        }
+    });
+    return data;
+}
+
+function getDataFromUrl(arr, pe, de) {
+    var num = 0
+    $.each(arr, function (k, v) {
+        if (v[0] == de && v[1] == pe) {
+            num = parseInt(v[2])
+        }
+    });
+    return num;
+}
+
+function getDataFromUrl1(arr, pe, de) {
+    var num = 0
+    $.each(arr, function (k, v) {
+        if (v[0] == de && v[1] == pe) {
+            num = parseInt(v[2])
+        }
+    });
+    return num;
+}
+
+
+function getDataElements() {
+    var data = [{
+        "title": "Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region",
+        "color": "#D6E3BC",
+        "content": [{
+            "indicator": "Increase in CYP (disaggregated by method) in project area",
+            "rows": "1",
+            "num": "",
+            "defination": [{
+                "term": "Total target CYP+",
+                "id": "W4m6A3Xufb5",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "PMPE2ETG001"
+            }]
+        }, {
+            "indicator": "CYP contribution by CHW",
+            "rows": "7",
+            "num": "3",
+            "defination": [{
+                "term": "CYP - Condoms ",
+                "id": "qdrFaOoDnze",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "OaVvVXMhktk"
+            }, {
+                "term": "CYP - Pills by CHW",
+                "id": "frfsHECWlKG",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "sq0ymfMdpLE"
+            }, {
+                "term": "CYP - Injectables (from outreach clinics)",
+                "id": "ln9O0Ned5XS",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "FT2CXfrVRqn"
+            },{
+                "term": "CYP - Implants (from outreach clinics)",
+                "id": "eNmCA6nXafF",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "fEkRng7w84E"
+            },{
+                "term": "CYP -Jadelle (from outreach clinics)",
+                "id": "jifud65FWQS",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "nitCEu4Z1QU"
+            }, {
+                "term": "CYP - Intrauterine Contraceptive Device (IUD) (from outreach clinics)",
+                "id": "Cm3kFp0drij",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "ej4l9OIDNWy"
+            },{
+                "term": "CYP-Permanent (BTL)",
+                "id": "xmCI8AIt26P",
+                "includeOuGroup": false,
+                "realisation": "total",
+                "target": "pvzgIzQ4qEK"
+            }]
+        }, {
+            "indicator": "CYP contribution from facilites  and outreach service",
+            "rows": "9",
+            "num": "3",
+            "defination": [{
+                "term": "CYP - Condoms",
+                "id": "C7X8xkHjsXo",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "CYP - Pills",
+                "id": "Jjya4RxmJhT",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "CYP - Injectables",
+                "id": "FPszf08yAVk",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG010"
+            }, {
+                "term": "CYP - Implanon",
+                "id": "b3A8AvDs3ZY",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG011"
+            }, {
+                "term": "CYP - Jadelle",
+                "id": "KO9vdzgRXbf",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG012"
+            }, {
+                "term": "CYP - Intrauterine Contraceptive Device (IUD) ",
+                "id": "kq9N0loL906",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG013"
+            }, {
+                "term": "CYP - Tubal Ligation",
+                "id": "yi3C16pYffx",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG014"
+            }, {
+                "term": "CYP - Vasectomies",
+                "id": "iUcrTVinoKD",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG015"
+            }, {
+                "term": "Total CYP by  Facility",
+                "id": "PMPMMHDE008",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG016"
+            }]
+        }]
+    }, {
+        "title": "Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region",
+        "color": "#D6E3BC",
+        "content": [{
+            "indicator": "1.1.  Number of WRA provided with contraceptive methods by  CHW by type",
+            "rows": "5",
+            "num": "3",
+            "defination": [{
+                "term": "Total target new users ",
+                "id": "PMPMMHDE009",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG017"
+            }, {
+                "term": "Female Condoms",
+                "id": "PMPMMHDE010",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG018"
+            }, {
+                "term": "Male Condoms",
+                "id": "PMPMMHDE010",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG019"
+            }, {
+                "term": "POP",
+                "id": "PMPMMHDE010",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG020"
+            }, {
+                "term": "COC",
+                "id": "PMPMMHDE010",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG021"
+            }]
+        }, {
+            "indicator": "1.2. Number of WRA provided with counseling on SRH/ FP by CHW, disaggregated by  age  (10-14, 15-19, 20-24) ",
+            "rows": "5",
+            "num": "3",
+            "defination": [{
+                "term": "Total target",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG022"
+            }, {
+                "term": "10-14",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG023"
+            }, {
+                "term": "15-19",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG024"
+            }, {
+                "term": "20-24",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG025"
+            }, {
+                "term": "25+",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG026"
+            }]
+        }, {
+            "indicator": "1.3. Number of repeat WRA clients in the community by method",
+            "rows": "5",
+            "num": "3",
+            "defination": [{
+                "term": "Total WRA  target revisits",
+                "id": "PMPMMHDE012",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG027"
+            }, {
+                "term": "Female Condomsy",
+                "id": "PMPMMHDE013",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG028"
+            }, {
+                "term": "Male Condoms",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG029"
+            }, {
+                "term": "POP",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG030"
+            }, {
+                "term": "COC",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG031"
+            }]
+        }, {
+            "indicator": "1.3b. Number of contraceptives given out  by CHW",
+            "rows": "2",
+            "num": "3",
+            "defination": [{
+                "term": "Condoms",
+                "id": "PMPMMHDE012",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG032"
+            }, {
+                "term": "Pills",
+                "id": "PMPMMHDE013",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG033"
+            }]
+        }, {
+            "indicator": "1.4. Number of referrals made by CHW for contraceptive methods  by method",
+            "rows": "6",
+            "num": "3",
+            "defination": [{
+                "term": "Total Targets",
+                "id": "PMPMMHDE012",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG034"
+            }, {
+                "term": "Injectable",
+                "id": "PMPMMHDE013",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG035"
+            }, {
+                "term": "Implants",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG036"
+            }, {
+                "term": "IUD",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG037"
+            }, {
+                "term": "Female Sterilization",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG038"
+            }, {
+                "term": "Vasectomy",
+                "id": "PMPMMHDE014",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG039"
+            }]
+        }, {
+            "indicator": "1.5. Number of clients who completed referrals made by CHW by method",
+            "rows": "6",
+            "num": "3",
+            "defination": [{
+                "term": "Total Targets",
+                "id": "PMPE2EDE040",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG040"
+            }, {
+                "term": "Injectable",
+                "id": "PMPE2EDE041",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG041"
+            }, {
+                "term": "Implants",
+                "id": "PMPE2EDE042",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG042"
+            }, {
+                "term": "IUD",
+                "id": "PMPE2EDE043",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG043"
+            }, {
+                "term": "Female Sterilization",
+                "id": "PMPE2EDE044",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG044"
+            }, {
+                "term": "Vasectomy",
+                "id": "PMPE2EDE045",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG045"
+            }]
+        }, {
+            "indicator": "1.6. Number of facility-based providers trained to deliver LARC servicers",
+            "rows": "1",
+            "num": "3",
+            "defination": [{
+                "term": "",
+                "id": "PMPE2EDE046",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG046"
+            }]
+        }, {
+            "indicator": "1.7. New contraceptive users in the health facilities",
+            "rows": "9",
+            "num": "3",
+            "defination": [{
+                "term": "Total Targets",
+                "id": "PMPE2EDE064",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG047"
+            }, {
+                "term": "Oral Contraceptives",
+                "id": "QsG09ni0Vck",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG048"
+            }, {
+                "term": "Male Condoms",
+                "id": "vrYUVlPjGHX",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG049"
+            }, {
+                "term": "Female Condoms",
+                "id": "pK1gZxC2yzO",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG049"
+            }, {
+                "term": "Injectable",
+                "id": "stUhpCLQHdo",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPMMHTG014"
+            }, {
+                "term": "Implants (Implanon NXT and Jadelle)",
+                "id": "F1jtqafoS9m",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG050"
+            }, {
+                "term": "IUCDs",
+                "id": "cLGchHOHUPP",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG051"
+            }, {
+                "term": "Female Sterilization",
+                "id": "V1tZJGfdeL6",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG052"
+            }, {
+                "term": "Vasectomy",
+                "id": "v8X8GNnoX2M",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG053"
+            }]
+        }, {
+            "indicator": "1.7.1. New contraceptive users Outreach",
+            "rows": "9",
+            "num": "3",
+            "defination": [{
+                "term": "Total Targets",
+                "id": "PMPE2EDE064",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG047"
+            }, {
+                "term": "Oral Contraceptives",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG048"
+            }, {
+                "term": "Male Condoms",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG049"
+            }, {
+                "term": "Female Condoms",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG049"
+            }, {
+                "term": "Injectable",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPMMHTG014"
+            }, {
+                "term": "Implants (Implanon NXT and Jadelle)",
+                "id": "ZnTi99UdGCS",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG050"
+            }, {
+                "term": "IUCDs",
+                "id": "RfSsrHPGBXV",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG051"
+            }, {
+                "term": "Female Sterilization",
+                "id": "chmWn8ksICz",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG052"
+            }, {
+                "term": "Vasectomy",
+                "id": "xip1SDutimh",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG053"
+            }]
+        }, {
+            "indicator": "1.8. Number of new  FP users enrolled in the facilities by age",
+            "rows": "5",
+            "num": "3",
+            "defination": [{
+                "term": "Total target",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG054"
+            }, {
+                "term": "10-14",
+                "id": "OIsWASIKhFI",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG055"
+            }, {
+                "term": "15-19",
+                "id": "KHk45qgIUgx",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG056"
+            }, {
+                "term": "20-24",
+                "id": "fMZMgRlUxYK",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG057"
+            }, {
+                "term": "25+",
+                "id": "ya78GSsUFB5",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG058"
+            }]
+        }, {
+            "indicator": "1.9: Number of revisit users in the health facilities",
+            "rows": "4",
+            "num": "3",
+            "defination": [{
+                "term": "Male Condoms ",
+                "id": "PHN05p61ByJ.Zi6m8Bfd4YZ",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG059"
+            }, {
+                "term": "Female Condoms ",
+                "id": "PMPMMHDE011",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG059"
+            }, {
+                "term": "Pills",
+                "id": "PHN05p61ByJ.OVPV2za8nOf",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG060"
+            }, {
+                "term": "Injectables",
+                "id": "epPM7fO8CnH.RcgnLQy1MxN",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG061"
+            }]
+        }, {
+            "indicator": "1.2: Number of contraceptives distributed in health facilities",
+            "rows": "2",
+            "num": "3",
+            "defination": [{
+                "term": "Condoms ",
+                "id": "oAdnR7jRTSN",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG062"
+            }, {
+                "term": "Pills",
+                "id": "bjkeLqFDDjo",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG063"
+            }]
+        }, {
+            "indicator": "1.21.Number of contraceptives distributed through outreach services",
+            "rows": "2",
+            "num": "3",
+            "defination": [{
+                "term": "Condoms ",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Pills",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }]
+        }, {
+            "indicator": "1..2.2 New contraceptive users  through community outreach services",
+            "rows": "9",
+            "num": "3",
+            "defination": [{
+                "term": "Total",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Condoms",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Oral Contraceptives ",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Injectable",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Implanon NXT  ",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Jadelle",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "IUCDs",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Female Sterilization",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }, {
+                "term": "Vasectomy",
+                "id": "",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": ""
+            }]
+        }]
+    }, {
+        "title": "Objective 2: Build the capacity of facilities such that they meet quality standards for providing comprehensive FP services, including LARC",
+        "color": "#D6E3BC",
+        "content": [{
+            "indicator": "Output Indicators:",
+            "rows": "4",
+            "num": "3",
+            "defination": [{
+                "term": "2.1: Number of facilities provided with FP supplies and equipment (by type of equipment)",
+                "id": "PMPE2EDE065",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG065"
+            }, {
+                "term": "2.2: Number of  supportive supervision rounds conducted in health facilities  ",
+                "id": "PMPE2EDE066",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG066"
+            }, {
+                "term": "2.3: Number of quarterly review meetings conducted  with CHMT ",
+                "id": "PMPE2EDE067",
+                "includeOuGroup": true,
+                "realisation": "total",
+                "target": "PMPE2ETG067"
+            }]
+        }]
+    }];
+    return data;
+}
+
+function downloadAsExcel() {
+    var entryFormDesign = $('div#contentDivExcel').html();
+    var orgUnit = $("#orgUnits").html()
+    var periodName = $(".period").html();
+    var filename = "Bergstrom_PMP_";
+    filename += (orgUnit) ? "_" + orgUnit : "";
+    filename += (periodName) ? "_" + periodName : ""
+    filename += '.xls';
+    var ctx = {
+            worksheet: 'Sheet 1'
+        },
+        base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+        format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+    var str =
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+        ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+        '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+        '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+    str += entryFormDesign + '</body></html>';
+
+    setTimeout(() => {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href =
+            'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+        link.click();
+    }, 100);
+}
 </script>
-<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
-<!--<button class="btn bt-small btn-default" onclick="download('report')">Download Excel</button>-->
-<h3 class="header text-center">Bergstrom PMP Report - <span class="period"></span> -  <span id="orgUnits"> </span></h3>
-<div class="col-sm-10 col-sm-offset-1" >
-    <table class="listTable table table-bordered table-responsive">
-        <thead class="header">
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div id="">
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">
+            Bergstrom PMP Report - <span class="period"></span> - <span id="orgUnits">
+            </span></h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+                <thead class="header">
+                </thead>
+            </table>
+        </div>
+    </div>
 
-        </thead>
-    </table>
 </div>
