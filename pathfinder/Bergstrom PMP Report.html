@@ -19,7 +19,8 @@
     var targetIdsArray = [];
     var orgUnit = dhis2.report.organisationUnit;
     $("#orgUnits").html(orgUnit.name);
-    var periods = dhis2.report.periods;
+    var periods = dhis2.report.periods;    
+    var targetPeriod =(isNaN(periods[0])) ?parseInt(periods[0].substr(0,4)) + 1: periods[0];
     var periodNames = getThreeMonthName(periods[0]);
     var data = getDataElements();
     var periodForIndicators = getThreeMonth(periods[0]);
@@ -72,8 +73,7 @@
                 ";") + "&dimension=pe:" + periodForIndicators + "&filter=ou:" + orgUnit.id +
             "&displayProperty=NAME";
         var targetsAnalyticsUrl = "/api/analytics.json?dimension=dx:" + targetIdsArray.join(";") +
-            "&dimension=pe:" + periods[
-                0] + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
+            "&dimension=pe:" + targetPeriod + "&filter=ou:" + orgUnit.id + "&displayProperty=NAME";
         $(".loader").show("slow");
         $(".header").hide();
         $.getJSON(ouGroupUrl, function (response) {
@@ -128,7 +128,7 @@
                                             }
                                             realization = getRealizationValue(indicatorDataArray,val.defination[0].realisation);
                                             html +="<td>"+ realization +"</td>";
-                                            html +="<td>"+getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,periods[0],val.defination[0].target);"+</td>";
+                                            html +="<td>"+getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,targetPeriod,val.defination[0].target);"+</td>";
                                             html +="<td  class='lastColumn'></td>";
                                             html +="</tr>";
                                             var rowTracker = 0;
@@ -152,7 +152,7 @@
                                                     })                                                        
                                                     }
                                                     html +="<td>"+ getRealizationValue(indicatorDataArray,v.realisation) +"</td>";                                                    
-                                                    html +="<td>"+parseInt(getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,periods[0],v.target));"+</td>";
+                                                    html +="<td>"+parseInt(getDataFromTargetsOrIndicatorAnalyticsUrl(targetsResponse.rows,targetPeriod,v.target));"+</td>";
                                                     html +="<td  class='lastColumn'></td>";
                                                     html +="</tr>";
                                                 }
@@ -328,7 +328,7 @@ function getDataElements() {
                 "id": "W4m6A3Xufb5",
                 "includeOuGroup": false,
                 "realisation": "total",
-                "target": "PMPE2ETG001"
+                "target": "YM2o9P9ZL35"
             }]
         }, {
             "indicator": "CYP contribution by CHW",
