@@ -17,6 +17,7 @@
     var indicatorIdsArrayWithOuGroup = [];
     var indicatorIdsArrayWithoutOuGroup = [];
     var targetIdsArray = [];
+    indicatorIdsArrayWithOuGroup.push("PMPE2ETG017");
     var orgUnit = dhis2.report.organisationUnit;
     $("#orgUnits").html(orgUnit.name);
     var periods = dhis2.report.periods;    
@@ -58,7 +59,8 @@
         $('table').html("")
         html += "<tr>";
         html += '<th style="width: 5%">#</th>';
-        html += '<th colspan="2" style="width: 25%">Performance Indicator</th>';
+        html += '<th  style="width: 25%">Monitoring Indicators</th>';
+        html += '<th  style="width: 10%">Disaggregation Categories</th>';
         $.each(periodNames.split(";"), function (periodIndex, periodName) {
             html += "<th style='width: 10%'>" + periodName + "</th>"
         })
@@ -105,7 +107,7 @@
                                             var realization = 0;
                                             html += "<tr>";
                                             html += "<td rowspan='" +
-                                                val.rows + "'></td>";
+                                            val.defination.length + "'></td>";
                                             html += "<td rowspan='" +
                                                 val.defination.length + "'>" + val.indicator +
                                                 "</td>";
@@ -205,6 +207,8 @@ function applyRealizations(periods,orgUnit) {
                 } else {
                     $(this).text(achievementPercentage);
                 }
+            }else{
+                $(this).css('background', '#E5E5E5');
             }
         }
     });
@@ -314,651 +318,384 @@ function getDataFromUrl1(arr, pe, de) {
     return num;
 }
 
-
 function getDataElements() {
     var data = [{
-        "title": "Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region",
-        "color": "#D6E3BC",
-        "content": [{
-            "indicator": "Increase in CYP (disaggregated by method) in project area",
-            "rows": "1",
-            "num": "",
-            "defination": [{
-                "term": "Total target CYP+",
-                "id": "W4m6A3Xufb5",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "YM2o9P9ZL35"
+            "title": "Project Goal: Project Goal: Increase healthy spacing of pregnancies among women of reproductive age",
+            "color": "#C4D7EF",
+            "content": [{
+                "indicator": "Increase in CYP (disaggregated by method) in project area",
+                "rows": "1",
+                "num": "",
+                "defination": [{
+                    "term": "Total target CYP+",
+                    "id": "W4m6A3Xufb5",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "YM2o9P9ZL35"
+                }]
+            }, {
+                "indicator": "CYP contribution by CHW",
+                "rows": "7",
+                "num": "",
+                "defination": [{
+                    "term": "CYP - Condoms ",
+                    "id": "qdrFaOoDnze",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "OaVvVXMhktk"
+                }, {
+                    "term": "CYP - Pills by CHW",
+                    "id": "frfsHECWlKG",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "sq0ymfMdpLE"
+                }, {
+                    "term": "CYP - Injectables (from outreach clinics)",
+                    "id": "ln9O0Ned5XS",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "FT2CXfrVRqn"
+                }, {
+                    "term": "CYP - Implants (from outreach clinics)",
+                    "id": "eNmCA6nXafF",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "fEkRng7w84E"
+                }, {
+                    "term": "CYP -Jadelle (from outreach clinics)",
+                    "id": "jifud65FWQS",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "nitCEu4Z1QU"
+                }, {
+                    "term": "CYP - Intrauterine Contraceptive Device (IUD) (from outreach clinics)",
+                    "id": "Cm3kFp0drij",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "ej4l9OIDNWy"
+                }, {
+                    "term": "CYP-Permanent (BTL)",
+                    "id": "xmCI8AIt26P",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "pvzgIzQ4qEK"
+                }]
             }]
-        }, {
-            "indicator": "CYP contribution by CHW",
-            "rows": "7",
-            "num": "3",
-            "defination": [{
-                "term": "CYP - Condoms ",
-                "id": "qdrFaOoDnze",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "OaVvVXMhktk"
-            }, {
-                "term": "CYP - Pills by CHW",
-                "id": "frfsHECWlKG",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "sq0ymfMdpLE"
-            }, {
-                "term": "CYP - Injectables (from outreach clinics)",
-                "id": "ln9O0Ned5XS",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "FT2CXfrVRqn"
-            },{
-                "term": "CYP - Implants (from outreach clinics)",
-                "id": "eNmCA6nXafF",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "fEkRng7w84E"
-            },{
-                "term": "CYP -Jadelle (from outreach clinics)",
-                "id": "jifud65FWQS",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "nitCEu4Z1QU"
-            }, {
-                "term": "CYP - Intrauterine Contraceptive Device (IUD) (from outreach clinics)",
-                "id": "Cm3kFp0drij",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "ej4l9OIDNWy"
-            },{
-                "term": "CYP-Permanent (BTL)",
-                "id": "xmCI8AIt26P",
-                "includeOuGroup": false,
-                "realisation": "total",
-                "target": "pvzgIzQ4qEK"
+        },
+        {
+            "title": "Objective 1: Increased FP uptake of all methods, including long acting reversible contraceptives (LARCs), among rural and hard to reach women of reproductive age",
+            "color": "#C4D7EF",
+            "content": [{
+                "indicator": "1.1.  Number of WRA provided with contraceptive methods by  CHW by type",
+                "rows": "",
+                "num": "",
+                "defination": [{
+                    "term": "Total contraceptive methods provided through outreach",
+                    "id": "lc3MLF7xrz8",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "JW9zHEOMx6H"
+                }, {
+                    "term": "Injectable",
+                    "id": "lc3MLF7xrz8.AYBdhb3kriS",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "aIQbqIGtSNo"
+                }, {
+                    "term": " 3- year Implant (Implanon NXT)",
+                    "id": "lc3MLF7xrz8.T0xZ4UtdhSe",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "eEwyPWO70Pq"
+                }, {
+                    "term": " 5- Years Implant (Jadelle)",
+                    "id": "lc3MLF7xrz8.F7lkRUUFccY",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "k47Dn5c8CNL"
+                }, {
+                    "term": "IUCDs",
+                    "id": "lc3MLF7xrz8.mlt8aLGLs4m",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "G1kkrCLeKcU"
+                }, {
+                    "term": "Permanent (BTL)",
+                    "id": "lc3MLF7xrz8.XJBE6BJH1BR",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "U6x6WEZGA4x"
+                }]
             }]
-        }, {
-            "indicator": "CYP contribution from facilites  and outreach service",
-            "rows": "9",
-            "num": "3",
-            "defination": [{
-                "term": "CYP - Condoms",
-                "id": "C7X8xkHjsXo",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
+        },
+        {
+            "title": "Objective 2: Engage community health workers to increase demand and uptake of a full range of contraceptive methods, including LAPMs",
+            "color": "#C4D7EF",
+            "content": [{
+                    "indicator": "2.1 Number of community health workers  providing Short acting FP methods and referrals for LAPM",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total CHWs",
+                        "id": "juE7U0DjK1Z",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "juE7U0DjK1Z"
+                    }, {
+                        "term": "Male",
+                        "id": "juE7U0DjK1Z.FAMIlvvkflO",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "juE7U0DjK1Z.FAMIlvvkflO"
+                    }, {
+                        "term": "Female",
+                        "id": "juE7U0DjK1Z.C6WjKQz4Maz",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "juE7U0DjK1Z.C6WjKQz4Maz"
+                    }]
+                },
+                {
+                    "indicator": "2.2. Number of WRA provided with counseling on SRH/ FP by CHW, disaggregated by  age  (10-14, 15-19, 20-24)",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total WRA Counselled",
+                        "id": "EKhQhTAj9Mr",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "EKhQhTAj9Mr"
+                    }, {
+                        "term": "10-14",
+                        "id": "EKhQhTAj9Mr.SYJ73I04bWu",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "EKhQhTAj9Mr.SYJ73I04bWu"
+                    }, {
+                        "term": "15-19",
+                        "id": "EKhQhTAj9Mr.oCQuhpBXITW",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "EKhQhTAj9Mr.oCQuhpBXITW"
+                    }, {
+                        "term": "20-24",
+                        "id": "EKhQhTAj9Mr.I8lKEv9WKe8",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "EKhQhTAj9Mr.I8lKEv9WKe8"
+                    }, {
+                        "term": "25+",
+                        "id": "EKhQhTAj9Mr.gyIW2wcEMiD",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "EKhQhTAj9Mr.gyIW2wcEMiD"
+                    }]
+                }, {
+                    "indicator": "2.3.  Number of new WRA provided with contraceptive methods by  CHW by type",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total new WRA in community",
+                        "id": "I5PAOoV0Iuz",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "I5PAOoV0Iuz"
+                    }, {
+                        "term": "Pills",
+                        "id": "I5PAOoV0Iuz.Fef8DVFAmH1",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "I5PAOoV0Iuz.Fef8DVFAmH1"
+                    }, {
+                        "term": "Condoms",
+                        "id": "I5PAOoV0Iuz.WyA2YiD5MPU",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "I5PAOoV0Iuz.WyA2YiD5MPU"
+                    }]
+                }, {
+                    "indicator": "2.4. Number of repeat WRA provided with contraceptive methods by  CHW by type",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total new WRA in community",
+                        "id": "B2y3nfvSvUR",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "B2y3nfvSvUR"
+                    }, {
+                        "term": "Pills",
+                        "id": "B2y3nfvSvUR.Fef8DVFAmH1",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "B2y3nfvSvUR.Fef8DVFAmH1"
+                    }, {
+                        "term": "Condoms",
+                        "id": "B2y3nfvSvUR.WyA2YiD5MPU",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "B2y3nfvSvUR.WyA2YiD5MPU"
+                    }]
+                }, {
+                    "indicator": "2.5 Number of contraceptives distributed by CHW",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total new WRA in community",
+                        "id": "yIskGkggPJA",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "yIskGkggPJA"
+                    }, {
+                        "term": "Pills",
+                        "id": "uYMxTO5hkLR",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "uYMxTO5hkLR"
+                    }, {
+                        "term": "Condoms",
+                        "id": "iKxOJRBadqy",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "iKxOJRBadqy"
+                    }]
+                }, {
+                    "indicator": "2.6. Number of referrals made by CHW for contraceptive methods  in outreach by method",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total referrals made",
+                        "id": "kIp0ngtA1Qa",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa"
+                    }, {
+                        "term": "Injectable",
+                        "id": "kIp0ngtA1Qa.nrxaGulIrR3",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa.nrxaGulIrR3"
+                    }, {
+                        "term": "Implants",
+                        "id": "kIp0ngtA1Qa.o4qzelDCGWL",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa.o4qzelDCGWL"
+                    }, {
+                        "term": "Jadelle",
+                        "id": "kIp0ngtA1Qa.KP46O7cO0fV",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa.KP46O7cO0fV"
+                    }, {
+                        "term": "IUD",
+                        "id": "kIp0ngtA1Qa.KNIb2FDCVlL",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa.KNIb2FDCVlL"
+                    }, {
+                        "term": "Female Sterilization",
+                        "id": "kIp0ngtA1Qa.GFSwyJIRulq",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "kIp0ngtA1Qa.GFSwyJIRulq"
+                    }]
+                }, {
+                    "indicator": "2.7. Number of clients who completed referrals for outreach  made by CHW by method",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total completed referrals",
+                        "id": "WVIHXDUzMrO",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO"
+                    }, {
+                        "term": "Injectable",
+                        "id": "WVIHXDUzMrO.nrxaGulIrR3",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO.nrxaGulIrR3"
+                    }, {
+                        "term": "Implants",
+                        "id": "WVIHXDUzMrO.o4qzelDCGWL",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO.o4qzelDCGWL"
+                    }, {
+                        "term": "Jadelle",
+                        "id": "WVIHXDUzMrO.KP46O7cO0fV",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO.KP46O7cO0fV"
+                    }, {
+                        "term": "IUD",
+                        "id": "WVIHXDUzMrO.KNIb2FDCVlL",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO.KNIb2FDCVlL"
+                    }, {
+                        "term": "Female Sterilization",
+                        "id": "WVIHXDUzMrO.GFSwyJIRulq",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WVIHXDUzMrO.GFSwyJIRulq"
+                    }]
+                }, {
+                    "indicator": "2.8 Number of WRA who completed referrals for outreach made by CHW by user type",
+                    "rows": "",
+                    "num": "",
+                    "defination": [{
+                        "term": "Total completed referrals by user type",
+                        "id": "WBWHAP7Ixl1",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WBWHAP7Ixl1"
+                    }, {
+                        "term": "WRA- new user",
+                        "id": "WBWHAP7Ixl1.nGN26K952TM",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WBWHAP7Ixl1.nGN26K952TM"
+                    }, {
+                        "term": "WRA-repeat user",
+                        "id": "WBWHAP7Ixl1.UCCGNhBKJUO",
+                        "includeOuGroup": false,
+                        "realisation": "total",
+                        "target": "WBWHAP7Ixl1.UCCGNhBKJUO"
+                    }]
+                }
+            ]
+
+        },
+        {
+            "title": "Objective 3: Accelerate progress toward government approval of pilot introduction of community-based provision of injectable contraception using DMPA-SC.",
+            "color": "#C4D7EF",
+            "content": [{
+                "indicator": "3.1  Report with recommendation for pilot testing SAYANA press",
+                "rows": "",
+                "num": "",
+                "defination": [{
+                    "term": "",
+                    "id": "ltMBudF8UrU",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "ltMBudF8UrU"
+                }]
             }, {
-                "term": "CYP - Pills",
-                "id": "Jjya4RxmJhT",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "CYP - Injectables",
-                "id": "FPszf08yAVk",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG010"
-            }, {
-                "term": "CYP - Implanon",
-                "id": "b3A8AvDs3ZY",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG011"
-            }, {
-                "term": "CYP - Jadelle",
-                "id": "KO9vdzgRXbf",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG012"
-            }, {
-                "term": "CYP - Intrauterine Contraceptive Device (IUD) ",
-                "id": "kq9N0loL906",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG013"
-            }, {
-                "term": "CYP - Tubal Ligation",
-                "id": "yi3C16pYffx",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG014"
-            }, {
-                "term": "CYP - Vasectomies",
-                "id": "iUcrTVinoKD",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG015"
-            }, {
-                "term": "Total CYP by  Facility",
-                "id": "PMPMMHDE008",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG016"
+                "indicator": "3.2: MOHSW approval for pilot testing SAYANA press",
+                "rows": "",
+                "num": "",
+                "defination": [{
+                    "term": "",
+                    "id": "t7euat7JNWK",
+                    "includeOuGroup": false,
+                    "realisation": "total",
+                    "target": "t7euat7JNWK"
+                }]
             }]
-        }]
-    }, {
-        "title": "Project Goal: Increase healthy spacing of pregnancies among women of reproductive age, especially those aged 15-24 in Shinyanga Region",
-        "color": "#D6E3BC",
-        "content": [{
-            "indicator": "1.1.  Number of WRA provided with contraceptive methods by  CHW by type",
-            "rows": "5",
-            "num": "3",
-            "defination": [{
-                "term": "Total target new users ",
-                "id": "PMPMMHDE009",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG017"
-            }, {
-                "term": "Female Condoms",
-                "id": "PMPMMHDE010",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG018"
-            }, {
-                "term": "Male Condoms",
-                "id": "PMPMMHDE010",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG019"
-            }, {
-                "term": "POP",
-                "id": "PMPMMHDE010",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG020"
-            }, {
-                "term": "COC",
-                "id": "PMPMMHDE010",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG021"
-            }]
-        }, {
-            "indicator": "1.2. Number of WRA provided with counseling on SRH/ FP by CHW, disaggregated by  age  (10-14, 15-19, 20-24) ",
-            "rows": "5",
-            "num": "3",
-            "defination": [{
-                "term": "Total target",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG022"
-            }, {
-                "term": "10-14",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG023"
-            }, {
-                "term": "15-19",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG024"
-            }, {
-                "term": "20-24",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG025"
-            }, {
-                "term": "25+",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG026"
-            }]
-        }, {
-            "indicator": "1.3. Number of repeat WRA clients in the community by method",
-            "rows": "5",
-            "num": "3",
-            "defination": [{
-                "term": "Total WRA  target revisits",
-                "id": "PMPMMHDE012",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG027"
-            }, {
-                "term": "Female Condomsy",
-                "id": "PMPMMHDE013",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG028"
-            }, {
-                "term": "Male Condoms",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG029"
-            }, {
-                "term": "POP",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG030"
-            }, {
-                "term": "COC",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG031"
-            }]
-        }, {
-            "indicator": "1.3b. Number of contraceptives given out  by CHW",
-            "rows": "2",
-            "num": "3",
-            "defination": [{
-                "term": "Condoms",
-                "id": "PMPMMHDE012",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG032"
-            }, {
-                "term": "Pills",
-                "id": "PMPMMHDE013",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG033"
-            }]
-        }, {
-            "indicator": "1.4. Number of referrals made by CHW for contraceptive methods  by method",
-            "rows": "6",
-            "num": "3",
-            "defination": [{
-                "term": "Total Targets",
-                "id": "PMPMMHDE012",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG034"
-            }, {
-                "term": "Injectable",
-                "id": "PMPMMHDE013",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG035"
-            }, {
-                "term": "Implants",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG036"
-            }, {
-                "term": "IUD",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG037"
-            }, {
-                "term": "Female Sterilization",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG038"
-            }, {
-                "term": "Vasectomy",
-                "id": "PMPMMHDE014",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG039"
-            }]
-        }, {
-            "indicator": "1.5. Number of clients who completed referrals made by CHW by method",
-            "rows": "6",
-            "num": "3",
-            "defination": [{
-                "term": "Total Targets",
-                "id": "PMPE2EDE040",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG040"
-            }, {
-                "term": "Injectable",
-                "id": "PMPE2EDE041",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG041"
-            }, {
-                "term": "Implants",
-                "id": "PMPE2EDE042",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG042"
-            }, {
-                "term": "IUD",
-                "id": "PMPE2EDE043",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG043"
-            }, {
-                "term": "Female Sterilization",
-                "id": "PMPE2EDE044",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG044"
-            }, {
-                "term": "Vasectomy",
-                "id": "PMPE2EDE045",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG045"
-            }]
-        }, {
-            "indicator": "1.6. Number of facility-based providers trained to deliver LARC servicers",
-            "rows": "1",
-            "num": "3",
-            "defination": [{
-                "term": "",
-                "id": "PMPE2EDE046",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG046"
-            }]
-        }, {
-            "indicator": "1.7. New contraceptive users in the health facilities",
-            "rows": "9",
-            "num": "3",
-            "defination": [{
-                "term": "Total Targets",
-                "id": "PMPE2EDE064",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG047"
-            }, {
-                "term": "Oral Contraceptives",
-                "id": "QsG09ni0Vck",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG048"
-            }, {
-                "term": "Male Condoms",
-                "id": "vrYUVlPjGHX",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG049"
-            }, {
-                "term": "Female Condoms",
-                "id": "pK1gZxC2yzO",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG049"
-            }, {
-                "term": "Injectable",
-                "id": "stUhpCLQHdo",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPMMHTG014"
-            }, {
-                "term": "Implants (Implanon NXT and Jadelle)",
-                "id": "F1jtqafoS9m",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG050"
-            }, {
-                "term": "IUCDs",
-                "id": "cLGchHOHUPP",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG051"
-            }, {
-                "term": "Female Sterilization",
-                "id": "V1tZJGfdeL6",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG052"
-            }, {
-                "term": "Vasectomy",
-                "id": "v8X8GNnoX2M",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG053"
-            }]
-        }, {
-            "indicator": "1.7.1. New contraceptive users Outreach",
-            "rows": "9",
-            "num": "3",
-            "defination": [{
-                "term": "Total Targets",
-                "id": "PMPE2EDE064",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG047"
-            }, {
-                "term": "Oral Contraceptives",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG048"
-            }, {
-                "term": "Male Condoms",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG049"
-            }, {
-                "term": "Female Condoms",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG049"
-            }, {
-                "term": "Injectable",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPMMHTG014"
-            }, {
-                "term": "Implants (Implanon NXT and Jadelle)",
-                "id": "ZnTi99UdGCS",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG050"
-            }, {
-                "term": "IUCDs",
-                "id": "RfSsrHPGBXV",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG051"
-            }, {
-                "term": "Female Sterilization",
-                "id": "chmWn8ksICz",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG052"
-            }, {
-                "term": "Vasectomy",
-                "id": "xip1SDutimh",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG053"
-            }]
-        }, {
-            "indicator": "1.8. Number of new  FP users enrolled in the facilities by age",
-            "rows": "5",
-            "num": "3",
-            "defination": [{
-                "term": "Total target",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG054"
-            }, {
-                "term": "10-14",
-                "id": "OIsWASIKhFI",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG055"
-            }, {
-                "term": "15-19",
-                "id": "KHk45qgIUgx",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG056"
-            }, {
-                "term": "20-24",
-                "id": "fMZMgRlUxYK",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG057"
-            }, {
-                "term": "25+",
-                "id": "ya78GSsUFB5",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG058"
-            }]
-        }, {
-            "indicator": "1.9: Number of revisit users in the health facilities",
-            "rows": "4",
-            "num": "3",
-            "defination": [{
-                "term": "Male Condoms ",
-                "id": "PHN05p61ByJ.Zi6m8Bfd4YZ",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG059"
-            }, {
-                "term": "Female Condoms ",
-                "id": "PMPMMHDE011",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG059"
-            }, {
-                "term": "Pills",
-                "id": "PHN05p61ByJ.OVPV2za8nOf",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG060"
-            }, {
-                "term": "Injectables",
-                "id": "epPM7fO8CnH.RcgnLQy1MxN",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG061"
-            }]
-        }, {
-            "indicator": "1.2: Number of contraceptives distributed in health facilities",
-            "rows": "2",
-            "num": "3",
-            "defination": [{
-                "term": "Condoms ",
-                "id": "oAdnR7jRTSN",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG062"
-            }, {
-                "term": "Pills",
-                "id": "bjkeLqFDDjo",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG063"
-            }]
-        }, {
-            "indicator": "1.21.Number of contraceptives distributed through outreach services",
-            "rows": "2",
-            "num": "3",
-            "defination": [{
-                "term": "Condoms ",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Pills",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }]
-        }, {
-            "indicator": "1..2.2 New contraceptive users  through community outreach services",
-            "rows": "9",
-            "num": "3",
-            "defination": [{
-                "term": "Total",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Condoms",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Oral Contraceptives ",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Injectable",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Implanon NXT  ",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Jadelle",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "IUCDs",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Female Sterilization",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }, {
-                "term": "Vasectomy",
-                "id": "",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": ""
-            }]
-        }]
-    }, {
-        "title": "Objective 2: Build the capacity of facilities such that they meet quality standards for providing comprehensive FP services, including LARC",
-        "color": "#D6E3BC",
-        "content": [{
-            "indicator": "Output Indicators:",
-            "rows": "4",
-            "num": "3",
-            "defination": [{
-                "term": "2.1: Number of facilities provided with FP supplies and equipment (by type of equipment)",
-                "id": "PMPE2EDE065",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG065"
-            }, {
-                "term": "2.2: Number of  supportive supervision rounds conducted in health facilities  ",
-                "id": "PMPE2EDE066",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG066"
-            }, {
-                "term": "2.3: Number of quarterly review meetings conducted  with CHMT ",
-                "id": "PMPE2EDE067",
-                "includeOuGroup": true,
-                "realisation": "total",
-                "target": "PMPE2ETG067"
-            }]
-        }]
-    }];
+        }
+    ];
     return data;
 }
 
