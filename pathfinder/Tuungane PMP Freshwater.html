@@ -1,0 +1,431 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var dateElmsArr1 = [];
+        var url = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name);
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(level,cordId){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+           
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:FICyhodDdll&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                $.each(data,function(key,value){
+                    if(value.hasOwnProperty('content')){
+                        $.each(value.content,function(k,val){
+
+                            if(val.hasOwnProperty('indicator')){
+                                if(val.hasOwnProperty('rows')){
+                                    var valuee1 = [];
+                                    var sumvaluee1 = 0;
+                                    var valuee2 = [];
+                                    var sumvaluee2 = 0;
+                                    html +="<tr>";
+                                 ;
+                                    html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
+                                    html +="<td>"+val.defination[0].term+"</td>";
+                                    if(val.hasOwnProperty('defination')){
+                                        if(val.defination[0].hasOwnProperty('id')){
+                                            $.each(period.split(";"),function(m,per){
+                                                valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
+                                                html +="<td>"+valuee1[per]+"</td>";
+                                                sumvaluee1+=valuee1[per];
+                                            })
+                                        }
+                                    }
+                                    //realization
+                                    if(val.defination[0].realisation == 'sum'){
+                                        html +="<td>"+sumvaluee1+"</td>";
+                                    }else if(val.defination[0].realisation == 'last'){
+                                        html +="<td>"+ valuee1[2] +"</td>";
+                                    }
+
+                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                    html +="<td  class='lastColumn'></td>";
+
+                                    html +="</tr>";
+                                    var rowTracker = 0;
+                                    $.each(val.defination,function(j,v){
+                                        if(rowTracker == 0){
+
+                                        }else{
+                                            html +="<tr>";
+                                            html +="<td>"+v.term+"</td>";
+                                            if(v.hasOwnProperty('id')){
+
+                                                $.each(period.split(";"),function(m,per){
+                                                   valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
+                                                    html +="<td>"+valuee2[per]+"</td>";
+                                                    sumvaluee2 += valuee2[per];
+                                                })
+                                            }
+
+                                            //realization
+                                            if(v.realisation == 'sum'){
+                                                html +="<td>"+sumvaluee2+"</td>";
+                                            }else if(v.realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }else if(v.realisation == 'avg'){
+
+                                                var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                html +="<td>"+ summ.toFixed(1) +"</td>";
+                                            }
+
+                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                        }
+                                        rowTracker ++
+                                    });
+                                }
+
+
+                            }
+
+
+                        });
+                    }
+                });
+                $("table").append(html);
+                $('.lastColumn').each(function () {
+                    //processing this row
+                    var num = $(this).prev('td').text();
+                    var num1 = $(this).prev('td').prev('td').text();
+                    num = num.replace(",", "");
+                    if(num != '0'){
+                        if($.isNumeric(parseInt(num1))){
+                            var parc = (parseInt(num1)*100)/parseInt(num);
+                            if(parc < 41 ){
+                                $(this).text(parseInt(parc)).css('background','#FF0000')
+                            }else if(parc >41 && parc <81){
+                                $(this).text(parseInt(parc)).css('background','#FFFF00')
+                            }else if(parc > 80){
+                                $(this).text(parseInt(parc)).css('background','#92D050')
+                            }
+                            $(this).text(parseInt(parc))
+                        }else{
+                            $(this).text('').css('background','#E6DADA')
+                        }
+
+                    }
+                });
+                $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                var periodName = getPeroidName(periods[0]);
+
+                $(".orgUnit").html(orgUnit.name);
+                $(".period").html(periodName);
+                $(".loader").hide();
+                $(".header").show();
+                });
+            });
+        }
+
+        loadData('national','riuabH1sYe6');
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+        var data = [
+            {"title":"",
+            "color":"",
+            "content":[
+                {"indicator":"IR 2.1 BMU in place and functioning",
+                "rows":"6",
+                "num":"",
+                "defination":[
+                    {"term":"2.1.1 Number BMUs established",
+                    "id":"wXrmPlV8Gel",
+                    "realisation":"sum",
+                    "targett":"WY2SqY4KRfN"
+                    },
+                    {"term":"2.1.1.1.  Number of BMUs who have at least 30% of female membership",
+                    "id":"rPc9bB202Nz",
+                    "realisation":"sum",
+                    "targett":"CIK5nY8eurb"
+                     }, 
+                     {"term":"2.1.3 Number of functional BMUs with offices",
+                    "id":"Sw2ZLcismKt",
+                    "realisation":"sum",
+                    "targett":"FWI0INuCuIF"
+                    },
+                    {"term":"2.1.4 Number of Collaborative Fisheries Management Areas (CFMAs) established and functioning",
+                    "id":"KBw3pSswbLy",
+                    "realisation":"sum",
+                    "targett":"P3yXKDYl2ZN"
+                     }, 
+                     {"term":"2.1.5 Number of active BMU members by sex ,Male BMU Members",
+                    "id":"NrXNnvW74LU.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"OTfHyo13WhX.FAMIlvvkflO"
+                    },
+                    {"term":"2.1.5 Number of active BMU members by sex ,Female BMU Members",
+                    "id":"NrXNnvW74LU.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"OTfHyo13WhX.C6WjKQz4Maz"
+                     }, 
+            ]},
+            {"indicator":"IR 2.2 Reduce illegal fishing",
+                "rows":"9",
+                "num":"",
+                "defination":[
+                     {"term":"2.2.1 Number of BMU members trained on patrol guidelines",
+                    "id":"q2ywoEysEfp",
+                    "realisation":"sum",
+                    "targett":"T7Qp6fei9bJ"
+                    },
+                    {"term":"2.2.2 Number of illegal fishing incidents reported by BMU at VEO office",
+                    "id":"f03mk9DQcuh",
+                    "realisation":"sum",
+                    "targett":"Y0QU5398IHv"
+                     },
+                     {"term":"2.2.3. Number of fish  breeding sites identified by village",
+                    "id":"suVBIvgqlle",
+                    "realisation":"sum",
+                    "targett":"xArN48dw9Ex"
+                    },
+                    {"term":"2.2.4. Number of fish  breeding sites established  by  village",
+                    "id":"XwvJIekcby0",
+                    "realisation":"sum",
+                    "targett":"mmST2WU4bSx"
+                     }, 
+                     {"term":"2.2.5. Village water area (in sq.m) protected as fish  breeding  site by village",
+                    "id":"S7Cq2cPBN1u",
+                    "realisation":"sum",
+                    "targett":"sPY0LuT7RnX"
+                    },
+                    {"term":"2.2.6 Number of  fish breeding sites reported no fishing activities",
+                    "id":"DZH80Ho2Hd3",
+                    "realisation":"sum",
+                    "targett":"culueKxmO9G"
+                     },
+                     {"term":"2.2.7. Number of fisherman punished due to illegal fishing practices by village, by type of punishment (warning, fine, imprisonent)",
+                    "id":"QsOMPMBlHVU",
+                    "realisation":"sum",
+                    "targett":"yAU2uDBSN5S"
+                     },
+                     {"term":"2.2.8.  Number of fisherman provided (at reduced price) with recommended gears after surrendering illegal gears",
+                    "id":"zoF0MDl1ogG",
+                    "realisation":"sum",
+                    "targett":"YVBJHK37QXp"
+                     },
+                     {"term":"2.2.9. Number of illegal fishing gears confiscated by type",
+                    "id":"sCvGgDSEuSY",
+                    "realisation":"sum",
+                    "targett":"qdl272e13rl"
+                     },
+            ]},
+            {"indicator":"IR 2.3 Improve quality of fisheries products",
+                "rows":"1",
+                "num":"",
+                "defination":[
+                
+                    {"term":"2.3.1 Number of BMU members using improved fish processing techniques (e.g., fish drying racks)",
+                    "id":"ZUUSqV2WPjs",
+                    "realisation":"sum",
+                    "targett":"q1enFHuDCIT"
+                    }
+            ]},
+            {"indicator":"IR 2.4 Improve BMU Financial sustainability through own income generating activities",
+                "rows":"4",
+                "num":"",
+                "defination":[
+                    {"term":"2.3.2 Number of BMU members with increased income as a result of project activities",
+                    "id":"FtG7kjhvvbF",
+                    "realisation":"sum",
+                    "targett":"VoAWClCceqd"
+                     }, 
+                     {"term":"2.4.1 Number of BMUs with established income generating business",
+                    "id":"zSdT4NU3bUP",
+                    "realisation":"sum",
+                    "targett":"jntq39lK0FX"
+                    },
+                    {"term":"2.4.2 Number of BMUs reportign income gain  from own income generating activities",
+                    "id":"julFr5ZZ9lJ",
+                    "realisation":"sum",
+                    "targett":"FZKOO7qz4K0"
+                     },
+                     {"term":"2.4.3 Number of BMUs which provide income and expenditure reports to BMU assembly meeting and Village government",
+                    "id":"yuz9gYEzQux",
+                    "realisation":"sum",
+                    "targett":"tGY2NQ0O8Dr"
+                     }
+            ]},
+       
+            ]}]
+            return data;
+    }
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Freshwater_PMP";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+</script>
+
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div>
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">Tuungane PMP Freshwater -
+            <span class="period"></span> -
+            <span id="orgUnits"></span>
+        </h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+            </table>
+        </div>
+    </div>
+
+</div>
