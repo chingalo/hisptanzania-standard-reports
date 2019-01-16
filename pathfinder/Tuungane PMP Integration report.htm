@@ -1,0 +1,496 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var dateElmsArr1 = [];
+        var url = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name);
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(level,cordId){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+           
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:FICyhodDdll&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                $.each(data,function(key,value){
+                    if(value.hasOwnProperty('content')){
+                        $.each(value.content,function(k,val){
+
+                            if(val.hasOwnProperty('indicator')){
+                                if(val.hasOwnProperty('rows')){
+                                    var valuee1 = [];
+                                    var sumvaluee1 = 0;
+                                    var valuee2 = [];
+                                    var sumvaluee2 = 0;
+                                    html +="<tr>";
+                                    
+                                    html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
+                                    html +="<td>"+val.defination[0].term+"</td>";
+                                    if(val.hasOwnProperty('defination')){
+                                        if(val.defination[0].hasOwnProperty('id')){
+                                            $.each(period.split(";"),function(m,per){
+                                                valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
+                                                html +="<td>"+valuee1[per]+"</td>";
+                                                sumvaluee1+=valuee1[per];
+                                            })
+                                        }
+                                    }
+                                    //realization
+                                    if(val.defination[0].realisation == 'sum'){
+                                        html +="<td>"+sumvaluee1+"</td>";
+                                    }else if(val.defination[0].realisation == 'last'){
+                                        html +="<td>"+ valuee1[2] +"</td>";
+                                    }
+
+                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                    html +="<td  class='lastColumn'></td>";
+
+                                    html +="</tr>";
+                                    var rowTracker = 0;
+                                    $.each(val.defination,function(j,v){
+                                        if(rowTracker == 0){
+
+                                        }else{
+                                            html +="<tr>";
+                                            html +="<td>"+v.term+"</td>";
+                                            if(v.hasOwnProperty('id')){
+
+                                                $.each(period.split(";"),function(m,per){
+                                                   valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
+                                                    html +="<td>"+valuee2[per]+"</td>";
+                                                    sumvaluee2 += valuee2[per];
+                                                })
+                                            }
+
+                                            //realization
+                                            if(v.realisation == 'sum'){
+                                                html +="<td>"+sumvaluee2+"</td>";
+                                            }else if(v.realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }else if(v.realisation == 'avg'){
+
+                                                var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                html +="<td>"+ summ.toFixed(1) +"</td>";
+                                            }
+
+                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                        }
+                                        rowTracker ++
+                                    });
+                                }
+
+
+                            }
+
+
+                        });
+                    }
+                });
+                $("table").append(html);
+                $('.lastColumn').each(function () {
+                    //processing this row
+                    var num = $(this).prev('td').text();
+                    var num1 = $(this).prev('td').prev('td').text();
+                    num = num.replace(",", "");
+                    if(num != '0'){
+                        if($.isNumeric(parseInt(num1))){
+                            var parc = (parseInt(num1)*100)/parseInt(num);
+                            if(parc < 41 ){
+                                $(this).text(parseInt(parc)).css('background','#FF0000')
+                            }else if(parc >41 && parc <81){
+                                $(this).text(parseInt(parc)).css('background','#FFFF00')
+                            }else if(parc > 80){
+                                $(this).text(parseInt(parc)).css('background','#92D050')
+                            }
+                            $(this).text(parseInt(parc))
+                        }else{
+                            $(this).text('').css('background','#E6DADA')
+                        }
+
+                    }
+                });
+                $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                var periodName = getPeroidName(periods[0]);
+
+                $(".orgUnit").html(orgUnit.name);
+                $(".period").html(periodName);
+                $(".loader").hide();
+                $(".header").show();
+                });
+            });
+        }
+
+        loadData('national','riuabH1sYe6');
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+        var data = [
+            {"title":"",
+            "color":"",
+            "content":[
+            {"indicator":"IR 4.1 Adoption of positive PHE behaviours at household level",
+                "rows":"16",
+                "num":"",
+                "defination":[
+                    {"term":"4.1.0 Number of community-based groups’ members considered multi-purpose resource persons",
+                    "id":"x10xSb4Dz26",
+                    "realisation":"sum",
+                    "targett":"B95XqvJ9KLh"
+                    },
+                    {"term":"4.1.1 Number of active PHE champions by sex and village",
+                    "id":"aT0R5iyJ3Wy",
+                    "realisation":"sum",
+                    "targett":"X4gQkTl0dtl"
+                     }, 
+                     {"term":"4.1.1.3 Number of active Male PHE champion",
+                    "id":"aT0R5iyJ3Wy.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"X4gQkTl0dtl.FAMIlvvkflO"
+                    },
+                    {"term":"4.1.1.2 Number of active Female PHE champion",
+                    "id":"aT0R5iyJ3Wy.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"X4gQkTl0dtl.C6WjKQz4Maz"
+                     }, 
+                     {"term":"4.1.2. Number of active model households dissagregated by class status",
+                    "id":"RrzaRwzNJK7",
+                    "realisation":"sum",
+                    "targett":"AfnJE1jWr7m"
+                    },
+                    {"term":"4.1.2.1 Number Male healded households",
+                    "id":"PDKOjGMqye1",
+                    "realisation":"sum",
+                    "targett":"Ba2oGwodTj5"
+                     }, 
+                     {"term":"4.1.2.2: Number of Female headed Households",
+                    "id":"YnD2HaVUpzP",
+                    "realisation":"sum",
+                    "targett":"Qs7xpRjzqje"
+                    },
+                    {"term":"4.1.2.1. Number of ACTIVE Model Households, Class 1",
+                    "id":"YsUdOAsnKo8.nfLc0Fei8U6",
+                    "realisation":"sum",
+                    "targett":"DmWAZsezA3P.nfLc0Fei8U6"
+                     },
+                     {"term":"4.1.2.2. Number of ACTIVE model households, Class 2.",
+                    "id":"YsUdOAsnKo8.tSc7ORHDsYP",
+                    "realisation":"sum",
+                    "targett":"DmWAZsezA3P.tSc7ORHDsYP"
+                    },
+                    {"term":"4.1.2.3. Number of ACTIVE model households, Class 3.",
+                    "id":"YsUdOAsnKo8.cg3KSJlN2kx",
+                    "realisation":"sum",
+                    "targett":"DmWAZsezA3P.cg3KSJlN2kx"
+                     }, 
+                     {"term":"4. Number of new model households established, disaggregated by class",
+                    "id":"ZaJQPXnT9Ac",
+                    "realisation":"sum",
+                    "targett":"YjKaeg4Mb4F"
+                    },
+                    {"term":"4.1.2.1. Number of NEW Model Households, Class 1",
+                    "id":"Realz42RpWv.nfLc0Fei8U6",
+                    "realisation":"sum",
+                    "targett":"QW1nGt56pIv.nfLc0Fei8U6"
+                     },
+                     {"term":"4.1.2.2. Number of NEW model households, Class 2.",
+                    "id":"Realz42RpWv.tSc7ORHDsYP",
+                    "realisation":"sum",
+                    "targett":"QW1nGt56pIv.tSc7ORHDsYP"
+                    },
+                    {"term":"4.1.2.3. Number of NEW model households, Class 3.",
+                    "id":"Realz42RpWv.cg3KSJlN2kx",
+                    "realisation":"sum",
+                    "targett":"QW1nGt56pIv.cg3KSJlN2kx"
+                     }, 
+                     {"term":"Number of model villages",
+                    "id":"ORXbN6nbHLd",
+                    "realisation":"sum",
+                    "targett":"qQB26jRvZWU"
+                    },
+                    {"term":"4.1.5. Number of FP/ RH/PHE Intergrated IEC Materials Developed and disseminated",
+                    "id":"mIWYhlLr2n7",
+                    "realisation":"sum",
+                    "targett":"sN0mre2vIlj"
+                     },
+            ]},
+            {"indicator":"IR 4.2. Improve savings and investment through the continued strengthening and expansion of Community Conservation Banks (COCOBAs)",
+                "rows":"6",
+                "num":"",
+                "defination":[
+                     {"term":"4.2.1 Number of COCOBA groups established within project villages.",
+                    "id":"GfgWpIMOabi",
+                    "realisation":"sum",
+                    "targett":"EpH5YuEaBwE"
+                    },
+                    {"term":"4.2.2 Number of COCOBA members by sex within project villages,Male",
+                    "id":"dkXTyTSG9o4.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"o3KVBizxQUI.FAMIlvvkflO"
+                     },
+                     {"term":"4.2.2 Number of COCOBA members by sex within project villages,Female",
+                    "id":"dkXTyTSG9o4.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"o3KVBizxQUI.C6WjKQz4Maz"
+                    },
+                    {"term":"Proportion of remale COCOBA members",
+                    "id":"ZE05gbvEWxt",
+                    "realisation":"sum",
+                    "targett":"CsnMmEPDWRG"
+                     }, 
+                     {"term":"4.2.3 Amount of savings made by COCOBA groups per quarter, per village",
+                    "id":"CtK9z89ueJO",
+                    "realisation":"sum",
+                    "targett":"aZEEb4HFRT8"
+                    },
+                    {"term":"4.2.4. Number of COCOBA members with increased income due to COCOBA loans",
+                    "id":"teEmtGEdOak",
+                    "realisation":"sum",
+                    "targett":"WATQbQeNp1a"
+                     },
+            ]},
+            {"indicator":"IR 4.3. Increase youth engagment in PHE program activities",
+                "rows":"4",
+                "num":"",
+                "defination":[
+                
+                     {"term":"4.3.1 Number of new youth clubs established promoting PHE messages within project villages, in-school",
+                    "id":"uAnAXvPFCge.ywpIyYdVsud",
+                    "realisation":"sum",
+                    "targett":"dvzVLC4j3PZ.ywpIyYdVsud"
+                    },
+                    {"term":"4.3.1 Number of new youth clubs established promoting PHE messages within project villages, out- of school.",
+                    "id":"uAnAXvPFCge.WC9zsJWMYOt",
+                    "realisation":"sum",
+                    "targett":"dvzVLC4j3PZ.WC9zsJWMYOt"
+                     }, 
+                     {"term":"4.3.2 Number of young girls participating in youth club PHE activities, in school",
+                    "id":"hj60a3iLdbd.ywpIyYdVsud",
+                    "realisation":"sum",
+                    "targett":"RUUZZJ9FpDp.ywpIyYdVsud"
+                    },
+                    {"term":"4.3.2 Number of young girls participating in youth club PHE activities,Out of school",
+                    "id":"hj60a3iLdbd.WC9zsJWMYOt",
+                    "realisation":"sum",
+                    "targett":"RUUZZJ9FpDp.WC9zsJWMYOt"
+                     },
+            ]},
+            {"indicator":"IR 4.4. Improve leadership among village leaders",
+                "rows":"3",
+                "num":"",
+                "defination":[
+                    {"term":"4.4.1 Number of local leaders ( Village, Ward & Council) who received training on governance by training type within project villages.",
+                    "id":"bqZm4xcMWgj",
+                    "realisation":"sum",
+                    "targett":"k3N0SMOBpmM"
+                     }, 
+                     {"term":"4.4.2. Number of the villages providing regular feedback to community about PHE action plan implementation within project villages.",
+                    "id":"ChsimZ1cX8d",
+                    "realisation":"sum",
+                    "targett":"pOzFvVbJCcr"
+                    },
+                    {"term":"4.4.3. Number of project villages implementing 70% of PHE action plan, per year",
+                    "id":"zpHVmN4xgiY",
+                    "realisation":"sum",
+                    "targett":"j8ZcCYdqgZX"
+                     },
+            ]},
+            {"indicator":"IR 4.5. Improve community participation in civic and governance activities.",
+                "rows":"3",
+                "num":"",
+                "defination":[
+                    {"term":"4.5.1 Number of project villages where at least 20% of participants in village assembly meetings are youths under age of 24.",
+                    "id":"vuqoDzmRQmE",
+                    "realisation":"sum",
+                    "targett":"skte6r3kpPS"
+                     }, 
+                     {"term":"4.5.1 Number of project villages where at least 50% of participants in village assembly meetings are female",
+                    "id":"YYMi4NO2WZI",
+                    "realisation":"sum",
+                    "targett":"HfiGfQKz3eS"
+                    },
+                    {"term":"4.5.2. Number of project villages implementing Community Score Card approch, by quarter.",
+                    "id":"hTyomZfBPxn",
+                    "realisation":"sum",
+                    "targett":"rhyh5nVm8Ev"
+                     },
+            ]}
+            ]}]
+            return data;
+    }
+
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Integration_PMP";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+</script>
+
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div>
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">Tuungane PMP Integration -
+            <span class="period"></span> -
+            <span id="orgUnits"></span>
+        </h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,1277 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var dateElmsArr1 = [];
+        var url = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name);
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(level,cordId){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+            html += '<th style="width: 1%">#</th>';
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:FICyhodDdll&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                $.each(data,function(key,value){
+                    html +="<tr style='background-color: "+value.color+"'><td colspan='9'>"+value.title+"</td> </tr>";
+                    if(value.hasOwnProperty('content')){
+                        $.each(value.content,function(k,val){
+
+                            if(val.hasOwnProperty('indicator')){
+                                if(val.hasOwnProperty('rows')){
+                                    var valuee1 = [];
+                                    var sumvaluee1 = 0;
+                                    var valuee2 = [];
+                                    var sumvaluee2 = 0;
+                                    html +="<tr>";
+                                    html +="<td rowspan='"+val.rows+"'>"+val.num+"</td>";
+                                    html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
+                                    html +="<td>"+val.defination[0].term+"</td>";
+                                    if(val.hasOwnProperty('defination')){
+                                        if(val.defination[0].hasOwnProperty('id')){
+                                            $.each(period.split(";"),function(m,per){
+                                                valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
+                                                html +="<td>"+valuee1[per]+"</td>";
+                                                sumvaluee1+=valuee1[per];
+                                            })
+                                        }
+                                    }
+                                    //realization
+                                    if(val.defination[0].realisation == 'sum'){
+                                        html +="<td>"+sumvaluee1+"</td>";
+                                    }else if(val.defination[0].realisation == 'last'){
+                                        html +="<td>"+ valuee1[2] +"</td>";
+                                    }
+
+                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                    html +="<td  class='lastColumn'></td>";
+
+                                    html +="</tr>";
+                                    var rowTracker = 0;
+                                    $.each(val.defination,function(j,v){
+                                        if(rowTracker == 0){
+
+                                        }else{
+                                            html +="<tr>";
+                                            html +="<td>"+v.term+"</td>";
+                                            if(v.hasOwnProperty('id')){
+
+                                                $.each(period.split(";"),function(m,per){
+                                                   valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
+                                                    html +="<td>"+valuee2[per]+"</td>";
+                                                    sumvaluee2 += valuee2[per];
+                                                })
+                                            }
+
+                                            //realization
+                                            if(v.realisation == 'sum'){
+                                                html +="<td>"+sumvaluee2+"</td>";
+                                            }else if(v.realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }else if(v.realisation == 'avg'){
+
+                                                var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                html +="<td>"+ summ.toFixed(1) +"</td>";
+                                            }
+
+                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                        }
+                                        rowTracker ++
+                                    });
+                                }
+
+
+                            }
+
+
+                        });
+                    }
+                });
+                $("table").append(html);
+                $('.lastColumn').each(function () {
+                    //processing this row
+                    var num = $(this).prev('td').text();
+                    var num1 = $(this).prev('td').prev('td').text();
+                    num = num.replace(",", "");
+                    if(num != '0'){
+                        if($.isNumeric(parseInt(num1))){
+                            var parc = (parseInt(num1)*100)/parseInt(num);
+                            if(parc < 41 ){
+                                $(this).text(parseInt(parc)).css('background','#FF0000')
+                            }else if(parc >41 && parc <81){
+                                $(this).text(parseInt(parc)).css('background','#FFFF00')
+                            }else if(parc > 80){
+                                $(this).text(parseInt(parc)).css('background','#92D050')
+                            }
+                            $(this).text(parseInt(parc))
+                        }else{
+                            $(this).text('').css('background','#E6DADA')
+                        }
+
+                    }
+                });
+                $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                var periodName = getPeroidName(periods[0]);
+
+                $(".orgUnit").html(orgUnit.name);
+                $(".period").html(periodName);
+                $(".loader").hide();
+                $(".header").show();
+                });
+            });
+        }
+
+        loadData('national','riuabH1sYe6');
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+        var data = [
+            {"title":"IR 1.1: Reduce shortage of contraceptives",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"Number of facilities that report stock out of contraceptives, disaggregated by type",
+                "rows":"5",
+                "num":"1",
+                "defination":[
+                    {"term":"UID",
+                    "id":"Dx86JqV2dh2.g08r6Nt8k4D",
+                    "realisation":"sum",
+                    "targett":"TciejepRpcw.g08r6Nt8k4D"
+                    },
+                    {"term":"Implants",
+                    "id":"Dx86JqV2dh2.XwuaYttPMHR",
+                    "realisation":"sum",
+                    "targett":"TciejepRpcw.XwuaYttPMHR"
+                    },
+                    {"term":"Injectables",
+                    "id":"Dx86JqV2dh2.RYAt84tRBAA",
+                    "realisation":"sum",
+                    "targett":"TciejepRpcw.RYAt84tRBAA"
+                    },
+                    {"term":"Pills",
+                    "id":"Dx86JqV2dh2.FVWmOkczIBT",
+                    "realisation":"sum",
+                    "targett":"TciejepRpcw.FVWmOkczIBT"
+                    },
+                    {"term":"Condoms",
+                    "id":"Dx86JqV2dh2.PutEAZIB21Y",
+                    "realisation":"sum",
+                    "targett":"TciejepRpcw.PutEAZIB21Y"
+                    }
+            ]},
+            {"indicator":"Number of people trained in family planning/reproductive health with USG funds by sex",
+                "rows":"2",
+                "num":"2",
+                "defination":[
+                    {"term":"Male",
+                    "id":"DAmMEmFqJ82.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"YSAqdPMWuuC.FAMIlvvkflO"
+                    },
+                    {"term":"Female",
+                    "id":"DAmMEmFqJ82.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"YSAqdPMWuuC.C6WjKQz4Maz"
+                    }
+            ]},
+            {"indicator":"Number of people trained in family planning/reproductive health with USG funds by type of the service provider",
+                "rows":"5",
+                "num":"",
+                "defination":[
+                    {"term":"Physician/clinician",
+                    "id":"CkfccnQcZB7.xiH7Fuesk7V",
+                    "realisation":"sum",
+                    "targett":"wSgNT2TK1hG.xiH7Fuesk7V"
+                    },
+                    {"term":"Nurse/Midwives",
+                    "id":"CkfccnQcZB7.lQxKKBEjc4J",
+                    "realisation":"sum",
+                    "targett":"wSgNT2TK1hG.lQxKKBEjc4J"
+                    },
+                    {"term":"CHW",
+                    "id":"CkfccnQcZB7.S2i2DgVa3c5",
+                    "realisation":"sum",
+                    "targett":"wSgNT2TK1hG.S2i2DgVa3c5"
+                    },
+                    {"term":"Model HH champions",
+                    "id":"CkfccnQcZB7.MtbqaSGeXV4",
+                    "realisation":"sum",
+                    "targett":"wSgNT2TK1hG.MtbqaSGeXV4"
+                    },
+                    {"term":"FTP peer leaders",
+                    "id":"CkfccnQcZB7.miOPp0nCqXV",
+                    "realisation":"sum",
+                    "targett":"wSgNT2TK1hG.miOPp0nCqXV"
+                    }
+            ]},
+            {"indicator":"Number of people trained in family planning/reproductive health with USG funds by method trained",
+                "rows":"3",
+                "num":"",
+                "defination":[
+                    {"term":"Short term",
+                    "id":"kvmaNJsC5Dn.nCOxig0QiFD",
+                    "realisation":"sum",
+                    "targett":"xnUxwaJyeS4.nCOxig0QiFD"
+                    },
+                    {"term":"Long acting",
+                    "id":"kvmaNJsC5Dn.km8Puj2UZSi",
+                    "realisation":"sum",
+                    "targett":"xnUxwaJyeS4.km8Puj2UZSi"
+                    },
+                    {"term":"Permanent",
+                    "id":"kvmaNJsC5Dn.Jqqnn05nkvJ",
+                    "realisation":"sum",
+                    "targett":"xnUxwaJyeS4.Jqqnn05nkvJ"
+                    }
+            ]},
+            {"indicator":"Number of people trained in family planning/reproductive health with USG funds by method trained",
+                "rows":"8",
+                "num":"",
+                "defination":[
+                    {"term":"Youth",
+                    "id":"WayloQepfva.g7uZeJuvxQr",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.g7uZeJuvxQr"
+                    },
+                    {"term":"Short acting",
+                    "id":"WayloQepfva.CvrIVHHpFMp",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.CvrIVHHpFMp"
+                    },
+                    {"term":"LARC",
+                    "id":"WayloQepfva.wWaCDk6154y",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.wWaCDk6154y"
+                    },
+                    {"term":"PM",
+                    "id":"WayloQepfva.rf69LTopveB",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.rf69LTopveB"
+                    },
+                    {"term":"PPFP",
+                    "id":"WayloQepfva.PvXOc2ext3M",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.PvXOc2ext3M"
+                    },
+                    {"term":"FTP",
+                    "id":"WayloQepfva.t3XngRiwifW",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.t3XngRiwifW"
+                    },
+                    {"term":"Integration ( model HH etc)",
+                    "id":"WayloQepfva.OiA3mEAdHKy",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.OiA3mEAdHKy"
+                    },
+                    {"term":"Mobile Application",
+                    "id":"WayloQepfva.Yw5TNKuC9tZ",
+                    "realisation":"sum",
+                    "targett":"N9zzXABXGYU.Yw5TNKuC9tZ"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"3",
+                "defination":[
+                    {"term":"Number of Supportive supervision and mentorship conducted to the trained Service providers",
+                    "id":"oKc3JpXgAUn.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"CenIRgTUJvy"
+                    }
+            ]},
+
+            {"indicator":"",
+                "rows":"1",
+                "num":"4",
+                "defination":[
+                    {"term":"Number of facilities meeting minimal QA FP standards",
+                    "id":"herOxtXLbbd",
+                    "realisation":"sum",
+                    "targett":"t0dyFLTJd9k"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"5",
+                "defination":[
+                    {"term":"Number of providers who are comptence in provision of LARC services",
+                    "id":"zxqtgFlye3X",
+                    "realisation":"sum",
+                    "targett":"Bv0X6EljX4p"
+                    }
+            ]}
+            ]},
+            {"title":"IR 1.3. Increase access of contraceptive services in health facilities",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"Number of contraceptives distributed in the facility, disaggregated by type",
+                "rows":"2",
+                "num":"6",
+                "defination":[
+                    {"term":"Pills cycles HMIS Family Planining Form (8b)",
+                    "id":"E8vrhLMKQNs.jUubQy7cbgO",
+                    "realisation":"sum",
+                    "targett":"upHBG4872uu.jUubQy7cbgO"
+                    },
+                    {"term":"Condoms HMIS Family Planining Form (9a+9b",
+                    "id":"E8vrhLMKQNs.magTP7CTWNo",
+                    "realisation":"sum",
+                    "targett":"upHBG4872uu.magTP7CTWNo"
+                    }
+            ]},
+            {"indicator":"Number of New clients using a modern family planning method by facilities by sex",
+                "rows":"2",
+                "num":"7",
+                "defination":[
+                    {"term":"Female",
+                    "id":"yDDY169nbLj.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"qEC3gZ2PDkG.C6WjKQz4Maz"
+                    },
+                    {"term":"Male",
+                    "id":"yDDY169nbLj.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"qEC3gZ2PDkG.FAMIlvvkflO"
+                    }
+            ]},
+            {"indicator":"Number of New clients using a modern family planning method by facilities by age",
+                "rows":"4",
+                "num":"8",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"fjUVffSkzWU.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"WZMRAbGz4Gw.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"fjUVffSkzWU.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"WZMRAbGz4Gw.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"fjUVffSkzWU.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"WZMRAbGz4Gw.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"fjUVffSkzWU.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"WZMRAbGz4Gw.r8zYd21mDY3"
+                    }
+            ]},
+            {"indicator":"Number of new acceptors of a modern family planning method at the facilities by method",
+                "rows":"8",
+                "num":"9",
+                "defination":[
+                    {"term":"Female sterilization",
+                    "id":"zVh3v1rAmDE.GRMvLv2RuZS",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.GRMvLv2RuZS"
+                    },
+                    {"term":"Male sterilization",
+                    "id":"zVh3v1rAmDE.YQBqwmgyCJh",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.YQBqwmgyCJh"
+                    },
+                    {"term":"IUD",
+                    "id":"zVh3v1rAmDE.Qi07UF9Pkdl",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.Qi07UF9Pkdl"
+                    },
+                    {"term":"mplant",
+                    "id":"zVh3v1rAmDE.uA7X5prmM8f",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.uA7X5prmM8f"
+                    },
+                    {"term":"Injectable",
+                    "id":"zVh3v1rAmDE.Y8xoo0QUjff",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.Y8xoo0QUjff"
+                    },
+                    {"term":"Pills",
+                    "id":"zVh3v1rAmDE.csjelJuzL9b",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.csjelJuzL9b"
+                    },
+                    {"term":"Female Condom",
+                    "id":"zVh3v1rAmDE.c6S1wvN4OM0",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.c6S1wvN4OM0"
+                    },
+                    {"term":"Male condom",
+                    "id":"zVh3v1rAmDE.ICge87BLjjv",
+                    "realisation":"sum",
+                    "targett":"vZQCFqlaGPU.ICge87BLjjv"
+                    }
+            ]},
+            {"indicator":"Number of New clients using a modern family planning method by facilities by parity",
+                "rows":"5",
+                "num":"10",
+                "defination":[
+                    {"term":"Parity 0",
+                    "id":"F5Qcm02Druy.Kfky2fKBaxY",
+                    "realisation":"sum",
+                    "targett":"GfaZieRxkLs.Kfky2fKBaxY"
+                    },
+                    {"term":"Parity 1",
+                    "id":"F5Qcm02Druy.AzbWu6s6jUW",
+                    "realisation":"sum",
+                    "targett":"GfaZieRxkLs.AzbWu6s6jUW"
+                    },
+                    {"term":"Parity 2-3",
+                    "id":"F5Qcm02Druy.k9kfHYjp7Wo",
+                    "realisation":"sum",
+                    "targett":"GfaZieRxkLs.k9kfHYjp7Wo"
+                    },
+                    {"term":"Parity 4-5",
+                    "id":"F5Qcm02Druy.ZVcbrFVKNxR",
+                    "realisation":"sum",
+                    "targett":"GfaZieRxkLs.ZVcbrFVKNxR"
+                    },
+                    {"term":"Parity 6+",
+                    "id":"F5Qcm02Druy.vr2WSsWAnKf",
+                    "realisation":"sum",
+                    "targett":"GfaZieRxkLs.vr2WSsWAnKf"
+                    }
+            ]},
+            {"indicator":"Number of USG assisted facilities that offer FP servoces immediately ( 48 hours) postpartum; by method",
+                "rows":"2",
+                "num":"11",
+                "defination":[
+                    {"term":"CEmONC",
+                    "id":"USIkqH9qOY6.L97f0DibVNf",
+                    "realisation":"sum",
+                    "targett":"MPNyTDzGwjX.L97f0DibVNf"
+                    },
+                    {"term":"BEmONC",
+                    "id":"USIkqH9qOY6.B6gW3JhXYzD",
+                    "realisation":"sum",
+                    "targett":"MPNyTDzGwjX.B6gW3JhXYzD"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"12",
+                "defination":[
+                    {"term":"Percent of women reciveing moderm method of FP immedieately ( I.e <48 hours) postparturm or postabortion",
+                    "id":"",
+                    "realisation":"sum",
+                    "targett":""
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"",
+                "defination":[
+                    {"term":"",
+                    "id":"",
+                    "realisation":"sum",
+                    "targett":""
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"",
+                "defination":[
+                    {"term":"",
+                    "id":"",
+                    "realisation":"sum",
+                    "targett":""
+                    }
+            ]},
+            {"indicator":"PPFP New and continuing users",
+                "rows":"2",
+                "num":"13",
+                "defination":[
+                    {"term":"New",
+                    "id":"NrBwLdGrGd1.dJT8DijmFwr",
+                    "realisation":"sum",
+                    "targett":"gFiAtotZqqR.dJT8DijmFwr"
+                    },
+                    {"term":"Continuing",
+                    "id":"NrBwLdGrGd1.yWE9Zq4PXkw",
+                    "realisation":"sum",
+                    "targett":"gFiAtotZqqR.yWE9Zq4PXkw"
+                    },
+            ]},
+            {"indicator":"PPFP Age group",
+                "rows":"4",
+                "num":"",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"qYyT5hu00CU.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"sVggBXACniW.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"qYyT5hu00CU.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"sVggBXACniW.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"qYyT5hu00CU.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"sVggBXACniW.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"qYyT5hu00CU.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"sVggBXACniW.r8zYd21mDY3"
+                    },
+            ]},
+            {"indicator":"PPFP by method",
+                "rows":"5",
+                "num":"",
+                "defination":[
+                    {"term":"Female sterilization",
+                    "id":"AZWjvnHO5FP.RUAnNvM4hts",
+                    "realisation":"sum",
+                    "targett":"lqs9KdsF2ag.RUAnNvM4hts"
+                    },
+                    {"term":"PPIUD",
+                    "id":"AZWjvnHO5FP.PYu3fmVJAe1",
+                    "realisation":"sum",
+                    "targett":"lqs9KdsF2ag.PYu3fmVJAe1"
+                    },
+                    {"term":"PPImplant",
+                    "id":"AZWjvnHO5FP.vfwgBvMM7cC",
+                    "realisation":"sum",
+                    "targett":"lqs9KdsF2ag.vfwgBvMM7cC"
+                    },
+                    {"term":"Pills",
+                    "id":"AZWjvnHO5FP.SrfyV9B8vot",
+                    "realisation":"sum",
+                    "targett":"lqs9KdsF2ag.SrfyV9B8vot"
+                    },
+                    {"term":"Condoms",
+                    "id":"AZWjvnHO5FP.zqNkND5VVZb",
+                    "realisation":"sum",
+                    "targett":"lqs9KdsF2ag.zqNkND5VVZb"
+                    },
+            ]},
+            {"indicator":"Number of continuing clients using modern facmily planning methods in the facilities, by method",
+                "rows":"4",
+                "num":"14",
+                "defination":[
+                    {"term":"Injectable",
+                    "id":"lUF7OnUE2Jm.Y8xoo0QUjff",
+                    "realisation":"sum",
+                    "targett":"YFgwSMvJhhE.Y8xoo0QUjff"
+                    },
+                    {"term":"Pills",
+                    "id":"lUF7OnUE2Jm.csjelJuzL9b",
+                    "realisation":"sum",
+                    "targett":"YFgwSMvJhhE.csjelJuzL9b"
+                    },
+                    {"term":"Female Condoms",
+                    "id":"lUF7OnUE2Jm.c6S1wvN4OM0",
+                    "realisation":"sum",
+                    "targett":"YFgwSMvJhhE.c6S1wvN4OM0"
+                    },
+                    {"term":"Male Condoms",
+                    "id":"lUF7OnUE2Jm.ICge87BLjjv",
+                    "realisation":"sum",
+                    "targett":"YFgwSMvJhhE.ICge87BLjjv"
+                    },
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"15",
+                "defination":[
+                    {"term":"Number of out-of facilities clinical outreaches conducted",
+                    "id":"MM6IZr9zRJ3.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"QPgXHJoI1vM"
+                    }
+            ]},
+            {"indicator":"Number of clients using a modern family planning method,through Outreach by method",
+                "rows":"7",
+                "num":"16",
+                "defination":[
+                    {"term":"Female sterilization",
+                    "id":"uZaUgahcqo2.GRMvLv2RuZS",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.GRMvLv2RuZS"
+                    },
+                    {"term":"Male sterilization",
+                    "id":"uZaUgahcqo2.YQBqwmgyCJh",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.YQBqwmgyCJh"
+                    },
+                    {"term":"Implants",
+                    "id":"uZaUgahcqo2.uA7X5prmM8f",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.uA7X5prmM8f"
+                    },
+                    {"term":"Injectable",
+                    "id":"uZaUgahcqo2.Y8xoo0QUjff",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.Y8xoo0QUjff"
+                    },
+                    {"term":"Pills",
+                    "id":"uZaUgahcqo2.csjelJuzL9b",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.csjelJuzL9b"
+                    },
+                    {"term":"Female Condom",
+                    "id":"uZaUgahcqo2.c6S1wvN4OM0",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.c6S1wvN4OM0"
+                    },
+                    {"term":"Male Condom",
+                    "id":"uZaUgahcqo2.ICge87BLjjv",
+                    "realisation":"sum",
+                    "targett":"nHxJIUnf8Ec.ICge87BLjjv"
+                    },
+            ]},
+            {"indicator":"Number of clients using a modern family planning method,through Outreach by parity",
+                "rows":"5",
+                "num":"",
+                "defination":[
+                    {"term":"Parity 0",
+                    "id":"zORXAqnND2h.Kfky2fKBaxY",
+                    "realisation":"sum",
+                    "targett":"FSJBwc3NdYo.Kfky2fKBaxY"
+                    },
+                    {"term":"Parity 1",
+                    "id":"zORXAqnND2h.AzbWu6s6jUW",
+                    "realisation":"sum",
+                    "targett":"FSJBwc3NdYo.AzbWu6s6jUW"
+                    },
+                    {"term":"Parity 2-3",
+                    "id":"zORXAqnND2h.k9kfHYjp7Wo",
+                    "realisation":"sum",
+                    "targett":"FSJBwc3NdYo.k9kfHYjp7Wo"
+                    },
+                    {"term":"Parity 4-5",
+                    "id":"zORXAqnND2h.ZVcbrFVKNxR",
+                    "realisation":"sum",
+                    "targett":"FSJBwc3NdYo.ZVcbrFVKNxR"
+                    },
+                    {"term":"Parity 6+",
+                    "id":"zORXAqnND2h.vr2WSsWAnKf",
+                    "realisation":"sum",
+                    "targett":"FSJBwc3NdYo.vr2WSsWAnKf"
+                    },
+            ]},
+            {"indicator":"Number of clients using a modern family planning method,through Outreach by age",
+                "rows":"4",
+                "num":"",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"EF5pj4neAIq.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"xLk921QAczJ.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"EF5pj4neAIq.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"xLk921QAczJ.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"EF5pj4neAIq.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"xLk921QAczJ.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"EF5pj4neAIq.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"xLk921QAczJ.r8zYd21mDY3"
+                    },
+            ]},
+            ]},
+            {"title":"IR.2.1 Increase access of Family Planning (FP) services in the community via Community Health Workers (CHW)",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"",
+                "rows":"1",
+                "num":"17",
+                "defination":[
+                    {"term":"Number of USG-assisted community health workers (CHWs) providing family planning information, referrals, and/or services during the year by sex",
+                    "id":"XE32Va1z2p6",
+                    "realisation":"sum",
+                    "targett":"z0MIVk9AczL"
+                    }
+            ]},
+            {"indicator":"Number of contraceptives distributed by CHW by methods",
+                "rows":"2",
+                "num":"18",
+                "defination":[
+                    {"term":"Condoms",
+                    "id":"r7lQ5HTOxXm.vF2WN58qUTi",
+                    "realisation":"sum",
+                    "targett":"dW6eLhoUSXW.vF2WN58qUTi"
+                    },
+                    {"term":"Pills",
+                    "id":"r7lQ5HTOxXm.lfAnO30DprP",
+                    "realisation":"sum",
+                    "targett":"dW6eLhoUSXW.lfAnO30DprP"
+                    }
+            ]},
+            {"indicator":"Number of clients using a modern family planning method from CHW by sex",
+                "rows":"2",
+                "num":"19",
+                "defination":[
+                    {"term":"Male",
+                    "id":"KohcRf9QDCz.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"em7huky1cQj.FAMIlvvkflO"
+                    },
+                    {"term":"Female",
+                    "id":"KohcRf9QDCz.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"em7huky1cQj.C6WjKQz4Maz"
+                    }
+            ]},
+            {"indicator":"Number of clients using a modern family planning method from CHW by age",
+                "rows":"4",
+                "num":"",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"LsWYTXFXiIS.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"IcDASwatQlG.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"LsWYTXFXiIS.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"IcDASwatQlG.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"LsWYTXFXiIS.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"IcDASwatQlG.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"LsWYTXFXiIS.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"IcDASwatQlG.r8zYd21mDY3"
+                    }
+            ]},
+            {"indicator":"Number of clients using a modern family planning method from CHW by method",
+                "rows":"2",
+                "num":"20",
+                "defination":[
+                    {"term":"Pills",
+                    "id":"sVR4y6HhPk7.lfAnO30DprP",
+                    "realisation":"sum",
+                    "targett":"YyMqggSC5JY.lfAnO30DprP"
+                    },
+                    {"term":"Condoms",
+                    "id":"sVR4y6HhPk7.vF2WN58qUTi",
+                    "realisation":"sum",
+                    "targett":"YyMqggSC5JY.vF2WN58qUTi"
+                    }
+            ]},
+            ]},
+            {"title":"IR 1.6: Increase Couple of Years of Protection",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"Couple years protection provided with USG support",
+                "rows":"10",
+                "num":"21",
+                "defination":[
+                    {"term":"CYP, female sterilization",
+                    "id":"KmETO8Ir1LV.GgPEhDlePy9",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.GgPEhDlePy9"
+                    },
+                    {"term":"CYP, male sterilization",
+                    "id":"KmETO8Ir1LV.tDH3WpzsPE1",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.tDH3WpzsPE1"
+                    },
+                    {"term":"CYP, IUDs",
+                    "id":"KmETO8Ir1LV.eo96uRjlCDZ",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.eo96uRjlCDZ"
+                    },
+                    {"term":"CYP, Implants Implanon	",
+                    "id":"KmETO8Ir1LV.j1lffBOv72A",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.j1lffBOv72A"
+                    },
+                    {"term":"CYP, Impla­nts Jadelle",
+                    "id":"KmETO8Ir1LV.uURo4doffWI",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.uURo4doffWI"
+                    },
+                    {"term":"CYP, injectables",
+                    "id":"KmETO8Ir1LV.QAXSVs8Fcfv",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.QAXSVs8Fcfv"
+                    },
+                    {"term":"CYP, pills - facilities",
+                    "id":"KmETO8Ir1LV.TK2RZE5Nie6",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.TK2RZE5Nie6"
+                    },
+                    {"term":"CYP, pills - CHW",
+                    "id":"KmETO8Ir1LV.VtHhUMxXYPV",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.VtHhUMxXYPV"
+                    },
+                    {"term":"CYP, condoms - facilities",
+                    "id":"KmETO8Ir1LV.JjgaMFX9ECW",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.JjgaMFX9ECW"
+                    },
+                    {"term":"CYP, condoms, CHW",
+                    "id":"KmETO8Ir1LV.DwYFgN82Yyh",
+                    "realisation":"sum",
+                    "targett":"QJlzvSkfFm5.DwYFgN82Yyh"
+                    }
+            ]},
+            ]},
+            {"title":"FP Objective 2: Increase knowledge of and demand for SRH/FP services",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"Number of NEW WRA referred by CHW to Health Facilities for SRH/FP services, including LARC, disaggregated by methods",
+                "rows":"5",
+                "num":"22",
+                "defination":[
+                    {"term":"Female sterilization",
+                    "id":"pHEKs547Ggi.GRMvLv2RuZS",
+                    "realisation":"sum",
+                    "targett":"AXdy3RVzdTD.GRMvLv2RuZS"
+                    },
+                    {"term":"Male sterilization",
+                    "id":"pHEKs547Ggi.YQBqwmgyCJh",
+                    "realisation":"sum",
+                    "targett":"AXdy3RVzdTD.YQBqwmgyCJh"
+                    },
+                    {"term":"methods, IUD",
+                    "id":"pHEKs547Ggi.Qi07UF9Pkdl",
+                    "realisation":"sum",
+                    "targett":"AXdy3RVzdTD.Qi07UF9Pkdl"
+                    },
+                    {"term":"Implant",
+                    "id":"pHEKs547Ggi.uA7X5prmM8f",
+                    "realisation":"sum",
+                    "targett":"AXdy3RVzdTD.uA7X5prmM8f"
+                    },
+                    {"term":"injectable",
+                    "id":"pHEKs547Ggi.Y8xoo0QUjff",
+                    "realisation":"sum",
+                    "targett":"AXdy3RVzdTD.Y8xoo0QUjff"
+                    }
+            ]},
+            {"indicator":"Number of referrals from CHW completed by method",
+                "rows":"5",
+                "num":"23",
+                "defination":[
+                    {"term":"Female sterilization",
+                    "id":"HzbVHOcwKe2.GRMvLv2RuZS",
+                    "realisation":"sum",
+                    "targett":"pcICUc5VDqx.GRMvLv2RuZS"
+                    },
+                    {"term":"Male sterilization",
+                    "id":"HzbVHOcwKe2.YQBqwmgyCJh",
+                    "realisation":"sum",
+                    "targett":"pcICUc5VDqx.YQBqwmgyCJh"
+                    },
+                    {"term":"IUD",
+                    "id":"HzbVHOcwKe2.Qi07UF9Pkdl",
+                    "realisation":"sum",
+                    "targett":"pcICUc5VDqx.Qi07UF9Pkdl"
+                    },
+                    {"term":"Implant",
+                    "id":"HzbVHOcwKe2.uA7X5prmM8f",
+                    "realisation":"sum",
+                    "targett":"pcICUc5VDqx.uA7X5prmM8f"
+                    },
+                    {"term":"Injectable",
+                    "id":"HzbVHOcwKe2.Y8xoo0QUjff",
+                    "realisation":"sum",
+                    "targett":"pcICUc5VDqx.Y8xoo0QUjff"
+                    }
+            ]},
+            {"indicator":"Number of NEW WRA referred by CHW to Health Facilities for SRH/FP services, LARC by age",
+                "rows":"4",
+                "num":"24",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"JSS5zCt3x9f.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"i1mTu75hnG3.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"JSS5zCt3x9f.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"i1mTu75hnG3.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"JSS5zCt3x9f.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"i1mTu75hnG3.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"JSS5zCt3x9f.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"i1mTu75hnG3.r8zYd21mDY3"
+                    }
+            ]},
+            {"indicator":"Number of referrals from CHW completed by age",
+                "rows":"4",
+                "num":"25",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"XiFGymEmcne.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"ZecsuU7hfNp.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"XiFGymEmcne.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"ZecsuU7hfNp.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"XiFGymEmcne.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"ZecsuU7hfNp.L755xIpdmv2"
+                    },
+                    {"term":"25+",
+                    "id":"XiFGymEmcne.r8zYd21mDY3",
+                    "realisation":"sum",
+                    "targett":"ZecsuU7hfNp.r8zYd21mDY3"
+                    }
+            ]},
+            {"indicator":"Number of NEW WRA referred by CHW to Health Facilities for SRH/FP services, including LARC, disaggregated by Parity",
+                "rows":"5",
+                "num":"26",
+                "defination":[
+                    {"term":"Parity 0",
+                    "id":"kksergb8n33.Kfky2fKBaxY",
+                    "realisation":"sum",
+                    "targett":"EmBRn9eG0gN.Kfky2fKBaxY"
+                    },
+                    {"term":"Parity 1",
+                    "id":"kksergb8n33.AzbWu6s6jUW",
+                    "realisation":"sum",
+                    "targett":"EmBRn9eG0gN.AzbWu6s6jUW"
+                    },
+                    {"term":"Parity 2-3",
+                    "id":"kksergb8n33.k9kfHYjp7Wo",
+                    "realisation":"sum",
+                    "targett":"EmBRn9eG0gN.k9kfHYjp7Wo"
+                    },
+                    {"term":"Parity 4-5",
+                    "id":"kksergb8n33.ZVcbrFVKNxR",
+                    "realisation":"sum",
+                    "targett":"EmBRn9eG0gN.ZVcbrFVKNxR"
+                    },
+                    {"term":"Parity 6+",
+                    "id":"kksergb8n33.vr2WSsWAnKf",
+                    "realisation":"sum",
+                    "targett":"EmBRn9eG0gN.vr2WSsWAnKf"
+                    }
+            ]},
+            {"indicator":"Number of referrals from CHW completed by parity",
+                "rows":"5",
+                "num":"27",
+                "defination":[
+                    {"term":"Parity 0",
+                    "id":"ULNQuTG9NJi.Kfky2fKBaxY",
+                    "realisation":"sum",
+                    "targett":"UNGHambXqTJ.Kfky2fKBaxY"
+                    },
+                    {"term":"Parity 1",
+                    "id":"kksergb8n33.AzbWu6s6jUW",
+                    "realisation":"sum",
+                    "targett":"UNGHambXqTJ.AzbWu6s6jUW"
+                    },
+                    {"term":"Parity 2-3",
+                    "id":"ULNQuTG9NJi.k9kfHYjp7Wo",
+                    "realisation":"sum",
+                    "targett":"UNGHambXqTJ.k9kfHYjp7Wo"
+                    },
+                    {"term":"Parity 4-5",
+                    "id":"ULNQuTG9NJi.ZVcbrFVKNxR",
+                    "realisation":"sum",
+                    "targett":"UNGHambXqTJ.ZVcbrFVKNxR"
+                    },
+                    {"term":"Parity 6+",
+                    "id":"ULNQuTG9NJi.vr2WSsWAnKf",
+                    "realisation":"sum",
+                    "targett":"UNGHambXqTJ.vr2WSsWAnKf"
+                    }
+            ]},
+            ]},
+            {"title":"IR 1.5 Increase ability of FTMs/FTPs to practice HTSP through peer group participation",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"",
+                "rows":"1",
+                "num":"28",
+                "defination":[
+                    {"term":"Number of peer groups conducted with young women on HTSP/FP/gender roles",
+                    "id":"bp5RnuEnygu",
+                    "realisation":"sum",
+                    "targett":"QVjKQIllCh7"
+                    }
+            ]},
+            {"indicator":"Number of young women participating in FTM peer groups disaggregated by age",
+                "rows":"3",
+                "num":"29",
+                "defination":[
+                    {"term":"10-14",
+                    "id":"oSCyuNQAZvH.jknBJa2NGEV",
+                    "realisation":"sum",
+                    "targett":"sTI9WdIBD48.jknBJa2NGEV"
+                    },
+                    {"term":"15-19",
+                    "id":"oSCyuNQAZvH.BVXq2s7zTuj",
+                    "realisation":"sum",
+                    "targett":"sTI9WdIBD48.BVXq2s7zTuj"
+                    },
+                    {"term":"20-24",
+                    "id":"oSCyuNQAZvH.L755xIpdmv2",
+                    "realisation":"sum",
+                    "targett":"sTI9WdIBD48.L755xIpdmv2"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"30",
+                "defination":[
+                    {"term":"Number of peer group members using contraceptives",
+                    "id":"psCcwSPG0uX.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"icuUV9OiN5g"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"",
+                "defination":[
+                    {"term":"Number of peer group members",
+                    "id":"VE4mDoEMo8h.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"TXugincn8H8"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"",
+                "defination":[
+                    {"term":"Percentage of peer group members who are currently using a modern contraceptive method",
+                    "id":"o3gu9RuyQ2I",
+                    "realisation":"sum",
+                    "targett":"GJOnMGWTNZ9"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"31",
+                "defination":[
+                    {"term":"Number of peer group members who are new family planning acceptors",
+                    "id":"eZ2tDaJxOjj.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"gBZkZhlxl84.uGIJ6IdkP7Q"
+                    }
+            ]}
+            ]},
+            {"title":"Family Planning and Natural Resourse Management integration",
+            "color":"#C4D7EF",
+            "content":[
+            {"indicator":"",
+                "rows":"1",
+                "num":"32",
+                "defination":[
+                    {"term":"Number of outreach events conducted in NRM communities to reach their respective beneficiaries with FP services",
+                    "id":"zvk7zcPKz30.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"yEUPQlrcF2d.uGIJ6IdkP7Q"
+                    }
+            ]},
+            {"indicator":"",
+                "rows":"1",
+                "num":"33",
+                "defination":[
+                    {"term":"Number of people reached with outreach events promoting positive PHE behaviours",
+                    "id":"CFxJYClF73X.uGIJ6IdkP7Q",
+                    "realisation":"sum",
+                    "targett":"o9DHMoHXgz4.uGIJ6IdkP7Q"
+                    }
+            ]}
+            ]},
+            ]
+            return data;
+    }
+
+    function downloadAsExcel() {
+        var entryFormDesign = $('div#contentDivExcel').html();
+        var orgUnit = $("#orgUnits").html()
+        var periodName = $(".period").html();
+        var filename = "Health_PMP";
+        filename += (orgUnit) ? "_" + orgUnit : "";
+        filename += (periodName) ? "_" + periodName : ""
+        filename += '.xls';
+        var ctx = {
+                worksheet: 'Sheet 1'
+            },
+            base64 = s => window.btoa(unescape(encodeURIComponent(s))),
+            format = (s, c) => s.replace(/{(\w+)}/g, (m, p) => c[p]);
+        var str =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office' +
+            ':excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/>' +
+            '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        str += entryFormDesign + '</body></html>';
+
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href =
+                'data:application/vnd.ms-excel;base64,' + base64(format(str, ctx));
+            link.click();
+        }, 100);
+    }
+</script>
+
+<input type="button" value="Download as Excel" onclick="downloadAsExcel()" id="downloadAsExcelButton" style="width:140px;float: left;">
+<div>
+    <div class="selectOrgUnit"></div>
+    <h4 class="loader">
+        <img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+    <div id="contentDivExcel">
+        <h3 class="header text-center">Tuungane PMP Health -
+            <span class="period"></span> -
+            <span id="orgUnits"></span>
+        </h3>
+        <div class="col-sm-10 col-sm-offset-1">
+            <table class="listTable table table-bordered table-responsive">
+            </table>
+        </div>
+    </div>
+
+</div>
