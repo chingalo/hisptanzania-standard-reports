@@ -1,0 +1,505 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/tabletools/2.2.2/css/dataTables.tableTools.min.css">
+<script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/tabletools/2.2.2/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".loader").hide();
+        $(".header").hide();
+        var html = "";
+        var dataElems= "";
+        var dataElems1= "";
+        var dateElmsArr = [];
+        var targetsArr = [];
+        var dateElmsArr1 = [];
+        var url = "";
+        var orgUnit = dhis2.report.organisationUnit;
+        var periods = dhis2.report.periods;
+        var periodNames = getThreeMonthName(periods[0])
+        $("#orgUnits").html(orgUnit.name);
+
+        var data = getDataElements();
+        $.each(data,function(key,value){
+            if(value.hasOwnProperty('content')){
+                $.each(value.content,function(k,val){
+                    if(val.hasOwnProperty('indicator')){
+                        if(val.hasOwnProperty('rows')){
+                            $.each(val.defination,function(j,v){
+                                if(v.hasOwnProperty('id')){
+                                    if(v.id != ""){
+                                        if(dateElmsArr.indexOf(v.id) == -1){
+                                            dateElmsArr.push(v.id);
+                                        }
+
+                                    }
+                                }if(v.hasOwnProperty('targett')){
+                                    if(v.targett != ""){
+                                        if(targetsArr.indexOf(v.targett) == -1){
+                                            targetsArr.push(v.targett);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        var period = getThreeMonth(periods[0]);
+        function loadData(level,cordId){
+            html = "";
+            $('table').html("");
+            html += "<tr>";
+            
+            html += '<th style="width: 25%">Outcome</th>';
+            html += '<th style="width: 25%">Performance Indicator</th>';
+            $.each(periodNames.split(";"),function(m,per){
+                html += "<th style='width: 10%'>"+per+"</th>"
+            });
+            html += '<th style="width: 10%">Realisation</th>';
+            html += '<th style="width: 5%">Target</th>';
+            html += '<th style="width: 5%">Achievement</th>';
+            html += "</tr>";
+            var url = "/api/analytics.json?dimension=YCxAoZQVNgT:FICyhodDdll&dimension=dx:"+dateElmsArr.join(";")+"&dimension=pe:"+period+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            var url1 = "/api/analytics.json?dimension=dx:"+targetsArr.join(";")+"&dimension=pe:"+periods[0]+"&filter=ou:"+orgUnit.id+"&displayProperty=NAME";
+            $(".loader").show("slow");
+            $(".header").hide();
+            $.getJSON(url,function(resp){
+                $.getJSON(url1,function(resp1){
+                $.each(data,function(key,value){
+                    if(value.hasOwnProperty('content')){
+                        $.each(value.content,function(k,val){
+
+                            if(val.hasOwnProperty('indicator')){
+                                if(val.hasOwnProperty('rows')){
+                                    var valuee1 = [];
+                                    var sumvaluee1 = 0;
+                                    var valuee2 = [];
+                                    var sumvaluee2 = 0;
+                                    html +="<tr>";
+                                    
+                                    html +="<td rowspan='"+val.rows+"'>"+val.indicator+"</td>";
+                                    html +="<td>"+val.defination[0].term+"</td>";
+                                    if(val.hasOwnProperty('defination')){
+                                        if(val.defination[0].hasOwnProperty('id')){
+                                            $.each(period.split(";"),function(m,per){
+                                                valuee1[per]= getDataFromUrl1(resp.rows,per,val.defination[0].id);
+                                                html +="<td>"+valuee1[per]+"</td>";
+                                                sumvaluee1+=valuee1[per];
+                                            })
+                                        }
+                                    }
+                                    //realization
+                                    if(val.defination[0].realisation == 'sum'){
+                                        html +="<td>"+sumvaluee1+"</td>";
+                                    }else if(val.defination[0].realisation == 'last'){
+                                        html +="<td>"+ valuee1[2] +"</td>";
+                                    }
+
+                                    html +="<td>"+getDataFromUrl(resp1.rows,periods[0],val.defination[0].targett);"+</td>";
+
+                                    html +="<td  class='lastColumn'></td>";
+
+                                    html +="</tr>";
+                                    var rowTracker = 0;
+                                    $.each(val.defination,function(j,v){
+                                        if(rowTracker == 0){
+
+                                        }else{
+                                            html +="<tr>";
+                                            html +="<td>"+v.term+"</td>";
+                                            if(v.hasOwnProperty('id')){
+
+                                                $.each(period.split(";"),function(m,per){
+                                                   valuee2[per] = getDataFromUrl1(resp.rows,per,v.id);
+                                                    html +="<td>"+valuee2[per]+"</td>";
+                                                    sumvaluee2 += valuee2[per];
+                                                })
+                                            }
+
+                                            //realization
+                                            if(v.realisation == 'sum'){
+                                                html +="<td>"+sumvaluee2+"</td>";
+                                            }else if(v.realisation == 'last'){
+                                                html +="<td>"+ valuee1[2] +"</td>";
+                                            }else if(v.realisation == 'avg'){
+
+                                                var summ = (sumvaluee2 == 0)?0: (sumvaluee1/sumvaluee2)*100;
+                                                html +="<td>"+ summ.toFixed(1) +"</td>";
+                                            }
+
+                                            html +="<td>"+getDataFromUrl(resp1.rows,periods[0],v.targett);"+</td>";
+
+                                            html +="<td  class='lastColumn'></td>";
+                                            html +="</tr>";
+                                        }
+                                        rowTracker ++
+                                    });
+                                }
+
+
+                            }
+
+
+                        });
+                    }
+                });
+                $("table").append(html);
+                $('.lastColumn').each(function () {
+                    //processing this row
+                    var num = $(this).prev('td').text();
+                    var num1 = $(this).prev('td').prev('td').text();
+                    num = num.replace(",", "");
+                    if(num != '0'){
+                        if($.isNumeric(parseInt(num1))){
+                            var parc = (parseInt(num1)*100)/parseInt(num);
+                            if(parc < 41 ){
+                                $(this).text(parseInt(parc)).css('background','#FF0000')
+                            }else if(parc >41 && parc <81){
+                                $(this).text(parseInt(parc)).css('background','#FFFF00')
+                            }else if(parc > 80){
+                                $(this).text(parseInt(parc)).css('background','#92D050')
+                            }
+                            $(this).text(parseInt(parc))
+                        }else{
+                            $(this).text('').css('background','#E6DADA')
+                        }
+
+                    }
+                });
+                $('.listTable').addClass('bordered-table zebra-striped dataTable');
+                var periodName = getPeroidName(periods[0]);
+
+                $(".orgUnit").html(orgUnit.name);
+                $(".period").html(periodName);
+                $(".loader").hide();
+                $(".header").show();
+                });
+            });
+        }
+
+        loadData('national','riuabH1sYe6');
+    });
+
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            var yr = parseInt(year)+1;
+            time = yr+"Q1";
+        }else if(quater == "Q3"){
+            time = year+"Q4";
+        }else if(quater == "Q2"){
+            time = year+"Q3";
+        }else if(quater == "Q1"){
+            time = year+"Q2";
+        }
+        return period;
+    }
+
+    function getThreeMonth(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var nextYear = parseInt(year) + 1;
+        var time = year+"Q4;"+nextYear+"Q1;"+nextYear+"Q2;"+nextYear+"Q3";
+        return time;
+    }
+    function getThreeMonthName(period){
+        var year = period.substring(0,4);
+        var nextyear = parseInt(year)+1;
+        var quater = period.substring(4,6);
+        var time = "";
+        names = "Oct - Dec "+year+";Jan - Mar "+nextyear+";Apr - Jun "+nextyear+";July - Sept "+nextyear;
+
+        return names;
+    }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = year
+
+        return names;
+    }
+
+    function getDataFromUrl(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[1] == pe){
+                num = parseInt(v[2])
+            }
+        });
+        return num;
+    }
+
+    function getDataFromUrl1(arr,pe,de){
+        var num = 0
+        $.each(arr,function(k,v){
+            if(v[0]== de && v[2] == pe){
+                num = parseInt(v[3])
+            }
+        });
+        return num;
+    }
+
+
+    function getDataElements(){
+        var data = [
+            {"title":"",
+            "color":"",
+            "content":[
+                {"indicator":"IR 3.1 Support creation of  Local Authority Forest Reserves in project sites",
+                "rows":"2",
+                "num":"",
+                "defination":[
+                    {"term":"3.1.1 Number of Local Authority Forest Reserves (LAFRs) established in the GME with project support",
+                    "id":"PMPTUUDE116",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG116"
+                    },
+                    {"term":"3.1.2 Number of Local Authority Forest Reserves (VLFRs) with approved management plans at national level, disagregrated by district.",
+                    "id":"PMPTUUDE117",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG117"
+                     }
+            ]},
+            {"indicator":"IR 3.2 Village Land Use Plans established and in use",
+                "rows":"8",
+                "num":"",
+                "defination":[
+                    {"term":"Number of women participating in development of village Land use plans",
+                    "id":"PMPTUUDE117",
+                    "realisation":"sum",
+                    "targett":"mdEe2i6a7Ey"
+                     },
+                     {"term":"Number of all village members who participate in development of VLUP",
+                    "id":"HKR1ClbV27L",
+                    "realisation":"sum",
+                    "targett":"psJoPfrKlpR"
+                    },
+                     {"term":"3.2.1.percent of female community members participating in development of  Land-Use Plans (VLUPs) ",
+                    "id":"vTidqot1cEO",
+                    "realisation":"sum",
+                    "targett":"o5YIMQ049DO"
+                    },
+                    {"term":"3.2.2.  Number of Village Land-Use Plans (VLUPs) approved by district council and central government levels",
+                    "id":"PMPTUUDE119",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG119"
+                     },
+                     {"term":"3.2.3.  Number of  Village Land Forest Reserves (VLFRs) with approved management plans at district level with project support",
+                    "id":"emb9UybBjqX",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG120"
+                    },
+                    {"term":"3.2.4 Number of hectares designated for firewood collection in VLFRs by village",
+                    "id":"PMPTUUDE121",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG121"
+                     }, 
+                     {"term":"3.2.5. Number of villages implementing  VLUPs  as per approved land use plans.",
+                    "id":"PMPTUUDE122",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG122"
+                    },
+                    {"term":"3.2.6 . Number of households/ community groups with approved CCROs( Certificate of Customary Rights of Occupancy) in project villages.",
+                    "id":"PMPTUUDE123",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG123"
+                     },
+            ]},
+            {"indicator":"IR 3.3. Climate Smart agricultural practices reduce sedimentation, maintain food security, and increase income ",
+                "rows":"16",
+                "num":"",
+                "defination":[
+                
+                     {"term":"3.3.1 Number of farmers trained on climate smart agriculture practices within project villages(Male)",
+                    "id":"o0cZgbo2YCZ.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"nWCktofpff9.FAMIlvvkflO"
+                    },
+                    {"term":"3.3.1 Number of farmers trained on climate smart agriculture practices within project villages(Female)",
+                    "id":"o0cZgbo2YCZ.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"nWCktofpff9.C6WjKQz4Maz"
+                    },
+                    {"term":"Proportion of female farmers trained on CSA practices",
+                    "id":"Nugmkf5vIwn",
+                    "realisation":"sum",
+                    "targett":"jOhysdOqxck"
+                     }, 
+                     {"term":"Number of trained farmers practicing climate smart agriculture within project villages.(Male)",
+                    "id":"UnvgFmr5eOL.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"bHmeOjBEj2a.FAMIlvvkflO"
+                    },
+                    {"term":"Number of trained farmers practicing climate smart agriculture within project villages(Female).",
+                    "id":"UnvgFmr5eOL.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"bHmeOjBEj2a.C6WjKQz4Maz"
+                    },
+                     {"term":"3.3.2 percent of trained farmers practicing climate smart agriculture within project villages.",
+                    "id":"kwnikP56g2z",
+                    "realisation":"sum",
+                    "targett":"GRXKNMigxEt"
+                    },
+                    {"term":"Proportion of female farmers practicing CSA ",
+                    "id":"bEyY2BnQ3Xk",
+                    "realisation":"sum",
+                    "targett":"v7e0paFkVjL"
+                     },
+                     {"term":"Number of trained farmers reporting increase in crop productivity per unit area(Male) ",
+                    "id":"AXkNY77c5q0.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"lkIdZ4PQ6SV.FAMIlvvkflO"
+                     },
+                     {"term":"Number of trained farmers reporting increase in crop productivity per unit area(Female)",
+                    "id":"AXkNY77c5q0.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"lkIdZ4PQ6SV.C6WjKQz4Maz"
+                     },
+                     {"term":"Total number of village farmers in project villages ",
+                    "id":"YRJk1JxjlMl",
+                    "realisation":"sum",
+                    "targett":"Ju1s8V2zKdY"
+                     },
+                     {"term":"3.3.3 percent  of trained farmers reporting increase in crop productivity per unit area by sex",
+                    "id":"muEQjNKPc0o",
+                    "realisation":"sum",
+                    "targett":"txhtIvkE6q4"
+                    },
+                    {"term":"Proportion of female farmers reporting increase in crop productivity",
+                    "id":"VIIpSTYm4zR",
+                    "realisation":"sum",
+                    "targett":"g0yNHKbvSJg"
+                     }, 
+                     {"term":"3.345. # of farmers reporting an increase in income as result of climate smart agriculture practices from sales of agricultural/ livestock products within project villages(Male)",
+                    "id":"Dl3L1EE2v72.FAMIlvvkflO",
+                    "realisation":"sum",
+                    "targett":"ELwAQkx5vMe.FAMIlvvkflO"
+                    },
+                    {"term":"3.345. # of farmers reporting an increase in income as result of climate smart agriculture practices from sales of agricultural/ livestock products within project villages(Female) ",
+                    "id":"Dl3L1EE2v72.C6WjKQz4Maz",
+                    "realisation":"sum",
+                    "targett":"ELwAQkx5vMe.C6WjKQz4Maz"
+                    },
+                    {"term":"Proportion of female farmers reporting increase in income as a result of CSA practices",
+                    "id":"I22in2hKnQl",
+                    "realisation":"sum",
+                    "targett":"ZyqtNceI5f9"
+                     },
+                     {"term":"3.3.6. Number of farms found less than 60M from the lake and 30M from key rivers within project villages",
+                    "id":"PMPTUUDE134",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG134"
+                     },
+            ]},
+            {"indicator":"IR 3.4 Reduce threats to Village Land Forest Reserves",
+                "rows":"5",
+                "num":"",
+                "defination":[
+                    {"term":"3.4.1 Number forest scouts trained in forest patrols, monitoring  and reporting",
+                    "id":"PMPTUUDE135",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG135"
+                     }, 
+                     {"term":"3.4.2 Number of active forest scouts participating in patrols in project villages.",
+                    "id":"PMPTUUDE136",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG136"
+                    },
+                    {"term":"3.4.3 Number of persons arrested as result of illegal logging/timber harvesting/ encroachment by quarter and by  village",
+                    "id":"PMPTUUDE137",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG137"
+                     },
+                     {"term":"3.4.5 Number of  forest fire events recorded in VLFRs within project villages.",
+                    "id":"PMPTUUDE138",
+                    "realisation":"sum",
+                    "targett":"wxgqc6bSlBD"
+                    },
+                    {"term":"3.4.6. Number of  forest fire events contained by Forest Scouts/ Community in VLFRs within project villages.",
+                    "id":"mf7LY0UZlKi",
+                    "realisation":"sum",
+                    "targett":"PMPTUUTG139"
+                     }
+            ]},
+            ]}]
+            return data;
+    }
+    function download(name){
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">{table}</table><br /><table border="1">{table}</table></body></html>',
+            base64 = function(s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        },
+        format = function(s, c) {
+            return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+        })
+        };
+        // console.log("Table:",nativeElement.innerHTML);
+        var ctx = {worksheet: "Sheet 1"};
+        var str = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+        var el = $(".listTable");
+        ($(".listTable").find("td.hidden").each(function(index2){
+            // console.log("Remove Index:",index2);
+            this.remove();
+        }));
+        ctx["table1"] = el.innerHTML;
+
+        str += '<table border="1">{table1}</table><br />';
+        str += '</body></html>';
+
+        setTimeout(function () {
+
+        var link = document.createElement('a');
+        link.download = name +".xlsx";
+        link.href = uri + base64(format(str, ctx));
+        link.click();},100);
+    }
+
+</script>
+<h4 class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>
+<!--<button class="btn bt-small btn-default" onclick="download('report')">Download Excel</button>-->
+<h3 class="header text-center">Tuungane PMP Terrestral Report- <span class="period"></span> -  <span id="orgUnits"></span></h3>
+<div class="col-sm-10 col-sm-offset-1" >
+    <table class="listTable table table-bordered table-responsive">
+        <thead class="header">
+
+        </thead>
+    </table>
+</div>
+
+</div>          </div>
+    <script type="text/javascript">
+        </script>
+
+    <div id="rightBar">
+      <span id="hideRightBar"><a href="javascript:hideHelpContent()" title="Close">
+        <i class="fa fa-times leftBarIcon"></i></a>
+      </span>
+      <div id="rightBarContents"></div>
+    </div>
+
+    
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-50813409-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
