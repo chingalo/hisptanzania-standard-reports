@@ -5295,9 +5295,9 @@
             var currentLevel = "";
             var title = getOrganisationPathName().reverse().splice(-3).reverse().join(" ");
             //value valid for QIP report, mapper and final varibale for rows
-            var validValueForQip = ["no", "partial"];
+            var validValueForQip = ["no", "partial"]; // all should be in small leter
             var qipMapper;
-            var dataRows = []
+            var dataRows = [] // for filtered rows
             if (window && window.cordova) {
                 //deduce datasetId, period and organisationUnitId for data retrival, data element ids
                 var facilityTypeDatsetId = getFacilityTypeAndDataSetIds(dhis2.report.dataSets);
