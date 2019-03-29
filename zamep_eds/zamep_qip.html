@@ -304,6 +304,8 @@
 </style>
 <script>
     const minimumScore = 70;
+    let qipConfiguration;
+    let qipData = {};
     if (window && window.cordova) {
         if (dhis2 && dhis2 && dhis2.eventCaptureSelection && dhis2.currentEventId && dhis2.sqlLiteProvider &&
             dhis2.trackerCaptureProvider) {
@@ -320,19 +322,50 @@
             selectedOrgUnit,
             selectedProgram
         } = eventCaptureSelection;
-        const qipConfiguration = getQIPCOnfigurations();
+        qipConfiguration = getQIPCOnfigurations();
         try {
             const programIndicators = await getProgramIndicators(qipConfiguration);
-            Object.keys(qipConfiguration).map(function (programId) {
-                const event = await discoveringEvents(programId, selectedOrgUnit.id);
-                const {
-                    dataValues
-                } = event;
+            for (const program of Object.keys(qipConfiguration)) {
+                const name = qipConfiguration[program].name;
+                const events = await discoveringEvents(program, selectedOrgUnit.id);
+                const dataValues = events && events.length > 0 ? events[0].dataValues ? events[0].dataValues : [] :
+                    [];
+                for (const programIndicator of programIndicators) {
+                    const {
+                        id,
+                        programId,
+                        expression
+                    } = programIndicator;
+                    if (programId === program) {
+                        const programIndicatorId = id.split("-").pop();
+                        const indicatorValue = getProgramIndicatorValueFromExpression(expression, dataValues);
+                        if (qipConfiguration[program].sections && qipConfiguration[program].sections[
+                                programIndicatorId]) {
+                            qipConfiguration[program].sections[programIndicatorId].value = indicatorValue;
+                        }
+                    }
+                }
+            }
+            const selectedProgramId = selectedProgram.id;
+            const dataStoreResponse = await discoveringQipValueFromLocalDataSrore(currentEventId,
+                selectedProgramId);
+            const dataStoreObject = dataStoreResponse && dataStoreResponse.length > 0 ? dataStoreResponse[0] : {
+                data: {
+                    qipConfiguration: qipConfiguration,
+                    qipData
+                }
+            }
+            qipData = dataStoreObject.data.qipData;
+            if (dataStoreResponse && dataStoreResponse.length === 0) {
+                await saveQipValueToLocalDataStore(currentEventId, selectedProgramId, {
+                    qipConfiguration,
+                    qipData
+                })
+            } else {
                 console.log(JSON.stringify({
-                    dataValues
+                    dataStoreResponse
                 }))
-            })
-
+            }
         } catch (error) {
             console.log(JSON.stringify({
                 error
@@ -340,8 +373,28 @@
         }
     }
 
+    async function discoveringQipValueFromLocalDataSrore(eventId, programId) {
+        const tableName = "dataStore";
+        const id = `${programId}_${eventId}`;
+        return dhis2.sqlLiteProvider.getFromTableByAttributes(tableName, "id", [id]);
+
+    }
+
+    async function saveQipValueToLocalDataStore(eventId, programId, newData) {
+        const tableName = "dataStore";
+        const data = {
+            id: `${programId}_${eventId}`,
+            nameSpace: programId,
+            key: event,
+            data: newData,
+            status: "not-sync"
+        }
+        console.log(JSON.stringify(data));
+        return dhis2.sqlLiteProvider.insertOrReplaceOnTable(tableName, [data]);
+    }
+
     async function discoveringEvents(programId, orgUnitId) {
-        return dhis2.trackerCaptureProvider.getEventsByProgramAndOrganisationUnit
+        return dhis2.trackerCaptureProvider.getEventsByProgramAndOrganisationUnit(programId, orgUnitId);
     }
 
     async function getProgramIndicators(qipConfiguration) {
@@ -351,9 +404,6 @@
             const {
                 sections
             } = qipConfiguration[programId];
-            console.log({
-                sections
-            })
             Object.keys(sections).map(function (sectionId) {
                 ids.push(`${programId}-${sectionId}`);
             })
@@ -363,40 +413,35 @@
 
     function getProgramIndicatorValueFromExpression(expression, dataValues) {
         let indicatorValue = '0';
-        const indictorUidValue = {};
+        const indictorUidValueObject = {};
+        const dataElementDataValueObject = arrayToObject(dataValues, "dataElement");
         const uids = getUidsFromExpression(expression);
         for (const uid of uids) {
-            const elementId = uid.split('.').pop();
-            // const element: any = document.getElementById(`${elementId}-val`);
-            // const value = element && element.value ? element.value : '0';
-            const value = 0;
-            indictorUidValue[uid] = value;
+            const dataElementId = uid.split('.').pop();
+            const dataValue = dataElementDataValueObject[dataElementId];
+            const value = dataValue && dataValue.value ? dataValue.value : '0';
+            indictorUidValueObject[uid] = value;
         }
         indicatorValue = getEvaluatedIndicatorValueFromExpression(
             expression,
-            indictorUidValue
+            indictorUidValueObject
         );
         return indicatorValue;
     }
 
     function getUidsFromExpression(expression) {
         let uids = [];
-        const matchRegrex = /(\{.*?\})/gi;
-        expression.match(matchRegrex).forEach(function (value) {
-            uids = uids.concat(
-                value
-                .replace('{', ':separator:')
-                .replace('}', ':separator:')
-                .split(':separator:')
-                .filter(content => content.length > 0)
-            );
+        const formulaPattern = /#\{.+?\}/g;
+        const matcher = expression.match(formulaPattern);
+        matcher.map(function (match) {
+            uids.push(match.replace(/[#\{\}]/g, ''));
         });
         return uids;
     }
 
     function getEvaluatedIndicatorValueFromExpression(
         expression,
-        indicatorIdToValueObject
+        indictorUidValueObject
     ) {
         let evaluatedValue = 0;
         const formulaPattern = /#\{.+?\}/g;
@@ -404,8 +449,8 @@
         matcher.map(function (match) {
             var operand = match.replace(/[#\{\}]/g, '');
             const value =
-                indicatorIdToValueObject && indicatorIdToValueObject[operand] ?
-                indicatorIdToValueObject[operand] :
+                indictorUidValueObject && indictorUidValueObject[operand] ?
+                indictorUidValueObject[operand] :
                 0;
             expression = expression.replace(match, value);
         });
