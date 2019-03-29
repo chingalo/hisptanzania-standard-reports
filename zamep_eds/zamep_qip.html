@@ -346,6 +346,7 @@
 <script>
     const minimumScore = 70;
     let qipConfiguration;
+    let inputIds = [];
     const tableRowConfig = getTableRowConfig();
     let qipData = {};
     if (window && window.cordova) {
@@ -367,7 +368,6 @@
         const {
             selectedProgram
         } = eventCaptureSelection;
-
         await saveQipValueToLocalDataStore(currentEventId, selectedProgram.id, {
             qipConfiguration,
             qipData
@@ -432,6 +432,8 @@
         }
     }
 
+
+
     async function drawTableData(qipConfiguration, qipData, tableRowConfig, shouldUpdate) {
         try {
             const tableElement = document.createElement("table");
@@ -467,6 +469,7 @@
 
             const tableBodyElement = document.createElement("tbody");
             let newQipData = {}
+            inputIds = [];
             Object.keys(qipConfiguration).map(function (programId) {
                 const {
                     sections,
@@ -491,6 +494,7 @@
                                 options
                             } = config;
                             const id = `${sectionId}_${config.name}`;
+                            inputIds.push(id);
                             let value = "";
                             if (qipData && qipData[id]) {
                                 value = qipData[id]
@@ -515,8 +519,12 @@
                 })
             });
             tableElement.appendChild(tableHeaderElement);
-            tableElement.appendChild(tableBodyElement)
+            tableElement.appendChild(tableBodyElement);
+            if (shouldUpdate) {
+                document.getElementById("table-qip").innerHTML = "";
+            }
             document.getElementById("table-qip").appendChild(tableElement);
+            document.addEventListener("change", changeEventHandler, false)
             if (shouldUpdate && Object.keys(qipData).length !== Object.keys(newQipData)) {
                 updateQipValue(qipConfiguration, newQipData);
             }
@@ -524,6 +532,17 @@
             console.log("Error on drawing : " + JSON.stringify(error))
         }
     }
+
+    async function changeEventHandler() {
+        for (const id of inputIds) {
+            const element = document.getElementById(id);
+            const value = element && element.value ? element.value : "";
+            qipData[id] = value;
+        }
+        updateQipValue(qipConfiguration, qipData);
+    }
+
+
 
     function getSelectInput(id, value, options) {
         const selectElement = document.createElement('select');
@@ -573,6 +592,7 @@
     }
 
     async function saveQipValueToLocalDataStore(eventId, programId, newData) {
+        qipData = newData;
         const tableName = "dataStore";
         const data = {
             id: `${programId}_${eventId}`,
@@ -581,6 +601,7 @@
             data: newData,
             status: "not-sync"
         }
+
         return dhis2.sqlLiteProvider.insertOrReplaceOnTable(tableName, [data]);
     }
 
