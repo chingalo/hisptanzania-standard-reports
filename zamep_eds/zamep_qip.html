@@ -3,6 +3,31 @@
         white-space: nowrap;
     }
 
+    input,
+    textarea,
+    select {
+        border: solid thin #dddddd;
+        padding: 5px;
+    }
+
+    textarea {
+        width: 90%;
+    }
+
+    select {
+        background-color: #ffffff;
+    }
+
+    input {
+        text-align: center;
+    }
+
+    input:focus,
+    textarea:focus,
+    .entryselect-qip:focus {
+        border-color: #488aff;
+    }
+
     .container,
     .container-fluid,
     .table {
@@ -305,6 +330,7 @@
 <script>
     const minimumScore = 70;
     let qipConfiguration;
+    const tableRowConfig = getTableRowConfig();
     let qipData = {};
     if (window && window.cordova) {
         if (dhis2 && dhis2 && dhis2.eventCaptureSelection && dhis2.currentEventId && dhis2.sqlLiteProvider &&
@@ -341,7 +367,7 @@
                         const indicatorValue = getProgramIndicatorValueFromExpression(expression, dataValues);
                         if (qipConfiguration[program].sections && qipConfiguration[program].sections[
                                 programIndicatorId]) {
-                            qipConfiguration[program].sections[programIndicatorId].value = indicatorValue;
+                            qipConfiguration[program].sections[programIndicatorId].score = indicatorValue;
                         }
                     }
                 }
@@ -361,16 +387,136 @@
                     qipConfiguration,
                     qipData
                 })
-            } else {
-                console.log(JSON.stringify({
-                    dataStoreResponse
-                }))
             }
+            drawTableData(qipConfiguration, qipData, tableRowConfig);
         } catch (error) {
             console.log(JSON.stringify({
                 error
             }))
         }
+    }
+
+    function drawTableData(qipConfiguration, qipData, tableRowConfig) {
+        try {
+            const tableElement = document.createElement("table");
+            tableElement.setAttribute("class", "table table-bordered");
+
+            const tableHeaderElement = document.createElement("thead")
+            const tableHeaderRow = document.createElement("tr");
+            let tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Checklist/Module"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Section need improvement plan"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Section score"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Describe the impediment"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("What immediate action was done?"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("What is the action plan?"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Responsible person"));
+            tableHeaderRow.appendChild(tdElement);
+            tdElement = document.createElement("td");
+            tdElement.appendChild(document.createTextNode("Time frame"));
+            tableHeaderRow.appendChild(tdElement);
+            tableHeaderElement.appendChild(tableHeaderRow);
+
+            const tableBodyElement = document.createElement("tbody");
+            Object.keys(qipConfiguration).map(function (programId) {
+                const {
+                    sections,
+                    name
+                } = qipConfiguration[programId];
+                Object.keys(sections).map(function (sectionId) {
+                    const section = sections[sectionId];
+                    if (minimumScore > section.score) {
+                        const tbBodyRow = document.createElement("tr");
+                        let tdElement = document.createElement("td");
+                        tdElement.appendChild(document.createTextNode(`${name}`));
+                        tbBodyRow.appendChild(tdElement);
+                        tdElement = document.createElement("td");
+                        tdElement.appendChild(document.createTextNode(`${section.name}`));
+                        tbBodyRow.appendChild(tdElement);
+                        tdElement = document.createElement("td");
+                        tdElement.appendChild(document.createTextNode(`${section.score}`));
+                        tbBodyRow.appendChild(tdElement);
+                        for (const config of tableRowConfig) {
+                            const {
+                                valueType,
+                                options
+                            } = config;
+                            const id = `${sectionId}_${config.name}`;
+                            const value = qipData && qipData[id] ? qipData[id] : "";
+                            tdElement = document.createElement("td");
+                            if (options && options.length > 0) {
+                                const element = getSelectInput(id, value, options);
+                                tdElement.appendChild(element);
+                            } else if (valueType === "LONG_TEXT") {
+                                const element = getTextArea(id, value);
+                                tdElement.appendChild(element);
+                            } else {
+                                const element = getTextInput(id, value);
+                                tdElement.appendChild(element);
+                            }
+                            tbBodyRow.appendChild(tdElement);
+                        }
+                        tableBodyElement.appendChild(tbBodyRow);
+                    }
+
+                })
+            });
+            tableElement.appendChild(tableHeaderElement);
+            tableElement.appendChild(tableBodyElement)
+            document.getElementById("table-qip").appendChild(tableElement);
+        } catch (error) {
+            console.log("Error on drawing : " + JSON.stringify(error))
+        }
+    }
+
+    function getSelectInput(id, value, options) {
+        const selectElement = document.createElement('select');
+        selectElement.setAttribute('id', id);
+        selectElement.setAttribute('class', 'entryselect-qip');
+        const defaultOption = document.createElement('option');
+        defaultOption.disabled = false;
+        defaultOption.selected = true;
+        defaultOption.value = '';
+        selectElement.appendChild(defaultOption);
+        options.forEach(function (option) {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.code;
+            optionElement.appendChild(document.createTextNode(option.name));
+            optionElement;
+            if (option.code === value) {
+                optionElement.selected = true;
+            }
+            selectElement.appendChild(optionElement);
+        });
+        return selectElement;
+    }
+
+    function getTextInput(id, value) {
+        const inputElement = document.createElement('input');
+        inputElement.setAttribute('id', id);
+        inputElement.setAttribute('class', 'entryfield-qip');
+        inputElement.value = value;
+        return inputElement;
+    }
+
+    function getTextArea(id, value) {
+        const textarea = document.createElement('textarea');
+        textarea.setAttribute('id', id);
+        textarea.setAttribute('class', 'entryfield-qip');
+        textarea.value = value;
+        return textarea;
     }
 
     async function discoveringQipValueFromLocalDataSrore(eventId, programId) {
@@ -389,7 +535,6 @@
             data: newData,
             status: "not-sync"
         }
-        console.log(JSON.stringify(data));
         return dhis2.sqlLiteProvider.insertOrReplaceOnTable(tableName, [data]);
     }
 
@@ -469,6 +614,30 @@
         }, {});
     }
 
+    function getTableRowConfig() {
+        return [{
+            name: "impediment",
+            valueType: "LONG_TEXT",
+            options: []
+        }, {
+            name: "impedimentAction",
+            valueType: "TEXT",
+            options: []
+        }, {
+            name: "actionPlan",
+            valueType: "TEXT",
+            options: []
+        }, {
+            name: "responsiblePerson",
+            valueType: "TEXT",
+            options: []
+        }, {
+            name: "timeFrame",
+            valueType: "TEXT",
+            options: []
+        }]
+    }
+
     function getQIPCOnfigurations() {
         return {
             kBa5O5ibLM7: {
@@ -478,22 +647,22 @@
                     c3jKPBJR2JE: {
                         id: "c3jKPBJR2JE",
                         name: "D. Health Facility ANC Readiness",
-                        value: 0
+                        score: 0
                     },
                     FrvXDLqUhA7: {
                         id: "FrvXDLqUhA7",
                         name: "E. ANC Competence in managing pregnant women",
-                        value: 0
+                        score: 0
                     },
                     RjgvuNldbRG: {
                         id: "RjgvuNldbRG",
                         name: "F. Health Education",
-                        value: 0
+                        score: 0
                     },
                     euyqmLd7gFj: {
                         id: "euyqmLd7gFj",
                         name: "G. ANC Exit Interview",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -504,12 +673,12 @@
                     Ji78NQMd5PB: {
                         id: "Ji78NQMd5PB",
                         name: "C. Facility readiness to provide severe malaria management",
-                        value: 0
+                        score: 0
                     },
                     jmrg0VTlALb: {
                         id: "jmrg0VTlALb",
                         name: "D. Severe Malaria Treatment",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -520,27 +689,27 @@
                     tpmoV0z1xR4: {
                         id: "tpmoV0z1xR4",
                         name: "C. Facility Readiness to Provide Dispensing Services",
-                        value: 0
+                        score: 0
                     },
                     ndPsoczGgLg: {
                         id: "ndPsoczGgLg",
                         name: "D. Health Care Worker Observation",
-                        value: 0
+                        score: 0
                     },
                     IbAeWNGFvME: {
                         id: "IbAeWNGFvME",
                         name: "E. Stock Status (Anti-malarial and supportive medicines for malaria)",
-                        value: 0
+                        score: 0
                     },
                     H631KimKXiO: {
                         id: "H631KimKXiO",
                         name: "F. Commodity Levels",
-                        value: 0
+                        score: 0
                     },
                     mizgrAoOp90: {
                         id: "mizgrAoOp90",
                         name: "G. Logistics DQA",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -551,22 +720,22 @@
                     o58r3dbJ3ZM: {
                         id: "o58r3dbJ3ZM",
                         name: "C. Health Facility Microscopy Readiness",
-                        value: 0
+                        score: 0
                     },
                     qotvf1RZgJU: {
                         id: "qotvf1RZgJU",
                         name: "D. Microscopy Observation",
-                        value: 0
+                        score: 0
                     },
                     OvlJpkEhmTy: {
                         id: "OvlJpkEhmTy",
                         name: "E. Quality assurance and Quality control",
-                        value: 0
+                        score: 0
                     },
                     Ks89DOPBLpT: {
                         id: "Ks89DOPBLpT",
                         name: "F. Microscopy DQA",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -577,22 +746,22 @@
                     FvMXIMSIvx6: {
                         id: "FvMXIMSIvx6",
                         name: "C. Health Facility mRDT Readiness",
-                        value: 0
+                        score: 0
                     },
                     hpFPORxxzOx: {
                         id: "hpFPORxxzOx",
                         name: "D. mRDT Competence",
-                        value: 0
+                        score: 0
                     },
                     hpFPORxxzOx: {
                         id: "hpFPORxxzOx",
                         name: "E. Consistency Check",
-                        value: 0
+                        score: 0
                     },
                     Y0O1kccOJbw: {
                         id: "Y0O1kccOJbw",
                         name: "F. mRDT QC System",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -603,22 +772,22 @@
                     fIjulldAKRz: {
                         id: "fIjulldAKRz",
                         name: "C. Facility Readiness to Provide Malaria Service",
-                        value: 0
+                        score: 0
                     },
                     dGoO3CKlIFw: {
                         id: "dGoO3CKlIFw",
                         name: "D. Health care worker observation",
-                        value: 0
+                        score: 0
                     },
                     hlM0vQjydhe: {
                         id: "hlM0vQjydhe",
                         name: "E. Pre Referral of Management of Severe Malaria",
-                        value: 0
+                        score: 0
                     },
                     q0XpK1lyQdO: {
                         id: "q0XpK1lyQdO",
                         name: "F. Exit Interview",
-                        value: 0
+                        score: 0
                     }
                 }
             },
@@ -629,12 +798,12 @@
                     cwIJ7XHXz2S: {
                         id: "cwIJ7XHXz2S",
                         name: "C. Facility MEEDS/MCN readiness",
-                        value: 0
+                        score: 0
                     },
                     Mn0221J0YZf: {
                         id: "Mn0221J0YZf",
                         name: "D. MCN/MEEDS DQA",
-                        value: 0
+                        score: 0
                     },
                 }
             },
@@ -642,16 +811,5 @@
     }
 </script>
 <div class="container-fluid">
-    <table class="table table-bordered">
-        <thead>
-            <th>Checklist/Module</th>
-            <th>Section need improvement plan</th>
-            <th>Section score</th>
-            <th>Describe the impediment</th>
-            <th>What immediate action was done?</th>
-            <th>What is the action plan?</th>
-            <th>Responsible person</th>
-            <th>Time frame</th>
-        </thead>
-    </table>
+    <div id="table-qip"></div>
 </div>
