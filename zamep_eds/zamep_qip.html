@@ -1,0 +1,612 @@
+<style type="text/css">
+    .td-with-label {
+        white-space: nowrap;
+    }
+
+    .container,
+    .container-fluid,
+    .table {
+        width: 100%
+    }
+
+    .container,
+    .container-fluid {
+        padding-right: 5px;
+        padding-left: 5px;
+        margin-right: auto;
+        margin-left: auto
+    }
+
+    @media (min-width:576px) {
+        .container {
+            max-width: 540px
+        }
+    }
+
+    @media (min-width:768px) {
+        .container {
+            max-width: 720px
+        }
+    }
+
+    @media (min-width:992px) {
+        .container {
+            max-width: 960px
+        }
+    }
+
+    @media (min-width:1200px) {
+        .container {
+            max-width: 1140px
+        }
+    }
+
+    .table {
+        margin-bottom: 1rem;
+        background-color: transparent
+    }
+
+    .table td,
+    .table th {
+        padding: .75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6
+    }
+
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6
+    }
+
+    .table .table {
+        background-color: #fff
+    }
+
+    .table-sm td,
+    .table-sm th {
+        padding: .3rem
+    }
+
+    .table-bordered,
+    .table-bordered td,
+    .table-bordered th {
+        border: 1px solid #dee2e6
+    }
+
+    .table-bordered thead td,
+    .table-bordered thead th {
+        border-bottom-width: 2px
+    }
+
+    .table-borderless tbody+tbody,
+    .table-borderless td,
+    .table-borderless th,
+    .table-borderless thead th {
+        border: 0
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, .05)
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, .075)
+    }
+
+    .table-primary,
+    .table-primary>td,
+    .table-primary>th {
+        background-color: #b8daff
+    }
+
+    .table-hover .table-primary:hover,
+    .table-hover .table-primary:hover>td,
+    .table-hover .table-primary:hover>th {
+        background-color: #9fcdff
+    }
+
+    .table-secondary,
+    .table-secondary>td,
+    .table-secondary>th {
+        background-color: #d6d8db
+    }
+
+    .table-hover .table-secondary:hover,
+    .table-hover .table-secondary:hover>td,
+    .table-hover .table-secondary:hover>th {
+        background-color: #c8cbcf
+    }
+
+    .table-success,
+    .table-success>td,
+    .table-success>th {
+        background-color: #c3e6cb
+    }
+
+    .table-hover .table-success:hover,
+    .table-hover .table-success:hover>td,
+    .table-hover .table-success:hover>th {
+        background-color: #b1dfbb
+    }
+
+    .table-info,
+    .table-info>td,
+    .table-info>th {
+        background-color: #bee5eb
+    }
+
+    .table-hover .table-info:hover,
+    .table-hover .table-info:hover>td,
+    .table-hover .table-info:hover>th {
+        background-color: #abdde5
+    }
+
+    .table-warning,
+    .table-warning>td,
+    .table-warning>th {
+        background-color: #ffeeba
+    }
+
+    .table-hover .table-warning:hover,
+    .table-hover .table-warning:hover>td,
+    .table-hover .table-warning:hover>th {
+        background-color: #ffe8a1
+    }
+
+    .table-danger,
+    .table-danger>td,
+    .table-danger>th {
+        background-color: #f5c6cb
+    }
+
+    .table-hover .table-danger:hover,
+    .table-hover .table-danger:hover>td,
+    .table-hover .table-danger:hover>th {
+        background-color: #f1b0b7
+    }
+
+    .table-light,
+    .table-light>td,
+    .table-light>th {
+        background-color: #fdfdfe
+    }
+
+    .table-hover .table-light:hover,
+    .table-hover .table-light:hover>td,
+    .table-hover .table-light:hover>th {
+        background-color: #ececf6
+    }
+
+    .table-dark,
+    .table-dark>td,
+    .table-dark>th {
+        background-color: #c6c8ca
+    }
+
+    .table-hover .table-dark:hover,
+    .table-hover .table-dark:hover>td,
+    .table-hover .table-dark:hover>th {
+        background-color: #b9bbbe
+    }
+
+    .table-active,
+    .table-active>td,
+    .table-active>th,
+    .table-hover .table-active:hover,
+    .table-hover .table-active:hover>td,
+    .table-hover .table-active:hover>th {
+        background-color: rgba(0, 0, 0, .075)
+    }
+
+    .table .thead-dark th {
+        color: #fff;
+        background-color: #212529;
+        border-color: #32383e
+    }
+
+    .table .thead-light th {
+        color: #495057;
+        background-color: #e9ecef;
+        border-color: #dee2e6
+    }
+
+    .table-dark {
+        color: #fff;
+        background-color: #212529
+    }
+
+    .table-dark td,
+    .table-dark th,
+    .table-dark thead th {
+        border-color: #32383e
+    }
+
+    .table-dark.table-bordered,
+    .table-responsive>.table-bordered {
+        border: 0
+    }
+
+    .table-dark.table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, .05)
+    }
+
+    .table-dark.table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, .075)
+    }
+
+    @media (max-width:575.98px) {
+        .table-responsive-sm {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar
+        }
+
+        .table-responsive-sm>.table-bordered {
+            border: 0
+        }
+    }
+
+    @media (max-width:767.98px) {
+        .table-responsive-md {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar
+        }
+
+        .table-responsive-md>.table-bordered {
+            border: 0
+        }
+    }
+
+    @media (max-width:991.98px) {
+        .table-responsive-lg {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar
+        }
+
+        .table-responsive-lg>.table-bordered {
+            border: 0
+        }
+    }
+
+    @media (max-width:1199.98px) {
+        .table-responsive-xl {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar
+        }
+
+        .table-responsive-xl>.table-bordered {
+            border: 0
+        }
+    }
+
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: -ms-autohiding-scrollbar
+    }
+</style>
+<script>
+    const minimumScore = 70;
+    if (window && window.cordova) {
+        if (dhis2 && dhis2 && dhis2.eventCaptureSelection && dhis2.currentEventId && dhis2.sqlLiteProvider &&
+            dhis2.trackerCaptureProvider) {
+            discoverAndGenerateQip();
+        }
+    }
+
+    async function discoverAndGenerateQip() {
+        const {
+            eventCaptureSelection,
+            currentEventId
+        } = dhis2;
+        const {
+            selectedOrgUnit,
+            selectedProgram
+        } = eventCaptureSelection;
+        const qipConfiguration = getQIPCOnfigurations();
+        try {
+            const programIndicators = await getProgramIndicators(qipConfiguration);
+            Object.keys(qipConfiguration).map(function (programId) {
+                const event = await discoveringEvents(programId, selectedOrgUnit.id);
+                const {
+                    dataValues
+                } = event;
+                console.log(JSON.stringify({
+                    dataValues
+                }))
+            })
+
+        } catch (error) {
+            console.log(JSON.stringify({
+                error
+            }))
+        }
+    }
+
+    async function discoveringEvents(programId, orgUnitId) {
+        return dhis2.trackerCaptureProvider.getEventsByProgramAndOrganisationUnit
+    }
+
+    async function getProgramIndicators(qipConfiguration) {
+        const tableName = "programIndicators";
+        const ids = []
+        Object.keys(qipConfiguration).map(function (programId) {
+            const {
+                sections
+            } = qipConfiguration[programId];
+            console.log({
+                sections
+            })
+            Object.keys(sections).map(function (sectionId) {
+                ids.push(`${programId}-${sectionId}`);
+            })
+        });
+        return dhis2.sqlLiteProvider.getFromTableByAttributes(tableName, "id", ids)
+    }
+
+    function getProgramIndicatorValueFromExpression(expression, dataValues) {
+        let indicatorValue = '0';
+        const indictorUidValue = {};
+        const uids = getUidsFromExpression(expression);
+        for (const uid of uids) {
+            const elementId = uid.split('.').pop();
+            // const element: any = document.getElementById(`${elementId}-val`);
+            // const value = element && element.value ? element.value : '0';
+            const value = 0;
+            indictorUidValue[uid] = value;
+        }
+        indicatorValue = getEvaluatedIndicatorValueFromExpression(
+            expression,
+            indictorUidValue
+        );
+        return indicatorValue;
+    }
+
+    function getUidsFromExpression(expression) {
+        let uids = [];
+        const matchRegrex = /(\{.*?\})/gi;
+        expression.match(matchRegrex).forEach(function (value) {
+            uids = uids.concat(
+                value
+                .replace('{', ':separator:')
+                .replace('}', ':separator:')
+                .split(':separator:')
+                .filter(content => content.length > 0)
+            );
+        });
+        return uids;
+    }
+
+    function getEvaluatedIndicatorValueFromExpression(
+        expression,
+        indicatorIdToValueObject
+    ) {
+        let evaluatedValue = 0;
+        const formulaPattern = /#\{.+?\}/g;
+        const matcher = expression.match(formulaPattern);
+        matcher.map(function (match) {
+            var operand = match.replace(/[#\{\}]/g, '');
+            const value =
+                indicatorIdToValueObject && indicatorIdToValueObject[operand] ?
+                indicatorIdToValueObject[operand] :
+                0;
+            expression = expression.replace(match, value);
+        });
+        try {
+            if (!isNaN(eval(expression))) {
+                evaluatedValue = eval(expression);
+            }
+        } catch (e) {}
+        return evaluatedValue.toFixed(1);
+    }
+
+    function arrayToObject(array, keyField) {
+        return array.reduce((obj, item) => {
+            obj[item[keyField]] = item
+            return obj
+        }, {});
+    }
+
+    function getQIPCOnfigurations() {
+        return {
+            kBa5O5ibLM7: {
+                name: "ANC",
+                id: "kBa5O5ibLM7",
+                sections: {
+                    c3jKPBJR2JE: {
+                        id: "c3jKPBJR2JE",
+                        name: "D. Health Facility ANC Readiness",
+                        value: 0
+                    },
+                    FrvXDLqUhA7: {
+                        id: "FrvXDLqUhA7",
+                        name: "E. ANC Competence in managing pregnant women",
+                        value: 0
+                    },
+                    RjgvuNldbRG: {
+                        id: "RjgvuNldbRG",
+                        name: "F. Health Education",
+                        value: 0
+                    },
+                    euyqmLd7gFj: {
+                        id: "euyqmLd7gFj",
+                        name: "G. ANC Exit Interview",
+                        value: 0
+                    }
+                }
+            },
+            F0VAhn3yWR4: {
+                name: "IPD",
+                id: "F0VAhn3yWR4",
+                sections: {
+                    Ji78NQMd5PB: {
+                        id: "Ji78NQMd5PB",
+                        name: "C. Facility readiness to provide severe malaria management",
+                        value: 0
+                    },
+                    jmrg0VTlALb: {
+                        id: "jmrg0VTlALb",
+                        name: "D. Severe Malaria Treatment",
+                        value: 0
+                    }
+                }
+            },
+            chMSywu8dXD: {
+                name: "LOGISTICS",
+                id: "chMSywu8dXD",
+                sections: {
+                    tpmoV0z1xR4: {
+                        id: "tpmoV0z1xR4",
+                        name: "C. Facility Readiness to Provide Dispensing Services",
+                        value: 0
+                    },
+                    ndPsoczGgLg: {
+                        id: "ndPsoczGgLg",
+                        name: "D. Health Care Worker Observation",
+                        value: 0
+                    },
+                    IbAeWNGFvME: {
+                        id: "IbAeWNGFvME",
+                        name: "E. Stock Status (Anti-malarial and supportive medicines for malaria)",
+                        value: 0
+                    },
+                    H631KimKXiO: {
+                        id: "H631KimKXiO",
+                        name: "F. Commodity Levels",
+                        value: 0
+                    },
+                    mizgrAoOp90: {
+                        id: "mizgrAoOp90",
+                        name: "G. Logistics DQA",
+                        value: 0
+                    }
+                }
+            },
+            UykZvAVKRb2: {
+                name: "MICROSCOPY",
+                id: "UykZvAVKRb2",
+                sections: {
+                    o58r3dbJ3ZM: {
+                        id: "o58r3dbJ3ZM",
+                        name: "C. Health Facility Microscopy Readiness",
+                        value: 0
+                    },
+                    qotvf1RZgJU: {
+                        id: "qotvf1RZgJU",
+                        name: "D. Microscopy Observation",
+                        value: 0
+                    },
+                    OvlJpkEhmTy: {
+                        id: "OvlJpkEhmTy",
+                        name: "E. Quality assurance and Quality control",
+                        value: 0
+                    },
+                    Ks89DOPBLpT: {
+                        id: "Ks89DOPBLpT",
+                        name: "F. Microscopy DQA",
+                        value: 0
+                    }
+                }
+            },
+            Ye0F1JADZrB: {
+                name: "mRDT",
+                id: "Ye0F1JADZrB",
+                sections: {
+                    FvMXIMSIvx6: {
+                        id: "FvMXIMSIvx6",
+                        name: "C. Health Facility mRDT Readiness",
+                        value: 0
+                    },
+                    hpFPORxxzOx: {
+                        id: "hpFPORxxzOx",
+                        name: "D. mRDT Competence",
+                        value: 0
+                    },
+                    hpFPORxxzOx: {
+                        id: "hpFPORxxzOx",
+                        name: "E. Consistency Check",
+                        value: 0
+                    },
+                    Y0O1kccOJbw: {
+                        id: "Y0O1kccOJbw",
+                        name: "F. mRDT QC System",
+                        value: 0
+                    }
+                }
+            },
+            wkUnlxTP6pz: {
+                name: "OPD",
+                id: "wkUnlxTP6pz",
+                sections: {
+                    fIjulldAKRz: {
+                        id: "fIjulldAKRz",
+                        name: "C. Facility Readiness to Provide Malaria Service",
+                        value: 0
+                    },
+                    dGoO3CKlIFw: {
+                        id: "dGoO3CKlIFw",
+                        name: "D. Health care worker observation",
+                        value: 0
+                    },
+                    hlM0vQjydhe: {
+                        id: "hlM0vQjydhe",
+                        name: "E. Pre Referral of Management of Severe Malaria",
+                        value: 0
+                    },
+                    q0XpK1lyQdO: {
+                        id: "q0XpK1lyQdO",
+                        name: "F. Exit Interview",
+                        value: 0
+                    }
+                }
+            },
+            ypdmphAw65Q: {
+                name: "SME",
+                id: "ypdmphAw65Q",
+                sections: {
+                    cwIJ7XHXz2S: {
+                        id: "cwIJ7XHXz2S",
+                        name: "C. Facility MEEDS/MCN readiness",
+                        value: 0
+                    },
+                    Mn0221J0YZf: {
+                        id: "Mn0221J0YZf",
+                        name: "D. MCN/MEEDS DQA",
+                        value: 0
+                    },
+                }
+            },
+        }
+    }
+</script>
+<div class="container-fluid">
+    <table class="table table-bordered">
+        <thead>
+            <th>Checklist/Module</th>
+            <th>Section need improvement plan</th>
+            <th>Section score</th>
+            <th>Describe the impediment</th>
+            <th>What immediate action was done?</th>
+            <th>What is the action plan?</th>
+            <th>Responsible person</th>
+            <th>Time frame</th>
+        </thead>
+    </table>
+</div>
