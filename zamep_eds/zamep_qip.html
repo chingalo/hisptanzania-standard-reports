@@ -3,29 +3,45 @@
         white-space: nowrap;
     }
 
-    input,
-    textarea,
+
+
+    .entryfield-qip,
     select {
-        border: solid thin #dddddd;
-        padding: 5px;
-    }
-
-    textarea {
-        width: 90%;
-    }
-
-    select {
-        background-color: #ffffff;
-    }
-
-    input {
         text-align: center;
+        width: 16rem !important;
     }
 
-    input:focus,
-    textarea:focus,
-    .entryselect-qip:focus {
-        border-color: #488aff;
+    .button {
+        padding: 7px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin: 4px 2px;
+    }
+
+    select {
+        text-align-last: center;
+    }
+
+    .entryfield-qip,
+    select {
+        display: block;
+        color: #495057;
+        padding: 0.375rem 0.75rem;
+        margin: 0.3rem;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .entryfield-qip:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
 
     .container,
@@ -339,7 +355,26 @@
         }
     }
 
-    async function discoverAndGenerateQip() {
+    function updateQip() {
+        discoverAndGenerateQip(true);
+    }
+
+    async function updateQipValue(qipConfiguration, qipData) {
+        const {
+            eventCaptureSelection,
+            currentEventId
+        } = dhis2;
+        const {
+            selectedProgram
+        } = eventCaptureSelection;
+
+        await saveQipValueToLocalDataStore(currentEventId, selectedProgram.id, {
+            qipConfiguration,
+            qipData
+        })
+    }
+
+    async function discoverAndGenerateQip(shouldUpdate) {
         const {
             eventCaptureSelection,
             currentEventId
@@ -382,13 +417,14 @@
                 }
             }
             qipData = dataStoreObject.data.qipData;
+            qipConfiguration = shouldUpdate ? qipConfiguration : dataStoreObject.data.qipConfiguration;
             if (dataStoreResponse && dataStoreResponse.length === 0) {
                 await saveQipValueToLocalDataStore(currentEventId, selectedProgramId, {
                     qipConfiguration,
                     qipData
                 })
             }
-            drawTableData(qipConfiguration, qipData, tableRowConfig);
+            drawTableData(qipConfiguration, qipData, tableRowConfig, shouldUpdate);
         } catch (error) {
             console.log(JSON.stringify({
                 error
@@ -396,7 +432,7 @@
         }
     }
 
-    function drawTableData(qipConfiguration, qipData, tableRowConfig) {
+    async function drawTableData(qipConfiguration, qipData, tableRowConfig, shouldUpdate) {
         try {
             const tableElement = document.createElement("table");
             tableElement.setAttribute("class", "table table-bordered");
@@ -430,6 +466,7 @@
             tableHeaderElement.appendChild(tableHeaderRow);
 
             const tableBodyElement = document.createElement("tbody");
+            let newQipData = {}
             Object.keys(qipConfiguration).map(function (programId) {
                 const {
                     sections,
@@ -454,7 +491,12 @@
                                 options
                             } = config;
                             const id = `${sectionId}_${config.name}`;
-                            const value = qipData && qipData[id] ? qipData[id] : "";
+                            let value = "";
+                            if (qipData && qipData[id]) {
+                                value = qipData[id]
+                                newQipData[id] = value;
+                            }
+                            newQipData[id] = value;
                             tdElement = document.createElement("td");
                             if (options && options.length > 0) {
                                 const element = getSelectInput(id, value, options);
@@ -470,12 +512,14 @@
                         }
                         tableBodyElement.appendChild(tbBodyRow);
                     }
-
                 })
             });
             tableElement.appendChild(tableHeaderElement);
             tableElement.appendChild(tableBodyElement)
             document.getElementById("table-qip").appendChild(tableElement);
+            if (shouldUpdate && Object.keys(qipData).length !== Object.keys(newQipData)) {
+                updateQipValue(qipConfiguration, newQipData);
+            }
         } catch (error) {
             console.log("Error on drawing : " + JSON.stringify(error))
         }
@@ -514,6 +558,8 @@
     function getTextArea(id, value) {
         const textarea = document.createElement('textarea');
         textarea.setAttribute('id', id);
+        textarea.setAttribute('cols', "25");
+        textarea.setAttribute('rows', "3");
         textarea.setAttribute('class', 'entryfield-qip');
         textarea.value = value;
         return textarea;
@@ -634,7 +680,13 @@
         }, {
             name: "timeFrame",
             valueType: "TEXT",
-            options: []
+            options: [{
+                name: "Two years",
+                code: "Two years"
+            }, {
+                name: "Four years",
+                code: "Four years"
+            }]
         }]
     }
 
@@ -811,5 +863,6 @@
     }
 </script>
 <div class="container-fluid">
+    <button class="button" onclick="updateQip()">Update QIP</button>
     <div id="table-qip"></div>
 </div>
