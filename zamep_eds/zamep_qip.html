@@ -3,8 +3,6 @@
         white-space: nowrap;
     }
 
-
-
     .entryfield-qip,
     select {
         text-align: center;
@@ -350,6 +348,7 @@
     const tableRowConfig = getTableRowConfig();
     let qipData = {};
     if (window && window.cordova) {
+        dhis2.currentEventId = dhis2 && dhis2.currentEventId ? dhis2.currentEventId : 'currentEventId';
         if (dhis2 && dhis2 && dhis2.eventCaptureSelection && dhis2.currentEventId && dhis2.sqlLiteProvider &&
             dhis2.trackerCaptureProvider) {
             discoverAndGenerateQip();
@@ -375,6 +374,8 @@
     }
 
     async function discoverAndGenerateQip(shouldUpdate) {
+        $("#loader").show();
+        $("#qip-container").hide();
         const {
             eventCaptureSelection,
             currentEventId
@@ -429,6 +430,10 @@
             console.log(JSON.stringify({
                 error
             }))
+            setTimeout(function () {
+                $("#loader").hide();
+                $("#qip-container").show();
+            }, 500)
         }
     }
 
@@ -528,8 +533,16 @@
             if (shouldUpdate && Object.keys(qipData).length !== Object.keys(newQipData)) {
                 updateQipValue(qipConfiguration, newQipData);
             }
+            setTimeout(function () {
+                $("#loader").hide();
+                $("#qip-container").show();
+            }, 500)
         } catch (error) {
-            console.log("Error on drawing : " + JSON.stringify(error))
+            console.log("Error on drawing : " + JSON.stringify(error));
+            setTimeout(function () {
+                $("#loader").hide();
+                $("#qip-container").show();
+            }, 500)
         }
     }
 
@@ -541,8 +554,6 @@
         }
         updateQipValue(qipConfiguration, qipData);
     }
-
-
 
     function getSelectInput(id, value, options) {
         const selectElement = document.createElement('select');
@@ -597,11 +608,10 @@
         const data = {
             id: `${programId}_${eventId}`,
             nameSpace: programId,
-            key: event,
+            key: eventId,
             data: newData,
-            status: "not-sync"
+            status: "not-synced"
         }
-
         return dhis2.sqlLiteProvider.insertOrReplaceOnTable(tableName, [data]);
     }
 
@@ -701,13 +711,7 @@
         }, {
             name: "timeFrame",
             valueType: "TEXT",
-            options: [{
-                name: "Two years",
-                code: "Two years"
-            }, {
-                name: "Four years",
-                code: "Four years"
-            }]
+            options: []
         }]
     }
 
@@ -884,6 +888,38 @@
     }
 </script>
 <div class="container-fluid">
-    <button class="button" onclick="updateQip()">Update QIP</button>
-    <div id="table-qip"></div>
+    <div id="loader" style="text-align:center">
+        <svg width='120px' height='120px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid" class="uil-balls">
+            <rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect>
+            <g transform="rotate(0 50 50)">
+                <circle r="5" cx="30" cy="50">
+                    <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                        dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                    <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                        values="#c5523f;#f2b736" />
+                </circle>
+            </g>
+            <g transform="rotate(120 50 50)">
+                <circle r="5" cx="30" cy="50">
+                    <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                        dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                    <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                        values="#f2b736;#499255" />
+                </circle>
+            </g>
+            <g transform="rotate(240 50 50)">
+                <circle r="5" cx="30" cy="50">
+                    <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                        dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                    <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                        values="#499255;#c5523f" />
+                </circle>
+            </g>
+        </svg>
+    </div>
+    <div id="qip-container">
+        <button class="button" onclick="updateQip()">Update QIP</button>
+        <div id="table-qip"></div>
+    </div>
 </div>
