@@ -365,9 +365,10 @@
             currentEventId
         } = dhis2;
         const {
-            selectedProgram
+            selectedProgram,
+            selectedOrgUnit
         } = eventCaptureSelection;
-        await saveQipValueToLocalDataStore(currentEventId, selectedProgram.id, {
+        await saveQipValueToLocalDataStore(currentEventId, selectedProgram.id, selectedOrgUnit.id, {
             qipConfiguration,
             qipData
         })
@@ -409,7 +410,8 @@
                 }
             }
             const selectedProgramId = selectedProgram.id;
-            const dataStoreResponse = await discoveringQipValueFromLocalDataSrore(currentEventId,
+            const selectedOrgUnitId = selectedOrgUnit.id;
+            const dataStoreResponse = await discoveringQipValueFromLocalDataStore(currentEventId,
                 selectedProgramId);
             const dataStoreObject = dataStoreResponse && dataStoreResponse.length > 0 ? dataStoreResponse[0] : {
                 data: {
@@ -420,7 +422,7 @@
             qipData = dataStoreObject.data.qipData;
             qipConfiguration = shouldUpdate ? qipConfiguration : dataStoreObject.data.qipConfiguration;
             if (dataStoreResponse && dataStoreResponse.length === 0) {
-                await saveQipValueToLocalDataStore(currentEventId, selectedProgramId, {
+                await saveQipValueToLocalDataStore(currentEventId, selectedProgramId, selectedOrgUnitId, {
                     qipConfiguration,
                     qipData
                 })
@@ -595,19 +597,19 @@
         return textarea;
     }
 
-    async function discoveringQipValueFromLocalDataSrore(eventId, programId) {
+    async function discoveringQipValueFromLocalDataStore(eventId, programId) {
         const tableName = "dataStore";
         const id = `${programId}_${eventId}`;
         return dhis2.sqlLiteProvider.getFromTableByAttributes(tableName, "id", [id]);
 
     }
 
-    async function saveQipValueToLocalDataStore(eventId, programId, newData) {
+    async function saveQipValueToLocalDataStore(eventId, programId, selectedOrgUnitId, newData) {
         qipData = newData;
         const tableName = "dataStore";
         const data = {
             id: `${programId}_${eventId}`,
-            nameSpace: programId,
+            nameSpace: `${selectedOrgUnitId}_${programId}`,
             key: eventId,
             data: newData,
             status: "not-synced"
